@@ -42,57 +42,57 @@ const Login = () => {
       return;
     }
 
-    // try {
-    //   // Send login request to backend
-    //   const res = await axios.post("http://192.168.29.217:5000/api/auth/login", {
-    //     email: emailOrPhone,
-    //     password,
-    //   });
+    try {
+      // Send login request to backend
+      const res = await axios.post("http://192.168.29.217:5000/api/auth/login", {
+        email: emailOrPhone,
+        password,
+      });
 
-    //   // Backend should return token + role
-    //   const { token, role, message } = res.data;
+      // Backend should return token + role
+      const { token, role, message } = res.data;
 
-    //   setSuccessMessage(message || "Login successful!");
+      setSuccessMessage(message || "Login successful!");
 
-    //   //  Save token and role in localStorage
-    //   localStorage.setItem("token", token);
-    //   localStorage.setItem("role", role);
+      //  Save token and role in localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", role);
 
 
-    //   // Redirect based on user role
-    //   if (role === "admin") {
-    //     navigate("/admindashboard");
-    //   } else {
-    //     navigate("/customerdashboard");
-    //   }
-    // } catch (err) {
-    //   //  Handle errors
-    //   if (err.response) {
-    //     setError(err.response.data.message || "Invalid credentials");
-    //   } else {
-    //     setError("Server error, please try again.");
-    //   }
-    // }
-    const hardcodedAdmin = {
-      email: "admin@mandaram.com",
-      phone: "1111111111",
-      password: "123",
-    };
-
-    //  Check if entered credentials match
-    if (
-      (emailOrPhone === hardcodedAdmin.email ||
-        emailOrPhone === hardcodedAdmin.phone) &&
-      password === hardcodedAdmin.password
-    ) {
-      localStorage.setItem("token", "dummy-admin-token");
-      localStorage.setItem("role", "admin");
-      setSuccessMessage("Login successful!");
-      navigate("/admindashboard",{ replace: true });
-      return;
-    } else {
-      setError("Invalid email/phone or password");
+      // Redirect based on user role
+      if (role === "admin") {
+        navigate("/admindashboard");
+      } else {
+        navigate("/customerdashboard");
+      }
+    } catch (err) {
+      //  Handle errors
+      if (err.response) {
+        setError(err.response.data.message || "Invalid credentials");
+      } else {
+        setError("Server error, please try again.");
+      }
     }
+    // const hardcodedAdmin = {
+    //   email: "admin@mandaram.com",
+    //   phone: "1111111111",
+    //   password: "123",
+    // };
+
+    // //  Check if entered credentials match
+    // if (
+    //   (emailOrPhone === hardcodedAdmin.email ||
+    //     emailOrPhone === hardcodedAdmin.phone) &&
+    //   password === hardcodedAdmin.password
+    // ) {
+    //   localStorage.setItem("token", "dummy-admin-token");
+    //   localStorage.setItem("role", "admin");
+    //   setSuccessMessage("Login successful!");
+    //   navigate("/admindashboard",{ replace: true });
+    //   return;
+    // } else {
+    //   setError("Invalid email/phone or password");
+    // }
   };
 
   
