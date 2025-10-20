@@ -18,6 +18,11 @@ import Deleteproduct from "./products/Deleteproduct";
 import Listproducts from "./products/Listproducts";
 import Listcategory from "./categories/Listcategory";
 import Cartpage from "./cart/Cartpage";
+import CategoryProductPage from "./cart/CategoryProductPage";
+import ProductDetailPage from "./cart/ProductDetailPage";
+import { CartProvider } from './context/CartContext';
+import MyOrdersPage from "./orders/MyOrdersPage";
+
 
 
 function App() {
@@ -26,6 +31,7 @@ function App() {
     <>
 
     <Router>
+      <CartProvider>
       <Routes>
         {/* Admin Layout */}
         <Route path="/admindashboard" element={<Admindashboard />}>
@@ -47,10 +53,15 @@ function App() {
 
          <Route path="/customerdashboard" element={<Customerdashboard />} />
         <Route path="/cart" element={<Cartpage />} />
+
+        <Route path="/categories/:slug" element={<CategoryProductPage />} />
+        <Route path="/product/:productId" element={<ProductDetailPage />} />
+        <Route path="/myorders" element={<MyOrdersPage />} />
         {/* Authentication */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Login />} />
       </Routes>
+      </CartProvider>
     </Router>
    
     </>
@@ -58,5 +69,8 @@ function App() {
 }
 
 export default App
+
+
+
 
 
