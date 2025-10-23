@@ -784,7 +784,7 @@ const Customerdashboard = () => {
           src="image2.jpg"
           alt="Hero Section Banner"
         />
-      </div>ca
+      </div>
 
       {/* Category Section (Fixed Size & Transparent Arrows) */}
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { domainUrl } from "../utils/constant";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ const Signup = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // const [loading,setLoading] = useState(false)
 
   // Handle input change
   const handleChange = (e) => {
@@ -67,11 +69,12 @@ const Signup = () => {
     e.preventDefault();
     setSuccessMessage("");
     setErrors({});
+    // setLoading(true)
 
     if (validate()) {
       try {
         const response = await axios.post(
-          "http://192.168.29.217:5000/api/auth/signup",
+          `${domainUrl}/auth/signup`,
           formData
         );
 
@@ -94,6 +97,8 @@ const Signup = () => {
         }
       }
     }
+    
+    
   };
 
   return (

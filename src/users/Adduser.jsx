@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { domainUrl } from "../utils/constant";
 
 const AddUser = () => {
   const [formData, setFormData] = useState({
@@ -63,7 +64,7 @@ const AddUser = () => {
       try {
         const token = localStorage.getItem("token"); //
         const response = await axios.post(
-          "http://192.168.29.217:5000/api/admin/users",
+          `${domainUrl}/admin/users`,
           {
             username: formData.username,
             email: formData.email,

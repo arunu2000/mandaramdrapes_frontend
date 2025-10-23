@@ -36,9 +36,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { domainUrl } from '../utils/constant';
 
 // IMPORTANT: Define the base URL for your backend to load images
-const BACKEND_BASE_URL = "http://192.168.29.217:5000"; 
 
 const ProductCard = ({ product }) => {
     // Ensure product data is valid before rendering
@@ -49,8 +49,10 @@ const ProductCard = ({ product }) => {
 
     // Construct image URL
     const imageUrl = product.image 
-        ? `${BACKEND_BASE_URL}/${product.image}` 
+        ? `${domainUrl}/${product.image}` 
         : 'https://via.placeholder.com/300x300?text=No+Image';
+
+
 
     return (
         <div className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">

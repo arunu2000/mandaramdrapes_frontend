@@ -141,6 +141,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import { domainUrl } from "../utils/constant";
 
 const Addcategory = () => {
     const [formData, setFormData] = useState({
@@ -190,7 +191,7 @@ const Addcategory = () => {
             data.append("image", formData.image);
 
             const res = await axios.post(
-                "http://192.168.29.217:5000/api/category/add",
+                `${domainUrl}/category/add`,
                 data,
                 {
                     headers: {

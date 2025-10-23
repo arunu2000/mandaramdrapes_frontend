@@ -122,6 +122,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import axios from 'axios';
+import { domainUrl } from '../utils/constant';
 
 
 // --- Utility Icons (Must be in this file or imported) ---
@@ -150,7 +151,7 @@ const CategorySection = () => {
  setLoading(true);
  try {
  //  YOUR LIVE BACKEND ENDPOINT
- const res = await axios.get("http://192.168.29.217:5000/api/user/shop/categories");
+ const res = await axios.get(`${domainUrl}/user/shop/categories`);
  
  // Process fetched data to add a 'slug' for the URL
  const fetchedCategories=res.data.categories || []

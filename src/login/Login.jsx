@@ -4,12 +4,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-
+import { domainUrl } from "../utils/constant";
+import { ClipLoader, PropagateLoader } from "react-spinners";
 const Login = () => {
   const [formData, setFormData] = useState({
     emailOrPhone: "",
     password: "",
   });
+
+  const [loading,setLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,21 +33,24 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
-
-  
-
+    
+    
+    
     const { emailOrPhone, password } = formData;
-
-    // Simple email format check
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailOrPhone)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
+    
+    // // Simple email format check
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(emailOrPhone)) {
+    //   setError("Please enter a valid email address");
+    //   return;
+    // }
+    
     try {
+      setLoading(true)
+     
+
       // Send login request to backend
-      const res = await axios.post("http://192.168.29.217:5000/api/auth/login", {
+      const res = await axios.post(`${domainUrl}/auth/login`, {
         email: emailOrPhone,
         password,
       });
@@ -72,6 +78,9 @@ const Login = () => {
       } else {
         setError("Server error, please try again.");
       }
+    }
+    finally{
+      setLoading(false)
     }
     // const hardcodedAdmin = {
     //   email: "admin@mandaram.com",
@@ -141,9 +150,13 @@ const Login = () => {
           {/*  Submit Button */}
           <button
             type="submit"
-            className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 rounded hover:bg-[#5a6d57] transition"
+            className="w-full h-[40px] mt-3 text-white bg-[#5e785a] px-4  rounded hover:bg-[#5a6d57] transition"
           >
-            Login
+
+            {loading?<ClipLoader color="white" size={15} />:'Login'
+            }
+
+            
           </button>
         </form>
 

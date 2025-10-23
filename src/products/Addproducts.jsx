@@ -89,6 +89,7 @@
 
 import React, { useState, useEffect } from 'react'; 
 import axios from 'axios'; 
+import { domainUrl } from '../utils/constant';
 
 const Addproducts = () => {
     // 1. STATE MANAGEMENT
@@ -107,7 +108,7 @@ const Addproducts = () => {
         const fetchCategories = async () => {
             try {
                 // NOTE: Use your Category List API endpoint
-                const res = await axios.get("http://192.168.29.217:5000/api/category/list");
+                const res = await axios.get(`${domainUrl}/category/list`);
                 
                 // Assuming your backend returns { list: [...] }
                 setCategories(res.data.list); 
@@ -149,7 +150,7 @@ const Addproducts = () => {
             
             //  UNCOMMENTED AXIOS CALL
             const res = await axios.post(
-                "http://192.168.29.217:5000/api/product/add", 
+                `${domainUrl}/product/add`, 
                 data,
                 {
                     headers: {

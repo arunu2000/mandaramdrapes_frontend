@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { domainUrl } from "../utils/constant";
 
 const Listcategory = () => {
   const [categories, setCategories] = useState([]);
@@ -18,7 +19,7 @@ const Listcategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://192.168.29.217:5000/api/category/list");
+      const res = await axios.get(`${domainUrl}/category/list`);
       setCategories(res.data.list || []);
       setFilteredCategories(res.data.list || []);
     } catch (err) {
@@ -62,7 +63,7 @@ const Listcategory = () => {
       if (formData.image) data.append("image", formData.image);
 
       const res = await axios.put(
-        `http://192.168.29.217:5000/api/category/update/${selectedCategory._id}`,
+        `${domainUrl}/category/update/${selectedCategory._id}`,
         data,
         { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` } }
       );
@@ -79,7 +80,7 @@ const Listcategory = () => {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://192.168.29.217:5000/api/category/delete/${selectedCategory._id}`, {
+      await axios.delete(`${domainUrl}/category/delete/${selectedCategory._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowDeleteModal(false);

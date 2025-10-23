@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 // Assumes you have @heroicons/react installed
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'; 
+import { domainUrl } from "../utils/constant";
 
 // Utility component for the pagination controls
 const PaginationControls = ({ currentPage, totalPages, onPageChange }) => (
@@ -83,7 +84,7 @@ const ListUsers = () => {
         setLoading(true);
 
         axios
-            .get("http://192.168.29.217:5000/api/admin/users", {
+            .get(`${domainUrl}/admin/users`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

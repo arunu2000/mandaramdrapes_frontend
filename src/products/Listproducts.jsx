@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaSearch } from "react-icons/fa";
+import { domainUrl } from "../utils/constant";
 
 const Listproducts = () => {
     // 1. STATE MANAGEMENT
@@ -22,7 +23,7 @@ const Listproducts = () => {
     const [message, setMessage] = useState("");
 
     // Base URL from your other components
-    const BASE_URL = "http://192.168.29.217:5000/api"; 
+     
 
     useEffect(() => {
         fetchProducts();
@@ -33,7 +34,7 @@ const Listproducts = () => {
 
     const fetchCategories = async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/category/list`);
+            const res = await axios.get(`${domainUrl}/category/list`);
             // Store categories in a format that's easy to look up by ID later
             setCategories(res.data.list || []); 
         } catch (err) {
@@ -44,7 +45,7 @@ const Listproducts = () => {
     const fetchProducts = async () => {
         try {
             // NOTE: Use your Product List API endpoint
-            const res = await axios.get(`${BASE_URL}/product/list`); 
+            const res = await axios.get(`${domainUrl}/product/list`); 
             setProducts(res.data.list || []);
             setFilteredProducts(res.data.list || []);
         } catch (err) {
@@ -126,7 +127,7 @@ const Listproducts = () => {
             }
 
             const res = await axios.put(
-                `${BASE_URL}/product/update/${selectedProduct._id}`, // Use product ID
+                `${domainUrl}/product/update/${selectedProduct._id}`, // Use product ID
                 data,
                 { headers: { Authorization: `Bearer ${token}` } } // Axios will set Content-Type: multipart/form-data correctly
             );
@@ -144,7 +145,7 @@ const Listproducts = () => {
         setMessage("");
         try {
             const token = localStorage.getItem("token");
-            await axios.delete(`${BASE_URL}/product/delete/${selectedProduct._id}`, {
+            await axios.delete(`${domainUrl}/product/delete/${selectedProduct._id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             
