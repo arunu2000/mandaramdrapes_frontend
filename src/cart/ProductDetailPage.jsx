@@ -8,7 +8,7 @@
 // const ProductDetailPage = () => {
 //     // 1. Get the dynamic part of the URL (the productId)
 //     const { productId } = useParams();
-    
+
 //     const [product, setProduct] = useState(null);
 //     const [loading, setLoading] = useState(true);
 //     const [error, setError] = useState(null);
@@ -23,9 +23,9 @@
 //                 const res = await axios.get(
 //                     `${BACKEND_BASE_URL}/api/product/${productId}` //  Ensure your backend has this endpoint!
 //                 );
-                
+
 //                 // Assuming your API returns the product in res.data.product or just res.data
-//                 setProduct(res.data.product || res.data); 
+//                 setProduct(res.data.product || res.data);
 //             } catch (err) {
 //                 console.error("Error fetching single product:", err);
 //                 setError("Could not load product details. Please check the network and API endpoint.");
@@ -53,7 +53,7 @@
 //     return (
 //         <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
 //             <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
-                
+
 //                 {/* Product Image Section */}
 //                 <div className="flex flex-col-reverse">
 //                     <div className="aspect-w-1 aspect-h-1 overflow-hidden rounded-lg">
@@ -68,7 +68,7 @@
 //                 {/* Product Info Section */}
 //                 <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
 //                     <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">{product.name}</h1>
-                    
+
 //                     <div className="mt-3">
 //                         <h2 className="sr-only">Product information</h2>
 //                         <p className="text-3xl text-green-600">${product.price.toFixed(2)}</p>
@@ -80,7 +80,7 @@
 //                             <p>{product.description || "No description provided."}</p>
 //                         </div>
 //                     </div>
-                    
+
 //                     <div className="mt-4 border-t border-gray-200 pt-4">
 //                         <p className="text-sm text-gray-500">
 //                             **Brand:** {product.brand || 'N/A'}
@@ -89,7 +89,6 @@
 //                             **In Stock:** {product.countInStock > 0 ? `${product.countInStock} items` : 'Out of Stock'}
 //                         </p>
 //                     </div>
-
 
 //                     <div className="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
 //                         {/* Quantity Selector */}
@@ -115,8 +114,8 @@
 //                             onClick={handleAddToCart}
 //                             disabled={product.countInStock === 0}
 //                             className={`flex-1 w-full py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white ${
-//                                 product.countInStock > 0 
-//                                     ? 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500' 
+//                                 product.countInStock > 0
+//                                     ? 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
 //                                     : 'bg-gray-400 cursor-not-allowed'
 //                             }`}
 //                         >
@@ -131,9 +130,6 @@
 // };
 
 // export default ProductDetailPage;
-
-
-
 
 // import React, { useEffect, useState } from 'react';
 // import { useParams } from 'react-router-dom';
@@ -179,7 +175,7 @@
 //                 // Assuming your API returns the product in res.data.product or just res.data
 //                 const fetchedProduct = res.data.getProducts || res.data;
 //                 setProducts(fetchedProduct);
-                
+
 //                 // Initialize selected size if sizes are available
 //                 if (fetchedProduct.sizes && fetchedProduct.sizes.length > 0) {
 //                     setSelectedSize(fetchedProduct.sizes[0].name);
@@ -220,22 +216,22 @@
 //     if (loading) return <div className="text-center py-20 text-xl font-medium">Loading Product Details...</div>;
 //     if (error) return <div className="text-center py-20 text-red-600"> {error}</div>;
 //     if (!product) return <div className="text-center py-20 text-gray-700">Product details are unavailable.</div>;
-    
+
 //     // Derived properties for UI (Use fallback values)
 //     const isInStock = products.countInStock > 0;
 //     const productImageSrc = products.image ? `${BACKEND_BASE_URL}/${product.image}` : 'https://via.placeholder.com/500?text=No+Image';
 //     const productPrice = products.price ? `$${product.price.toFixed(2)}` : 'Price Unavailable';
 //     const productDescription = products.description || "No detailed description is available for this product.";
-    
+
 //     // --- Main Component Render (Using the fetched 'product' object) ---
 //     return (
 //         <div className="bg-white">
 //             <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-                
+
 //                 {/* Product details */}
 //                 <div className="lg:max-w-lg lg:self-end">
 //                     <nav aria-label="Breadcrumb">
-//                         {/*  NOTE: Breadcrumbs are hardcoded in your provided component. 
+//                         {/*  NOTE: Breadcrumbs are hardcoded in your provided component.
 //                            In a real app, you would generate these using the product's category. */}
 //                         <ol role="list" className="flex items-center space-x-2">
 //                             {/* Assuming the product object contains a category property for the breadcrumb */}
@@ -314,10 +310,10 @@
 //                 {/* Product image */}
 //                 <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
 //                     {/* Dynamic Image Source */}
-//                     <img 
-//                         alt={products.name} 
-//                         src={productImageSrc} 
-//                         className="aspect-square w-full rounded-lg object-cover" 
+//                     <img
+//                         alt={products.name}
+//                         src={productImageSrc}
+//                         className="aspect-square w-full rounded-lg object-cover"
 //                     />
 //                 </div>
 
@@ -339,8 +335,8 @@
 //                                                     aria-label={size.name}
 //                                                     aria-description={size.description}
 //                                                     className={classNames(
-//                                                         selectedSize === size.name 
-//                                                             ? 'outline outline-2 -outline-offset-2 outline-indigo-600' 
+//                                                         selectedSize === size.name
+//                                                             ? 'outline outline-2 -outline-offset-2 outline-indigo-600'
 //                                                             : 'border border-gray-300',
 //                                                         'group relative flex rounded-lg bg-white p-4 cursor-pointer hover:border-indigo-600'
 //                                                     )}
@@ -368,15 +364,15 @@
 //                                 )}
 //                                 {/* You can add the size guide link here if necessary */}
 //                             </div>
-                            
+
 //                             {/* Add to Bag Button */}
 //                             <div className="mt-10">
 //                                 <button
 //                                     type="submit"
 //                                     disabled={!isInStock}
 //                                     className={classNames(
-//                                         isInStock 
-//                                             ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500' 
+//                                         isInStock
+//                                             ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500'
 //                                             : 'bg-gray-400 cursor-not-allowed',
 //                                         "flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-base font-medium text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden"
 //                                     )}
@@ -384,7 +380,7 @@
 //                                     {isInStock ? 'Add to bag' : 'Out of Stock'}
 //                                 </button>
 //                             </div>
-                            
+
 //                             <div className="mt-6 text-center">
 //                                 <a href="#" className="group inline-flex text-base font-medium">
 //                                     <ShieldCheckIcon
@@ -402,10 +398,9 @@
 //     )
 // }
 
-
 // import React, { useEffect, useState } from 'react';
 // // 💡 CHANGE: Import 'productId' instead of 'categorySlug'
-// import { useParams } from 'react-router-dom'; 
+// import { useParams } from 'react-router-dom';
 // import axios from 'axios';
 // import { CheckCircleIcon, CheckIcon, QuestionMarkCircleIcon, StarIcon } from '@heroicons/react/20/solid'
 // import { ShieldCheckIcon } from '@heroicons/react/24/outline'
@@ -438,14 +433,14 @@
 //     // The previous error images suggest useCart is causing an issue.
 //     // If you need to use the cart context, you must ensure the export is correct.
 //     // For now, let's keep it commented out to prevent crashing until you fix the export.
-//     // const { addToCart } = useCart(); 
+//     // const { addToCart } = useCart();
 
 //     // 3. Data Fetching Effect
 //     useEffect(() => {
 //         const fetchProduct = async () => {
 //             setLoading(true);
 //             setError(null);
-            
+
 //             // 💡 CRITICAL CHANGE: Use productId and the new API endpoint
 //             const API_URL = `${BACKEND_BASE_URL}/api/user/shop/product/${productId}`;
 
@@ -454,9 +449,9 @@
 //                 const res = await axios.get(API_URL);
 
 //                 // Assuming your API returns the single product object directly: res.data
-//                 const fetchedProduct = res.data; 
+//                 const fetchedProduct = res.data;
 //                 setProduct(fetchedProduct);
-                
+
 //                 // Initialize selected size if sizes are available
 //                 if (fetchedProduct.sizes && fetchedProduct.sizes.length > 0) {
 //                     setSelectedSize(fetchedProduct.sizes[0].name);
@@ -465,7 +460,7 @@
 //             } catch (err) {
 //                 console.error("Error fetching single product:", err);
 //                 const status = err.response?.status;
-                
+
 //                 let errorMessage = `Could not load product ID "${productId}". Status: ${status || 'Network Error'}.`;
 //                 if (status === 404) {
 //                     errorMessage = `Product not found for ID: "${productId}". (Status 404)`;
@@ -507,19 +502,19 @@
 //     if (error) return <div className="text-center py-20 text-red-600"> {error}</div>;
 //     // Check if the product is null after loading
 //     if (!product) return <div className="text-center py-20 text-gray-700">Product details are unavailable.</div>;
-    
+
 //     // Derived properties for UI (Use the single 'product' object)
 //     const isInStock = product.countInStock > 0;
 //     const productImageSrc = product.image ? `${BACKEND_BASE_URL}/${product.image}` : 'https://via.placeholder.com/500?text=No+Image';
 //     const productPrice = product.price ? `$${product.price.toFixed(2)}` : 'Price Unavailable';
 //     const productDescription = product.description || "No detailed description is available for this product.";
-    
+
 //     // --- Main Component Render (Using the fetched 'product' object) ---
 //     return (
 //         <div className="bg-white">
 //             {/* ... rest of the UI code using 'product' object ... */}
 //             <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
-                
+
 //                 {/* Product details */}
 //                 <div className="lg:max-w-lg lg:self-end">
 //                     <nav aria-label="Breadcrumb">
@@ -600,10 +595,10 @@
 //                 {/* Product image */}
 //                 <div className="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
 //                     {/* Dynamic Image Source */}
-//                     <img 
-//                         alt={product.name} 
-//                         src={productImageSrc} 
-//                         className="aspect-square w-full rounded-lg object-cover" 
+//                     <img
+//                         alt={product.name}
+//                         src={productImageSrc}
+//                         className="aspect-square w-full rounded-lg object-cover"
 //                     />
 //                 </div>
 
@@ -625,8 +620,8 @@
 //                                                     aria-label={size.name}
 //                                                     aria-description={size.description}
 //                                                     className={classNames(
-//                                                         selectedSize === size.name 
-//                                                             ? 'outline outline-2 -outline-offset-2 outline-indigo-600' 
+//                                                         selectedSize === size.name
+//                                                             ? 'outline outline-2 -outline-offset-2 outline-indigo-600'
 //                                                             : 'border border-gray-300',
 //                                                         'group relative flex rounded-lg bg-white p-4 cursor-pointer hover:border-indigo-600'
 //                                                     )}
@@ -637,7 +632,7 @@
 //                                                         name="size"
 //                                                         value={size.name}
 //                                                         checked={selectedSize === size.name}
-//                                                         readOnly 
+//                                                         readOnly
 //                                                         className="absolute inset-0 appearance-none focus:outline-none"
 //                                                     />
 //                                                     <div className="flex-1">
@@ -653,15 +648,15 @@
 //                                     </fieldset>
 //                                 )}
 //                             </div>
-                            
+
 //                             {/* Add to Bag Button */}
 //                             <div className="mt-10">
 //                                 <button
 //                                     type="submit"
 //                                     disabled={!isInStock}
 //                                     className={classNames(
-//                                         isInStock 
-//                                             ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500' 
+//                                         isInStock
+//                                             ? 'bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500'
 //                                             : 'bg-gray-400 cursor-not-allowed',
 //                                         "flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-base font-medium text-white focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden"
 //                                     )}
@@ -669,7 +664,7 @@
 //                                     {isInStock ? 'Add to bag' : 'Out of Stock'}
 //                                 </button>
 //                             </div>
-                            
+
 //                             <div className="mt-6 text-center">
 //                                 <a href="#" className="group inline-flex text-base font-medium">
 //                                     <ShieldCheckIcon
@@ -687,7 +682,6 @@
 //     )
 // }
 
-
 // import React, { useEffect, useState } from "react";
 // import { useParams } from "react-router-dom";
 // import axios from "axios";
@@ -695,8 +689,6 @@
 // import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 // import { domainUrl } from "../utils/constant";
 // // import { useCart } from "../context/CartContext"; // Uncomment when ready
-
-
 
 // // Dummy related products (Tailwind UI)
 // const relatedProducts = [
@@ -813,9 +805,8 @@
 //     ? product.image
 //     : "https://via.placeholder.com/500?text=No+Image";
 
-
 //     console.log(productImageSrc);
-    
+
 //   const productPrice = product.price
 //     ? `$${product.price.toFixed(2)}`
 //     : "Price Unavailable";
@@ -847,7 +838,7 @@
 //                   />
 //                 ))}
 //               </div>
-             
+
 //             </div>
 
 //             <p className="mt-6 text-gray-700 leading-relaxed">
@@ -935,8 +926,11 @@
 //         </div>
 //       </div>
 
-      {/* Related Products*/}
-      {/* <div className="mx-auto max-w-7xl px-6 py-16">
+{
+  /* Related Products*/
+}
+{
+  /* <div className="mx-auto max-w-7xl px-6 py-16">
         <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-8">
           Customers also purchased
         </h2>
@@ -963,11 +957,11 @@
             </div>
           ))}
         </div>
-      </div> */}
+      </div> */
+}
 //     </div>
 //   );
-// } 
-
+// }
 
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -975,6 +969,7 @@ import axios from "axios";
 import { StarIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { domainUrl } from "../utils/constant";
+import { useCart } from "../context/CartContext";
 // import { useCart } from "../context/CartContext"; // ⬅ UNUSED: We are using a backend cart
 
 // Dummy related products (Tailwind UI) - KEPT FOR UI COMPLETENESS
@@ -996,8 +991,19 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAdding, setIsAdding] = useState(false); // New state for button loading
+  const [isAlreadyAdded,setIsAlreadyAdded]=useState()
+  const {
+    cartItems,
+
+    removeFromCart,
+    updateQuantity,
+    cartTotal,
+    placeOrder,
+    fetchCart,
+  } = useCart();
 
   useEffect(() => {
+    handleAddedProduct();
     const fetchProduct = async () => {
       try {
         setLoading(true);
@@ -1008,7 +1014,6 @@ export default function ProductDetailPage() {
         const fetchedProduct = res.data.product;
         setProduct(fetchedProduct);
         console.log(fetchedProduct);
-        
 
         if (fetchedProduct.sizes?.length > 0) {
           setSelectedSize(fetchedProduct.sizes[0].name);
@@ -1027,18 +1032,40 @@ export default function ProductDetailPage() {
     if (productId) fetchProduct();
   }, [productId]);
 
+  const handleAddedProduct = () => {
+    console.log(productId);
+
+    const filteredCartProduct = cartItems.some(
+      (item) => item.productId === productId
+    );
+    setIsAlreadyAdded(filteredCartProduct)
+   
+  };
   // ⬅️ UPDATED: Now performs the actual API call to add the product to the cart
   const handleAddToCart = async (e) => {
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      navigate("/login")
+      return
+    }
     e.preventDefault();
-    
+
     // Frontend validation
     if (!product || isAdding || product.countInStock === 0) return;
     if (product.sizes && !selectedSize)
       return alert("Please select a size before adding to bag.");
-    
+
     setIsAdding(true);
 
     try {
+
+      if(isAlreadyAdded){
+      console.log("inside already ");
+      
+        navigate('/cart')
+        return
+      }
       const token = localStorage.getItem("token");
       const cartData = {
         productId: product._id,
@@ -1046,31 +1073,27 @@ export default function ProductDetailPage() {
         // size: selectedSize
       };
 
-
-      
       //  IMPORTANT: Update this URL if your backend route is different
-      const ADD_CART_URL = `${domainUrl}/cart/add`; 
+      const ADD_CART_URL = `${domainUrl}/cart/add`;
 
       const response = await axios.post(
         ADD_CART_URL,
         cartData,
-         {
-                    headers: {
-                        // "Content-Type": "multipart/form-data",
-                        Authorization: `Bearer ${token}`,
-                    },
-                } // Required if your authentication uses cookies/sessions
+        {
+          headers: {
+            // "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        } // Required if your authentication uses cookies/sessions
       );
 
-     console.log(response.data)
-      
       // Navigate user to the cart page after successful addition
-      navigate('/cart'); 
-
+      navigate("/cart");
+      fetchCart();
     } catch (err) {
       console.log("Error adding to cart:", err.response?.data || err.message);
+      console.log("Error adding to cart:", err.response);
       // Display a friendly error message to the user
-     
     } finally {
       setIsAdding(false);
     }
@@ -1094,11 +1117,11 @@ export default function ProductDetailPage() {
   const productImageSrc = product.image
     ? product.image // Added domainUrl for images
     : "https://via.placeholder.com/500?text=No+Image";
-    
+
   const productPrice = product.price
     ? `$${product.price.toFixed(2)}`
     : "Price Unavailable";
-  const isInStock =true;
+  const isInStock = true;
   // const isInStock = product.countInStock > 0;
 
   return (
@@ -1144,9 +1167,7 @@ export default function ProductDetailPage() {
                   </p>
                 </>
               ) : (
-                <p className="text-sm text-red-600 font-medium">
-                  Out of stock
-                </p>
+                <p className="text-sm text-red-600 font-medium">Out of stock</p>
               )}
             </div>
           </div>
@@ -1195,7 +1216,11 @@ export default function ProductDetailPage() {
                 "mt-6 w-full rounded-md px-8 py-3 text-white font-medium"
               )}
             >
-              {isAdding ? "Adding to Bag..." : (isInStock ? "Add to Bag" : "Out of Stock")}
+              {isAdding
+                ? "Adding to Bag..."
+                : isInStock
+                ? isAlreadyAdded?"Go to Cart":"Add to Bag"
+                : "Out of Stock"}
             </button>
 
             <div className="mt-4 text-center text-sm text-gray-500">
@@ -1217,7 +1242,3 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-
-
-

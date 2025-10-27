@@ -208,7 +208,7 @@ const Listproducts = () => {
                                             <td className="px-6 py-6 align-top">
                                                 {prod.image ? (
                                                     // Assuming your backend serves images from a path like this
-                                                    <img src={`${prod.image}`} alt={prod.name} className="h-16 w-16 rounded-md object-cover border" />
+                                                    <img src={`${prod.image}`} alt={prod.name} className="h-16 w-16 rounded-md object-cover" />
                                                 ) : (
                                                     <div className="h-16 w-16 rounded-md border bg-gray-50 flex items-center justify-center text-gray-300">No Image</div>
                                                 )}

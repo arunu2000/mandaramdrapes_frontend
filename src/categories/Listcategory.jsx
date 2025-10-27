@@ -13,6 +13,7 @@ const Listcategory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
 
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -38,6 +39,8 @@ const Listcategory = () => {
 
   const handleEditClick = (category) => {
     setSelectedCategory(category);
+   
+    
     setFormData({ code: category.code, name: category.name, description: category.description, image: null });
     setShowEditModal(true);
   };
@@ -133,7 +136,7 @@ const Listcategory = () => {
                       <td className="px-6 py-6 align-top text-sm text-gray-600">{cat.description}</td>
                       <td className="px-6 py-6 align-top">
                         {cat.image ? (
-                          <img src={cat.image} alt={cat.name} className="h-16 w-16 rounded-md object-cover border" />
+                          <img src={cat.image} alt={cat.name} className="h-16 w-16 rounded-md object-cover" />
                         ) : (
                           <div className="h-16 w-16 rounded-md border bg-gray-50 flex items-center justify-center text-gray-300">No Image</div>
                         )}
@@ -166,7 +169,7 @@ const Listcategory = () => {
               <h2 className="text-xl font-bold text-[#2d412a] mb-4 text-center">Update Category</h2>
 
               <form onSubmit={handleUpdate} className="flex flex-col gap-3">
-                <input type="number" name="code" value={formData.code} onChange={handleChange} placeholder="Category Code" className="border rounded px-3 py-2 text-sm" required />
+                <input type="text" name="code" value={formData.code} onChange={handleChange} placeholder="Category Code" className="border rounded px-3 py-2 text-sm" required />
                 <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Category Name" className="border rounded px-3 py-2 text-sm" required />
                 <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Category Description" className="border rounded px-3 py-2 text-sm resize-none" />
 

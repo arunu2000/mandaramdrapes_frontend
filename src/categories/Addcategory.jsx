@@ -232,7 +232,7 @@ const Addcategory = () => {
                     
                     {/* Category Code */}
                     <input
-                        type="number"
+                        type="text"
                         name="code"
                         value={formData.code}
                         onChange={handleChange}

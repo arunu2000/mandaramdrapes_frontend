@@ -170,6 +170,9 @@ const Addproducts = () => {
                 price: "",
                 image: null,
             });
+            setTimeout(()=>{
+                setMessage('')
+            },2000)
 
         } catch (err) {
             console.error("Error adding product:", err.response ? err.response.data : err.message);
