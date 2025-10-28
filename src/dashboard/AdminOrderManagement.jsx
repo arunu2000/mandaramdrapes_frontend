@@ -5,8 +5,8 @@ import { ClockIcon, CheckCircleIcon, XCircleIcon, TruckIcon } from '@heroicons/r
 
 // Define the Admin-specific API endpoint
 // NOTE: You must confirm this endpoint with your backend developer.
-const ADMIN_ALL_ORDERS_ENDPOINT = `${domainUrl}/order/allOrders`;
-const ADMIN_UPDATE_STATUS_ENDPOINT = `${domainUrl}/order/updateStatus`;
+const ADMIN_ALL_ORDERS_ENDPOINT = `${domainUrl}/order/all`;
+const ADMIN_UPDATE_STATUS_ENDPOINT = `${domainUrl}/order/update`;
 
 const getStatusIcon = (status) => {
   switch (status) {
@@ -24,7 +24,7 @@ const getStatusIcon = (status) => {
   }
 };
 
-const statusOptions = ['Order Confirmed', 'Shipped', 'Delivered', 'Cancelled'];
+const statusOptions = ['Processing', 'Shipped', 'Delivered'];
 
 export default function AdminOrderManagement() {
   const [orders, setOrders] = useState([]);
@@ -50,8 +50,11 @@ export default function AdminOrderManagement() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      console.log("responseeeeeeeeeeeeeeeeeeeeeeee ", res.data.order);
+      
+
       // Assuming the API returns an array of all orders
-      setOrders(res.data.orders || []); 
+      setOrders(res.data.order || []); 
     } catch (err) {
       console.error(err);
       setError("Failed to fetch all customer orders. Check API endpoint and permissions.");
@@ -117,11 +120,8 @@ export default function AdminOrderManagement() {
                 <dl className="flex-auto divide-y divide-gray-200 text-sm text-gray-600 sm:grid sm:grid-cols-4 sm:gap-x-6 sm:divide-y-0 lg:w-4/5 lg:flex-none lg:gap-x-8">
                   {/* Customer Name ADDED */}
                   <div className='col-span-2'> 
-                    <dt className="font-medium text-gray-900">Customer Name</dt>
-                    <dd className="sm:mt-1 font-semibold text-gray-800">
-                       {/* Assumes your order object has a 'customer' field with a 'name' property */}
-                      {order.customer?.name || 'N/A'} 
-                    </dd>
+                    <dt className="font-medium text-gray-900">{order.user.username}</dt>
+                    
                   </div>
                   <div>
                     <dt className="font-medium text-gray-900">Date placed</dt>

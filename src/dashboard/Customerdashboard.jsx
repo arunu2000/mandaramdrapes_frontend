@@ -1502,10 +1502,413 @@
 // export default Customerdashboard;
 
 
+
+// ... (imports and component setup remain the same)
+
+// import React, { useRef } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import CategorySection from "../cart/CategorySection";
+// // IMPORT Menu components from @headlessui/react
+// import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+// import { Carousel } from "react-responsive-carousel";
+// import "react-responsive-carousel/lib/styles/carousel.min.css";
+// import CarouselImg1 from "../assets/carousel_img1.jpg";
+// import CarouselImg2 from "../assets/carousel_img2.jpg";
+// import CarouselImg3 from "../assets/carousel_img3.jpg";
+// import CarouselImg4 from "../assets/carousel_img4.png";
+// import CarouselImg5 from "../assets/carousel_img5.jpg";
+
+// // --- Utility Icons --- (Truncated for brevity)
+// const ChevronLeftIcon = (props) => (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       fill="none"
+//       viewBox="0 0 24 24"
+//       strokeWidth={1.5}
+//       stroke="currentColor"
+//       className="w-6 h-6"
+//     >
+//       <path
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//         d="M15.75 19.5L8.25 12l7.5-7.5"
+//       />
+//     </svg>
+// );
+
+// const ChevronRightIcon = (props) => (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       fill="none"
+//       viewBox="0 0 24 24"
+//       strokeWidth={1.5}
+//       stroke="currentColor"
+//       className="w-6 h-6"
+//     >
+//       <path
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//         d="M8.25 4.5l7.5 7.5-7.5 7.5"
+//       />
+//     </svg>
+// );
+// // --- Utility Icons ---
+
+// // Example product data (Truncated for brevity)
+// const products = [
+//     {
+//         id: 1,
+//         name: "Zip Tote Basket",
+//         color: "White and black",
+//         href: "#",
+//         imageSrc:
+//             "https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-03-related-product-01.jpg",
+//         imageAlt:
+//             "Front of zip tote bag with white canvas, black canvas straps and handle, and black zipper pulls.",
+//         price: "$140",
+//     },
+//     {
+//         id: 2,
+//         name: "Zip High Wall Tote",
+//         color: "White and blue",
+//         href: "#",
+//         imageSrc:
+//             "https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-03-related-product-02.jpg",
+//         imageAlt:
+//             "Front of zip tote bag with white canvas, blue canvas straps and handle, and front zipper pocket.",
+//         price: "$150",
+//     },
+//     {
+//         id: 3,
+//         name: "Halfsize Tote",
+//         color: "Clay",
+//         href: "#",
+//         imageSrc:
+//             "https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-03-related-product-03.jpg",
+//         imageAlt:
+//             "Front of tote with monochrome natural canvas body, straps, roll top, and handles.",
+//         price: "$210",
+//     },
+//     {
+//         id: 4,
+//         name: "High Wall Tote",
+//         color: "Black and orange",
+//         href: "#",
+//         imageSrc:
+//             "https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-03-related-product-04.jpg",
+//         imageAlt:
+//             "Front of zip tote bag with black canvas, black handles, and orange drawstring top.",
+//         price: "$210",
+//     },
+// ];
+
+// // Footer navigation (Truncated for brevity)
+// const navigation = [
+//     // ... (Your navigation items are here, truncated for brevity)
+//     {
+//         name: "Facebook",
+//         href: "#",
+//         icon: (props) => (
+//           <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
+//             <path
+//               fillRule="evenodd"
+//               d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+//               clipRule="evenodd"
+//             />
+//           </svg>
+//         ),
+//       },
+//       // ... (Rest of social icons)
+// ];
+
+// const Customerdashboard = () => {
+//     const scrollContainerRef = useRef(null);
+//     const navigate = useNavigate();
+//     const token = localStorage.getItem("token");
+//     const role = localStorage.getItem("role");
+    
+//     // Placeholder for User Name
+//     const userName = "Unaiz Noushad"; 
+
+//     // Function to handle the logout logic
+//     const handleLogout = () => {
+//         // Clear authentication data
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("role"); 
+//         // Navigate to the home/login page to reflect the logged-out state
+//         navigate("/", { replace: true }); 
+//     };
+
+//     // The previous handleAvatarClick is no longer needed due to conditional rendering
+
+//     return (
+//         <div>
+//             {/* Navbar */}
+//             <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
+//                 <div className="flex justify-around items-center text-[#5e785a] p-3">
+//                     <div>
+//                         <img className="h-10 w-auto" src="logo123.png" alt="Modimal Logo" />
+//                     </div>
+//                     <ul className="flex justify-center gap-10 text-sm items-center font-medium">
+//                         <Link to={"/"} className="hover:text-gray-900 transition-colors">Home</Link>
+//                         <Link
+//                             to="/cart"
+//                             className="p-2 text-gray-400 hover:text-gray-500"
+//                         >
+//                             <span className="ml-2 text-sm font-medium text-gray-700">
+//                                 Cart
+//                             </span>
+//                         </Link>
+//                         <Link
+//                             to="/myorders"
+//                             className="hover:text-gray-900 transition-colors"
+//                         >
+//                             My Orders
+//                         </Link>
+//                     </ul>
+
+//                     {/* ✅ FIX APPLIED HERE: Conditional rendering based on login status */}
+//                     {token && role === "user" ? (
+//                         // --- LOGGED IN: Show Avatar Menu ---
+//                         <Menu as="div" className="relative">
+//                             <MenuButton 
+//                                 className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5e785a] rounded-full"
+//                             >
+//                                 <img
+//                                     alt="User Avatar"
+//                                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&w=256&h=256&q=80"
+//                                     className="inline-block size-8 rounded-full outline -outline-offset-1 outline-black/5 cursor-pointer"
+//                                 />
+//                             </MenuButton>
+
+//                             <MenuItems
+//                                 transition
+//                                 anchor="bottom end"
+//                                 className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in z-50"
+//                             >
+//                                 <div className="px-4 py-3">
+//                                     <p className="text-sm font-medium text-gray-900">Signed in as:</p>
+//                                     <p className="truncate text-sm font-semibold text-[#5e785a]">{userName}</p>
+//                                 </div>
+//                                 <div className="py-1">
+//                                     <MenuItem>
+//                                         <Link
+//                                             to="/profile" 
+//                                             className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 transition-colors"
+//                                         >
+//                                             My Profile
+//                                         </Link>
+//                                     </MenuItem>
+//                                     <MenuItem>
+//                                         <Link
+//                                             to="/myorders"
+//                                             className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 transition-colors"
+//                                         >
+//                                             View Orders
+//                                         </Link>
+//                                     </MenuItem>
+//                                 </div>
+//                                 <div className="py-1">
+//                                     <MenuItem>
+//                                         <button
+//                                             onClick={handleLogout}
+//                                             className="w-full text-left block px-4 py-2 text-sm text-red-600 data-[focus]:bg-gray-100 transition-colors"
+//                                         >
+//                                             Logout
+//                                         </button>
+//                                     </MenuItem>
+//                                 </div>
+//                             </MenuItems>
+//                         </Menu>
+//                     ) : (
+//                         // --- LOGGED OUT: Show Login Link ---
+//                         <Link 
+//                             to="/login"
+//                             className="text-gray-600 hover:text-[#5e785a] font-medium transition-colors"
+//                         >
+//                             Login
+//                         </Link>
+//                     )}
+
+//                 </div>
+//             </nav>
+
+//             {/* Rest of your component (Hero, Category, Product, Footer) */}
+//             <div className="mt-16 relative w-full">
+//                 <Carousel autoPlay infiniteLoop showThumbs={true}>
+//                     <div>
+//                         <img
+//                             src={CarouselImg1}
+//                             alt="Saree collection"
+//                             className="object-cover w-full h-auto max-h-[500px]"
+//                         />
+//                     </div>
+//                     <div>
+//                         <img
+//                             src={CarouselImg2}
+//                             alt="Indian wear"
+//                             className="object-cover w-full h-auto max-h-[500px]"
+//                         />
+//                     </div>
+//                     <div>
+//                         <img
+//                             src={CarouselImg3}
+//                             alt="Handloom designs"
+//                             className="object-cover w-full h-auto max-h-[500px]"
+//                         />
+//                     </div>
+//                     <div>
+//                         <img
+//                             src={CarouselImg4}
+//                             alt="Fashion model"
+//                             className="object-cover w-full h-auto max-h-[500px]"
+//                         />
+//                     </div>
+//                     <div>
+//                         <img
+//                             src={CarouselImg5}
+//                             alt="Traditional clothes"
+//                             className="object-cover w-full h-auto max-h-[500px]"
+//                         />
+//                     </div>
+//                 </Carousel>
+//             </div>
+
+//             <CategorySection />
+
+//             {/* Product Section */}
+//             <section className="bg-white">
+//                 <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
+//                     <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
+//                         Featured Products
+//                     </h2>
+
+//                     <div className="mt-8 grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
+//                         {products.map((product) => (
+//                             <div key={product.id}>
+//                                 <div className="relative">
+//                                     <div className="relative h-72 w-full overflow-hidden rounded-lg">
+//                                         <img
+//                                             alt={product.imageAlt}
+//                                             src={product.imageSrc}
+//                                             className="size-full object-cover"
+//                                         />
+//                                     </div>
+
+//                                     <div className="absolute inset-x-0 top-0 flex h-72 items-end justify-end overflow-hidden rounded-lg p-4">
+//                                         <div
+//                                             aria-hidden="true"
+//                                             className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black opacity-50"
+//                                         />
+//                                         <p className="relative text-lg font-semibold text-white">
+//                                             {product.price}
+//                                         </p>
+//                                     </div>
+//                                 </div>
+
+//                                 <div className="relative mt-4">
+//                                     <h3 className="text-sm font-medium text-gray-900">
+//                                         {product.name}
+//                                     </h3>
+//                                     <p className="mt-1 text-sm text-gray-500">{product.color}</p>
+//                                 </div>
+
+//                                 <div className="mt-6">
+//                                     <a
+//                                         href={product.href}
+//                                         className="relative flex items-center justify-center rounded-md border border-transparent bg-gray-100 px-8 py-2 text-sm font-medium text-gray-900 hover:bg-gray-200 transition-colors"
+//                                     >
+//                                         Add to bag<span className="sr-only">, {product.name}</span>
+//                                     </a>
+//                                 </div>
+//                             </div>
+//                         ))}
+//                     </div>
+//                 </div>
+//             </section>
+
+//             {/* About Us Footer Section */}
+//             <footer className="bg-white border-t border-gray-100 py-16 lg:py-24">
+//                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+//                     <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-2 lg:gap-x-16 lg:items-center">
+//                         <div className="flex justify-center lg:justify-start">
+//                             <div className="w-full max-w-lg lg:max-w-none h-96">
+//                                 <img
+//                                     src="product1.jpg"
+//                                     alt="Company introduction image"
+//                                     className="w-full h-full object-cover rounded-lg shadow-xl"
+//                                 />
+//                             </div>
+//                         </div>
+
+//                         <div className="flex flex-col justify-center">
+//                             <div className="max-w-prose">
+//                                 <p className="text-sm font-semibold uppercase tracking-wider text-black mb-2">
+//                                     ABOUT US
+//                                 </p>
+//                                 <h2 className="text-3xl font-extrabold tracking-tight text-[#5e785a] mb-6">
+//                                     Mandaram Drapes
+//                                 </h2>
+
+//                                 <div className="text-base text-gray-400 space-y-4">
+//                                     <p>
+//                                         Welcome to Mandaram Drapes where tradition meets timeless
+//                                         fashion. Born from a deep love for Indian craftsmanship,
+//                                         Mandaram is more than just a clothing label — it’s a journey
+//                                         through threads of heritage, art, and individuality. Every
+//                                         saree and churidar in our collection is carefully curated,
+//                                         highlighting handpicked fabrics, intricate weaves, and
+//                                         soulful details that celebrate the beauty of Indian culture.
+//                                     </p>
+//                                     <p>
+//                                         From the graceful drape of a Banarasi saree to the soft flow
+//                                         of a linen churidar, our designs are made to make you feel
+//                                         confident, elegant, and connected to your roots. Whether
+//                                         you’re dressing up for a celebration or adding ethnic flair
+//                                         to your everyday look, Mandaram ensures that style and
+//                                         comfort walk hand in hand.
+//                                     </p>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </footer>
+            
+//             {/* Socials Footer */}
+//             <footer className="bg-white dark:bg-gray-900">
+//                 <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
+//                     <div className="flex justify-center gap-x-6 md:order-2">
+//                         {navigation.map((item) => (
+//                             <a
+//                                 key={item.name}
+//                                 href={item.href}
+//                                 className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
+//                             >
+//                                 <span className="sr-only">{item.name}</span>
+//                                 <item.icon aria-hidden="true" className="size-6" />
+//                             </a>
+//                         ))}
+//                     </div>
+//                     <p className="mt-8 text-center text-sm/6 text-gray-600 md:order-1 md:mt-0 dark:text-gray-400">
+//                         &copy; 2024 Your Company, Inc. All rights reserved.
+//                     </p>
+//                 </div>
+//             </footer>
+//         </div>
+//     );
+// };
+
+// export default Customerdashboard;
+
+
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CategorySection from "../cart/CategorySection";
 // Imported Headless UI Menu components
+
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -1513,8 +1916,12 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import CarouselImg1 from "../assets/carousel_img1.jpg";
 import CarouselImg2 from "../assets/carousel_img2.jpg";
 import CarouselImg3 from "../assets/carousel_img3.jpg";
+import CarouselImg8 from "../assets/carousel_img8.jpg";
+import CarouselImg9 from "../assets/carousel_img9.jpg";
+import CarouselImg10 from "../assets/carousel_img10.jpg";
 import CarouselImg4 from "../assets/carousel_img4.png";
 import CarouselImg5 from "../assets/carousel_img5.jpg";
+
 
 // --- Utility Icons --- (Kept for completeness, though not actively used in the Menu)
 const ChevronLeftIcon = (props) => (
@@ -1669,7 +2076,7 @@ const navigation = [
 ];
 
 // ** CONFIGURATION: Update this URL to your actual profile endpoint **
-const API_PROFILE_ENDPOINT = 'YOUR_BACKEND_API_URL/api/user/profile'; 
+
 
 const Customerdashboard = () => {
   const scrollContainerRef = useRef(null);
@@ -1687,7 +2094,7 @@ const Customerdashboard = () => {
       const fetchProfile = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(API_PROFILE_ENDPOINT, {
+          const response = await fetch(`${domainUrl}/user/shop`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -1839,39 +2246,39 @@ const Customerdashboard = () => {
       </nav>
 
       {/* Hero Section */}
-      <div className="mt-16 relative w-full">
+      <div className="mt-16 relative w-full ">
         <Carousel autoPlay infiniteLoop showThumbs={true}>
           <div>
             <img
-              src={CarouselImg1}
+              src={CarouselImg4}
               alt="Model wearing stylish outfit"
               className="object-cover w-full h-auto max-h-[500px]"
             />
           </div>
           <div>
             <img
-              src={CarouselImg2}
+              src={CarouselImg5}
               alt="Clothing displayed on a rack"
               className="object-cover w-full h-auto max-h-[500px]"
             />
           </div>
           <div>
             <img
-              src={CarouselImg3}
+              src={CarouselImg8}
               alt="Fashion show event"
               className="object-cover w-full h-auto max-h-[500px]"
             />
           </div>
           <div>
             <img
-              src={CarouselImg4}
+              src={CarouselImg9}
               alt="Close up of a unique textile pattern"
               className="object-cover w-full h-auto max-h-[500px]"
             />
           </div>
           <div>
             <img
-              src={CarouselImg5}
+              src={CarouselImg10}
               alt="Woman posing in a designer outfit"
               className="object-cover w-full h-auto max-h-[500px]"
             />
@@ -2011,4 +2418,9 @@ const Customerdashboard = () => {
 };
 
 export default Customerdashboard;
+
+
+
+
+
 

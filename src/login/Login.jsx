@@ -208,9 +208,20 @@ const Login = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    if (token) navigate("/", { replace: true });
-  }, [token, navigate]);
+ // 🏠 Recommended Fix for Login.jsx
+
+useEffect(() => {
+    const storedRole = localStorage.getItem("role"); // Retrieve the stored role
+    if (token) {
+        // If a token exists, check the role for proper redirection
+        if (storedRole === "admin") {
+            navigate("/admindashboard", { replace: true });
+        } else if (storedRole === "user") {
+            navigate("/", { replace: true });
+        }
+        // If role is null/undefined, navigate to / as a safe default
+    }
+}, [token, navigate]);
 
   const [formData, setFormData] = useState({
     emailOrPhone: "",
