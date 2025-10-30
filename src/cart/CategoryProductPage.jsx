@@ -644,3 +644,163 @@ const CategoryProductsPage = () => {
 };
 
 export default CategoryProductsPage;
+
+
+// import React, { useEffect, useState, useCallback } from 'react';
+// import { useParams, Link } from 'react-router-dom';
+// import axios from 'axios';
+// import { domainUrl } from '../utils/constant';
+
+// // --- PRODUCT CARD COMPONENT (FINAL POLISHED LOOK) ---
+// const ProductCard = ({ product }) => {
+//     const name = product?.name || "Product Name Missing";
+//     const price = product?.price ? `₹${product.price.toFixed(2)}` : "Price N/A";
+    
+//     const imageUrl = product?.image 
+//         ? (product.image.startsWith('http') ? product.image : `${domainUrl}/${product.image}`)
+//         : "https://placehold.co/600x400/e0e0e0/333333?text=Image+Error";
+    
+//     const productLink = `/products/${product?._id || 'unknown'}`;
+//     const categoryName = product?.category?.name || 'N/A';
+//     const imageAlt = product?.imageAlt || `Image of ${name}`;
+
+//     return (
+//         <Link 
+//             to={productLink} 
+//             className="group block relative 
+//                        transition-all duration-300 
+//                        hover:shadow-lg hover:bg-gray-50/50 rounded-lg"
+//         >
+            
+//             {/* Image Container */}
+//             <div className="aspect-h-3 aspect-w-2 w-full bg-gray-100 lg:h-96 overflow-hidden rounded-lg"> 
+//                 <img
+//                     alt={imageAlt}
+//                     src={imageUrl}
+//                     className="h-full w-full object-cover object-center 
+//                                transition-transform duration-500 
+//                                group-hover:scale-105"
+//                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/e0e0e0/333333?text=Image+Error"; }}
+//                 />
+//             </div>
+            
+//             {/* Text Details: Professional Typography */}
+//             <div className="p-2 pt-4 flex flex-col"> 
+//                 {/* Product Name: Bold and slightly larger than standard text */}
+//                 <h3 className="text-base font-semibold text-gray-900 
+//                                group-hover:text-indigo-700 transition duration-300 line-clamp-1">
+//                     {name}
+//                 </h3>
+//                 {/* Subtext: Category Name */}
+//                 <p className="mt-1 text-sm text-gray-500">{categoryName}</p> 
+                
+//                 {/* Price: Most Prominent Element */}
+//                 <p className="mt-2 text-xl font-extrabold text-gray-800"> 
+//                     {price}
+//                 </p>
+//             </div>
+//         </Link>
+//     );
+// };
+// // -----------------------------------------------------------------
+
+
+// const CategoryProductsPage = () => {
+//     const { slug } = useParams();
+
+//     const [products, setProducts] = useState([]);
+//     const [loading, setLoading] = useState(true);
+//     const [error, setError] = useState(null);
+    
+//     const getCategoryName = () => {
+//         if (products.length > 0 && products[0].category && products[0].category.name) {
+//             return products[0].category.name;
+//         }
+//         return slug ? slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ') : 'Category';
+//     }
+
+//     const fetchProductsByCategory = useCallback(async () => {
+//         if (!slug) {
+//             setLoading(false);
+//             setError("No category selected in the URL.");
+//             return;
+//         }
+
+//         setLoading(true);
+//         setError(null);
+        
+//         const API_URL = `${domainUrl}/user/shop/categories/${slug}`; 
+
+//         try {
+//             const res = await axios.get(API_URL);
+//             setProducts(res.data.getProducts || []); 
+            
+//         } catch (err) {
+//             console.error(`Error fetching products for slug "${slug}":`, err);
+            
+//             const status = err.response?.status;
+//             let errorMessage = `Could not load products. Status: ${status || 'Network Error'}.`;
+
+//             if (status === 404) {
+//                 errorMessage = `Category "${slug}" not found on the server. (Status 404)`;
+//             } else if (status === 500) {
+//                  errorMessage = "Server error (Status 500). Please check backend logs for Mongoose/database errors.";
+//             } 
+            
+//             setError(errorMessage);
+//             setProducts([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     }, [slug]);
+
+//     useEffect(() => {
+//         fetchProductsByCategory();
+//     }, [fetchProductsByCategory]);
+
+//     if (loading) {
+//         return <div className="text-center py-20 text-xl font-medium text-indigo-600">Loading products in {slug}...</div>;
+//     }
+
+//     if (error) {
+//         return <div className="text-center py-20 text-red-600 bg-red-50 p-6 m-4 rounded-lg border border-red-300">{error}</div>;
+//     }
+    
+//     const displayTitle = getCategoryName();
+
+//     return (
+//         <div className="bg-white min-h-screen">
+            
+//             {/* *** FIX APPLIED HERE ***: Removed 'mx-auto' and used 'max-w-none' to prevent global centering override */}
+//             <div className="w-full max-w-none lg:max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+                
+//                 {/* --- Main Title: Explicitly left-aligned --- */}
+//                 <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-10 border-b-2 border-gray-100 pb-4 text-left">
+//                     {displayTitle}
+//                 </h1>
+
+//                 {products.length === 0 ? (
+//                     // --- Empty State UI ---
+//                     <div className="text-center py-20 text-lg text-gray-500 bg-gray-50 p-10 rounded-xl border border-gray-200">
+//                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 mx-auto mb-6 text-indigo-500">
+//                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.5 2.108 8.43c-.588.666-1.354 1.054-2.193 1.076H7.47c-.84 0-1.606-.39-2.194-1.076l2.108-8.433m10.742 2.871-2.493-2.492m-2.492 2.492-2.493-2.492" />
+//                         </svg>
+//                         <h2 className="text-2xl font-bold text-gray-800">Oops! Nothing to see here.</h2>
+//                         <p className="mt-3 text-base text-gray-600">
+//                             We are currently updating our inventory for the **{displayTitle}** category. Please check back soon!
+//                         </p>
+//                     </div>
+//                 ) : (
+//                     // --- Product Grid: Starts directly after the left padding ---
+//                     <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
+//                         {products.map((product) => (
+//                             <ProductCard key={product._id} product={product} />
+//                         ))}
+//                     </div>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default CategoryProductsPage;

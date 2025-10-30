@@ -181,6 +181,326 @@
 // };
 
 
+// import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+// import axios from 'axios';
+// import { domainUrl } from '../utils/constant';
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// // Provider Component
+// export const CartProvider = ({ children }) => {
+//     // 1. STATE MANAGEMENT
+//     const [cartItems, setCartItems] = useState([]);
+//     const [cartTotal, setCartTotal] = useState(0);
+//     const [loading, setLoading] = useState(true); 
+//     const [error, setError] = useState(null);
+
+//     const getToken = () => localStorage.getItem("token");
+
+//     // 2. FETCH FUNCTION (The core function to get data from the backend)
+//     const fetchCart = useCallback(async () => {
+//         setLoading(true);
+//         setError(null);
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 setCartItems([]);
+//                 setCartTotal(0);
+//                 setLoading(false);
+//                 return;
+//             }
+            
+//             // NOTE: URL path adjusted based on your common API structure
+//             const res = await axios.get(`${domainUrl}/cart/list`, { 
+//                 headers: { Authorization: token }
+//             });
+          
+//             // const backendCart = res.data.cart;
+
+//             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+            
+//             // Map backend structure to a cleaner frontend structure
+//             // 
+//             const newCartItems = backendCart?.items?.map(item => ({
+//                 _id: item._id, // Mongoose Cart Line Item ID (unique for React key)
+//                 productId: item.product._id, // Product ID (used for API calls)
+//                 name: item.product.name,
+//                 price: item.product.price,
+//                 image: item.product.image,
+//                 quantity: item.quantity,
+//                 selectedSize: item.selectedSize || null,
+//             }));
+
+//             setCartItems(newCartItems);
+//             // Ensure cartTotal is a string representation of a float for display
+//             // setCartTotal(parseFloat(backendCart.totalAmount).toFixed(2)); 
+//             setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+
+//         } catch (err) {
+//             console.error("Failed to fetch cart:", err.response?.data || err.message);
+//             setError("Could not load cart data. Please ensure you are logged in.");
+//             setCartItems([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     }, []); 
+    
+//     // 3. EFFECT: Fetch cart on component mount
+//     useEffect(() => {
+//         fetchCart();
+//     }, [fetchCart]);
+
+
+//     // 4. ACTION: Remove from Cart
+//     // Accepts the Product ID which is required by your assumed backend route: /cart/remove/:productId
+//     const removeFromCart = async (productId) => { 
+//         setLoading(true);
+//         try {
+//             const token = getToken();
+//             // Assuming backend route is /api/cart/remove/:productId
+//             await axios.delete(`${domainUrl}/cart/remove/${productId}`, { 
+//                  headers: { Authorization: `Bearer ${token}` }
+//             });
+//             await fetchCart(); // Re-fetch the updated list
+//         } catch(err) {
+//             console.log("Error removing item:", err.response?.data || err.message);
+    
+//             setLoading(false);
+//         }
+//     };
+    
+//     // 5. ACTION: Update Quantity
+//     // Accepts the Product ID and the new quantity
+//     const updateQuantity = async (productId, newQuantity) => { 
+//         if (newQuantity <= 0) {
+//               removeFromCart(productId);
+//               return;
+//         }
+//         setLoading(true);
+//         // Optimistic update for faster UI response (optional, but good practice)
+//         setCartItems(currentItems => currentItems.map(item => 
+//             item.productId === productId ? { ...item, quantity: newQuantity } : item
+//         ));
+
+//         try {
+//             const token = getToken();
+//             // Assuming backend route is /api/cart/update
+//             await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, { 
+                
+//                 quantity: newQuantity
+//             }, {
+//                  headers: { Authorization: token }
+//             });
+//             // Re-fetch to get the official, recalculated total amount from the backend
+//             await fetchCart(); 
+//         } catch(err) {
+//             console.log("Error updating quantity:", err.response);
+            
+//             setLoading(false);
+//             // Re-fetch to revert to the correct server state if the update failed
+//             fetchCart(); 
+//         }
+//     };
+
+//     const placeOrder = async () => {
+//         setLoading(true);
+//         setError(null);
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 throw new Error("User not authenticated.");
+//             }
+
+//             // Assuming API route is /api/order/place
+//             const response = await axios.post(`${domainUrl}/order/place`, {}, {
+//                 headers: { Authorization: token }
+//             });
+            
+//             // After placing the order, clear the frontend cart state
+//             setCartItems([]);
+//             setCartTotal(0);
+//             console.log("response of placeOrder",response.data)
+//             return response.data;
+            
+
+//         } catch (err) {
+//             console.error("Error placing order:", err.response?.data || err.message);
+//             setError("Failed to place order. Please try again.");
+//             throw err;
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     return (
+//         <CartContext.Provider value={{ 
+//             cartItems, 
+//             loading, 
+//             error,
+//             cartTotal,
+//             fetchCart, 
+//             removeFromCart, 
+//             updateQuantity,
+//             placeOrder
+//         }}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };
+
+
+
+// import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+// import axios from 'axios';
+// import { domainUrl } from '../utils/constant';
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// // Provider Component
+// export const CartProvider = ({ children }) => {
+//     // 1. STATE MANAGEMENT
+//     const [cartItems, setCartItems] = useState([]);
+//     const [cartTotal, setCartTotal] = useState(0);
+//     const [loading, setLoading] = useState(true); 
+//     const [error, setError] = useState(null);
+
+//     const getToken = () => localStorage.getItem("token");
+
+//     // 2. FETCH FUNCTION
+//     const fetchCart = useCallback(async () => {
+//         setLoading(true);
+//         setError(null);
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 setCartItems([]);
+//                 setCartTotal(0);
+//                 setLoading(false);
+//                 return;
+//             }
+            
+//             const res = await axios.get(`${domainUrl}/cart/list`, { 
+//                 headers: { Authorization: token }
+//             });
+          
+//             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//             const newCartItems = backendCart?.items?.map(item => ({
+//                 _id: item._id, 
+//                 productId: item.product._id, 
+//                 name: item.product.name,
+//                 price: item.product.price,
+//                 image: item.product.image,
+//                 quantity: item.quantity,
+//                 selectedSize: item.selectedSize || null,
+//             }));
+
+//             setCartItems(newCartItems);
+//             setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+
+//         } catch (err) {
+//             console.error("Failed to fetch cart:", err.response?.data || err.message);
+//             setError("Could not load cart data. Please ensure you are logged in.");
+//             setCartItems([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     }, []); 
+    
+//     // 3. EFFECT: Fetch cart on component mount
+//     useEffect(() => {
+//         fetchCart();
+//     }, [fetchCart]);
+
+
+//     // 4. ACTION: Remove from Cart
+//     const removeFromCart = async (productId) => { 
+//         setLoading(true);
+//         try {
+//             const token = getToken();
+//             await axios.delete(`${domainUrl}/cart/remove/${productId}`, { 
+//                  headers: { Authorization: `Bearer ${token}` }
+//             });
+//             await fetchCart(); 
+//         } catch(err) {
+//             console.log("Error removing item:", err.response?.data || err.message);
+//             setLoading(false);
+//         }
+//     };
+    
+//     // 5. ACTION: Update Quantity 
+//     const updateQuantity = async (productId, newQuantity) => { 
+//         if (newQuantity <= 0) {
+//             removeFromCart(productId);
+//             return;
+//         }
+        
+//         setCartItems(currentItems => currentItems.map(item => 
+//             item.productId === productId ? { ...item, quantity: newQuantity } : item
+//         ));
+
+//         try {
+//             const token = getToken();
+//             await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, { 
+//                 quantity: newQuantity
+//             }, {
+//                 headers: { Authorization: token }
+//             });
+            
+//             fetchCart(); 
+            
+//         } catch(err) {
+//             console.log("Error updating quantity:", err.response);
+//             fetchCart(); 
+//         }
+//     };
+
+//     // 6. ACTION: Place Order (FIXED: Removed local state clearing)
+//     const placeOrder = async () => {
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 throw { message: "User not authenticated." }; 
+//             }
+
+//             const response = await axios.post(`${domainUrl}/order/place`, {}, {
+//                 headers: { Authorization: token }
+//             });
+            
+//             // State clearing removed to prevent the "Empty Cart" message flash 
+//             // while the success toast is still visible.
+            
+//             return response.data; 
+
+//         } catch (err) {
+//             console.error("Error placing order:", err.response?.data || err.message);
+//             throw err.response?.data || err; 
+//         }
+//     };
+
+//     return (
+//         <CartContext.Provider value={{ 
+//             cartItems, 
+//             loading, 
+//             error,
+//             cartTotal,
+//             fetchCart, 
+//             removeFromCart, 
+//             updateQuantity,
+//             placeOrder
+//         }}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };
+
+
+
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { domainUrl } from '../utils/constant';
@@ -199,7 +519,7 @@ export const CartProvider = ({ children }) => {
 
     const getToken = () => localStorage.getItem("token");
 
-    // 2. FETCH FUNCTION (The core function to get data from the backend)
+    // 2. FETCH FUNCTION
     const fetchCart = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -212,21 +532,15 @@ export const CartProvider = ({ children }) => {
                 return;
             }
             
-            // NOTE: URL path adjusted based on your common API structure
             const res = await axios.get(`${domainUrl}/cart/list`, { 
                 headers: { Authorization: token }
             });
           
-            // const backendCart = res.data.cart;
-
             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
 
-            
-            // Map backend structure to a cleaner frontend structure
-            // 
             const newCartItems = backendCart?.items?.map(item => ({
-                _id: item._id, // Mongoose Cart Line Item ID (unique for React key)
-                productId: item.product._id, // Product ID (used for API calls)
+                _id: item._id, 
+                productId: item.product._id, 
                 name: item.product.name,
                 price: item.product.price,
                 image: item.product.image,
@@ -235,8 +549,6 @@ export const CartProvider = ({ children }) => {
             }));
 
             setCartItems(newCartItems);
-            // Ensure cartTotal is a string representation of a float for display
-            // setCartTotal(parseFloat(backendCart.totalAmount).toFixed(2)); 
             setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
 
         } catch (err) {
@@ -255,84 +567,71 @@ export const CartProvider = ({ children }) => {
 
 
     // 4. ACTION: Remove from Cart
-    // Accepts the Product ID which is required by your assumed backend route: /cart/remove/:productId
     const removeFromCart = async (productId) => { 
         setLoading(true);
         try {
             const token = getToken();
-            // Assuming backend route is /api/cart/remove/:productId
             await axios.delete(`${domainUrl}/cart/remove/${productId}`, { 
                  headers: { Authorization: `Bearer ${token}` }
             });
-            await fetchCart(); // Re-fetch the updated list
+            await fetchCart(); 
         } catch(err) {
             console.log("Error removing item:", err.response?.data || err.message);
-    
             setLoading(false);
         }
     };
     
-    // 5. ACTION: Update Quantity
-    // Accepts the Product ID and the new quantity
+    // 5. ACTION: Update Quantity 
     const updateQuantity = async (productId, newQuantity) => { 
         if (newQuantity <= 0) {
-              removeFromCart(productId);
-              return;
+            removeFromCart(productId);
+            return;
         }
-        setLoading(true);
-        // Optimistic update for faster UI response (optional, but good practice)
+        
         setCartItems(currentItems => currentItems.map(item => 
             item.productId === productId ? { ...item, quantity: newQuantity } : item
         ));
 
         try {
             const token = getToken();
-            // Assuming backend route is /api/cart/update
             await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, { 
-                
                 quantity: newQuantity
             }, {
-                 headers: { Authorization: token }
+                headers: { Authorization: token }
             });
-            // Re-fetch to get the official, recalculated total amount from the backend
-            await fetchCart(); 
+            
+            fetchCart(); 
+            
         } catch(err) {
             console.log("Error updating quantity:", err.response);
-            
-            setLoading(false);
-            // Re-fetch to revert to the correct server state if the update failed
             fetchCart(); 
         }
     };
 
+    // 6. ACTION: Place Order 
     const placeOrder = async () => {
-        setLoading(true);
-        setError(null);
         try {
             const token = getToken();
             if (!token) {
-                throw new Error("User not authenticated.");
+                throw { message: "User not authenticated." }; 
             }
 
-            // Assuming API route is /api/order/place
             const response = await axios.post(`${domainUrl}/order/place`, {}, {
                 headers: { Authorization: token }
             });
             
-            // After placing the order, clear the frontend cart state
-            setCartItems([]);
-            setCartTotal(0);
-            console.log("response of placeOrder",response.data)
-            return response.data;
-            
+            return response.data; 
 
         } catch (err) {
             console.error("Error placing order:", err.response?.data || err.message);
-            setError("Failed to place order. Please try again.");
-            throw err;
-        } finally {
-            setLoading(false);
+            throw err.response?.data || err; 
         }
+    };
+    
+    // 7. ACTION: Clear Cart Locally (NEW)
+    const clearCart = () => {
+        setCartItems([]);
+        setCartTotal(0);
     };
 
     return (
@@ -344,7 +643,8 @@ export const CartProvider = ({ children }) => {
             fetchCart, 
             removeFromCart, 
             updateQuantity,
-            placeOrder
+            placeOrder,
+            clearCart // <--- EXPORTED
         }}>
             {children}
         </CartContext.Provider>

@@ -456,6 +456,8 @@ export default function MyOrdersPage() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      console.log("Fetched Orders:", res.data.order);
+
       setOrders(res.data.order || []);
     } catch (err) {
       setError("Ooops! Something Went Wrong");
@@ -557,3 +559,5 @@ export default function MyOrdersPage() {
     </div>
   );
 }
+
+

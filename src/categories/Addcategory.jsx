@@ -320,8 +320,3 @@ const Addcategory = () => {
 export default Addcategory;
 
 
-
-
-
-
-

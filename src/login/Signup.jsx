@@ -236,18 +236,271 @@
 // export default Signup;
 
 
+// import React, { useState } from "react";
+// import axios from "axios";
+// import { FaEye, FaEyeSlash } from "react-icons/fa";
+// import { Link, useNavigate } from "react-router-dom";
+// import { domainUrl } from "../utils/constant";
+// import { ClipLoader } from "react-spinners";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const Signup = () => {
+//   const navigate = useNavigate();
+
+//   const [formData, setFormData] = useState({
+//     username: "",
+//     email: "",
+//     phone: "",
+//     password: "",
+//     confirmPassword: "",
+//   });
+
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   //  Handle input change
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   //  Validation logic
+//   const validateForm = () => {
+//     const { username, email, phone, password, confirmPassword } = formData;
+
+//     if (!username.trim() || !email.trim() || !phone.trim() || !password.trim() || !confirmPassword.trim()) {
+//       return "Please fill in all fields.";
+//     }
+
+//     if (!/^[a-zA-Z\s]+$/.test(username)) {
+//       return "Name should contain only letters and spaces.";
+//     }
+
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!emailRegex.test(email)) {
+//       return "Enter a valid email address.";
+//     }
+
+//     const phoneRegex = /^[0-9]{10}$/;
+//     if (!phoneRegex.test(phone)) {
+//       return "Enter a valid 10-digit phone number.";
+//     }
+
+//     if (password.length < 6) {
+//       return "Password must be at least 6 characters long.";
+//     }
+
+//     if (password !== confirmPassword) {
+//       return "Passwords do not match.";
+//     }
+
+//     return null;
+//   };
+
+//   //  Submit form
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const validationError = validateForm();
+//     if (validationError) {
+//       toast.error(validationError, {
+//         style: {
+//           background: "#ffeded",
+//           color: "#c62828",
+//           fontWeight: "500",
+//         },
+//       });
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       const res = await axios.post(`${domainUrl}/auth/signup`, formData);
+
+//       toast.success(res.data.message || "Account created successfully!", {
+//         style: {
+//           background: "#EEFFEB",
+//           color: "#2f4f2f",
+//           fontWeight: "500",
+//         },
+//         icon: "🌿",
+//       });
+
+//       // Clear form
+//       setFormData({
+//         username: "",
+//         email: "",
+//         phone: "",
+//         password: "",
+//         confirmPassword: "",
+//       });
+
+//       // Redirect after short delay
+//       setTimeout(() => navigate("/"), 1500);
+//     } catch (err) {
+//       const msg =
+//         err.response?.data?.Error ||
+//         err.response?.data?.message ||
+//         "Signup failed. Please try again later.";
+
+//       toast.error(msg, {
+//         style: {
+//           background: "#ffeded",
+//           color: "#c62828",
+//           fontWeight: "500",
+//         },
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <div className="flex items-center justify-center h-screen bg-white">
+//         <div className="bg-[#EEFFEB] p-8 rounded-2xl shadow-md w-full max-w-sm">
+//           <h1 className="text-[#5e785a] text-2xl font-bold text-center">
+//             Welcome To Mandaram Drapes
+//           </h1>
+//           <p className="text-gray-500 text-sm text-center mt-1">
+//             Let&apos;s make your account
+//           </p>
+
+//           <form onSubmit={handleSubmit} className="flex flex-col mt-6 gap-3">
+//             {/* Username */}
+//             <input
+//               type="text"
+//               name="username"
+//               value={formData.username}
+//               onChange={handleChange}
+//               placeholder="Full Name"
+//               className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+//             />
+
+//             {/* Email */}
+//             <input
+//               type="text"
+//               name="email"
+//               value={formData.email}
+//               onChange={handleChange}
+//               placeholder="Email address"
+//               className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+//             />
+
+//             {/* Phone */}
+//             <input
+//               type="text"
+//               name="phone"
+//               value={formData.phone}
+//               onChange={handleChange}
+//               placeholder="Phone number"
+//               className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+//             />
+
+//             {/* Password */}
+//             <div className="relative">
+//               <input
+//                 type={showPassword ? "text" : "password"}
+//                 name="password"
+//                 value={formData.password}
+//                 onChange={handleChange}
+//                 placeholder="Password"
+//                 className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+//               />
+//               <span
+//                 onClick={() => setShowPassword(!showPassword)}
+//                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-[#343e32]"
+//               >
+//                 {showPassword ? <FaEyeSlash /> : <FaEye />}
+//               </span>
+//             </div>
+
+//             {/* Confirm Password */}
+//             <div className="relative">
+//               <input
+//                 type={showConfirmPassword ? "text" : "password"}
+//                 name="confirmPassword"
+//                 value={formData.confirmPassword}
+//                 onChange={handleChange}
+//                 placeholder="Confirm Password"
+//                 className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+//               />
+//               <span
+//                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+//                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-[#343e32]"
+//               >
+//                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+//               </span>
+//             </div>
+
+//             {/* Submit Button */}
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 rounded hover:bg-[#4f644d] transition disabled:opacity-70 disabled:cursor-not-allowed"
+//             >
+//               {loading ? <ClipLoader color="white" size={15} /> : "Create your Account"}
+//             </button>
+//           </form>
+
+//           {/* Login Link */}
+//           <div className="mt-3 text-xs text-center">
+//             Already have an account?{" "}
+//             <Link to="/" className="text-[#343e32] font-semibold">
+//               Login
+//             </Link>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/*  Toast Container (same as Login) */}
+//       <ToastContainer
+//         position="top-right"
+//         autoClose={2000}
+//         hideProgressBar={false}
+//         closeOnClick
+//         pauseOnHover
+//         draggable
+//         transition={Slide}
+//         toastStyle={{
+//           borderRadius: "10px",
+//           fontFamily: "Inter, sans-serif",
+//           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+//         }}
+//       />
+//     </>
+//   );
+// };
+
+// export default Signup;
+
+
 import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { domainUrl } from "../utils/constant";
 import { ClipLoader } from "react-spinners";
 import { ToastContainer, toast, Slide } from "react-toastify";
+import { motion } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
+import { domainUrl } from "../utils/constant";
+
+// --- BRAND COLOR PALETTE (Modimal Inspired) ---
+const DEEP_GREEN = "#34433d"; // Dark background
+const ACCENT_GREEN = "#dbe7cf"; // Light accent
+const HOVER_GREEN = "#4a5c53"; // Hover color
+// ------------------------------------------------
 
 const Signup = () => {
   const navigate = useNavigate();
 
+  // ---------------- STATE ----------------
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -260,7 +513,7 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  //  Handle input change
+  // ---------------- HANDLERS ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -269,7 +522,11 @@ const Signup = () => {
     }));
   };
 
-  //  Validation logic
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") handleSubmit(e);
+  };
+
+  // ---------------- VALIDATION ----------------
   const validateForm = () => {
     const { username, email, phone, password, confirmPassword } = formData;
 
@@ -302,18 +559,15 @@ const Signup = () => {
     return null;
   };
 
-  //  Submit form
+  // ---------------- SUBMIT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const validationError = validateForm();
     if (validationError) {
       toast.error(validationError, {
-        style: {
-          background: "#ffeded",
-          color: "#c62828",
-          fontWeight: "500",
-        },
+        icon: "❌",
+        style: { background: "#ffeded", color: "#c62828", fontWeight: 500 },
       });
       return;
     }
@@ -324,15 +578,11 @@ const Signup = () => {
       const res = await axios.post(`${domainUrl}/auth/signup`, formData);
 
       toast.success(res.data.message || "Account created successfully!", {
-        style: {
-          background: "#EEFFEB",
-          color: "#2f4f2f",
-          fontWeight: "500",
-        },
-        icon: "🌿",
+        icon: "✅",
+        style: { background: ACCENT_GREEN, color: DEEP_GREEN, fontWeight: 600 },
       });
 
-      // Clear form
+      // Reset form
       setFormData({
         username: "",
         email: "",
@@ -350,29 +600,42 @@ const Signup = () => {
         "Signup failed. Please try again later.";
 
       toast.error(msg, {
-        style: {
-          background: "#ffeded",
-          color: "#c62828",
-          fontWeight: "500",
-        },
+        icon: "❌",
+        style: { background: "#ffeded", color: "#c62828", fontWeight: 500 },
       });
     } finally {
       setLoading(false);
     }
   };
 
+  // ---------------- UI ----------------
   return (
     <>
-      <div className="flex items-center justify-center h-screen bg-white">
-        <div className="bg-[#EEFFEB] p-8 rounded-2xl shadow-md w-full max-w-sm">
-          <h1 className="text-[#5e785a] text-2xl font-bold text-center">
-            Welcome To Mandaram Drapes
+      <div
+        className="flex items-center justify-center h-screen px-4"
+        style={{ backgroundColor: DEEP_GREEN }}
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm"
+        >
+          <h1
+            className="text-2xl font-extrabold text-center mb-1"
+            style={{ color: DEEP_GREEN }}
+          >
+            Welcome to Mandaram Drapes
           </h1>
-          <p className="text-gray-500 text-sm text-center mt-1">
-            Let&apos;s make your account
+          <p className="text-gray-600 text-center text-base mb-6">
+            Let’s create your account
           </p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col mt-6 gap-3">
+          <form
+            onSubmit={handleSubmit}
+            onKeyDown={handleKeyPress}
+            className="flex flex-col gap-4"
+          >
             {/* Username */}
             <input
               type="text"
@@ -380,7 +643,8 @@ const Signup = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="Full Name"
-              className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+              className="text-sm border border-gray-300 rounded-md px-4 py-2.5 
+                         focus:outline-none focus:ring-2 focus:ring-offset-1 focus:[8eb086] w-full"
             />
 
             {/* Email */}
@@ -389,8 +653,9 @@ const Signup = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Email address"
-              className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+              placeholder="Email Address"
+              className="text-sm border border-gray-300 rounded-md px-4 py-2.5 
+                         focus:outline-none focus:ring-2 focus:ring-offset-1 focus:[8eb086] w-full"
             />
 
             {/* Phone */}
@@ -399,69 +664,83 @@ const Signup = () => {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="Phone number"
-              className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+              placeholder="Phone Number"
+              className="text-sm border border-gray-300 rounded-md px-4 py-2.5 
+                         focus:outline-none focus:ring-2 focus:ring-offset-1 focus:[8eb086] w-full"
             />
 
             {/* Password */}
-            <div className="relative">
+            <div className="relative w-full">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+                className="text-sm border border-gray-300 rounded-md px-4 py-2.5 pr-10 
+                           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:[8eb086] w-full"
               />
               <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-[#343e32]"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500 hover:text-gray-700"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
 
             {/* Confirm Password */}
-            <div className="relative">
+            <div className="relative w-full">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="Confirm Password"
-                className="text-sm border border-gray-400 rounded px-3 py-2 w-full focus:outline-none focus:border-[#343e32]"
+                className="text-sm border border-gray-300 rounded-md px-4 py-2.5 pr-10 
+                           focus:outline-none focus:ring-2 focus:ring-offset-1 focus:[8eb086] w-full"
               />
               <span
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-[#343e32]"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500 hover:text-gray-700"
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 rounded hover:bg-[#4f644d] transition disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full h-[45px] mt-3 font-semibold rounded-md transition disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+              style={{ backgroundColor: DEEP_GREEN, color: ACCENT_GREEN }}
+              onMouseEnter={(e) => {
+                if (!loading) e.currentTarget.style.backgroundColor = HOVER_GREEN;
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) e.currentTarget.style.backgroundColor = DEEP_GREEN;
+              }}
             >
-              {loading ? <ClipLoader color="white" size={15} /> : "Create your Account"}
+              {loading ? <ClipLoader color="white" size={18} /> : "Create Account"}
             </button>
           </form>
 
-          {/* Login Link */}
-          <div className="mt-3 text-xs text-center">
+          {/* Login link */}
+          <div className="mt-5 text-sm text-center text-gray-700">
             Already have an account?{" "}
-            <Link to="/" className="text-[#343e32] font-semibold">
+            <Link
+              to="/"
+              className="font-semibold hover:underline"
+              style={{ color: DEEP_GREEN }}
+            >
               Login
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/*  Toast Container (same as Login) */}
+      {/* Toast Container */}
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={2000}
         hideProgressBar={false}
         closeOnClick
@@ -479,5 +758,3 @@ const Signup = () => {
 };
 
 export default Signup;
-
-
