@@ -218,6 +218,7 @@ import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion"; // for fade-in animation
 import { domainUrl } from "../utils/constant";
+import { useCart } from "../context/CartContext";
 
 // --- BRAND COLOR PALETTE (Modimal Inspired) ---
 const DEEP_GREEN = "#34433d"; // Dark background
@@ -292,8 +293,9 @@ const Login = () => {
       });
 
       const { token, role, message } = res.data;
-
+      // const {notifyAuthChange} = await useCart();
       localStorage.setItem("token", token);
+      // await notifyAuthChange(); // Notify auth change to update cart context
       localStorage.setItem("role", role);
 
       toast.success(message || "Login successful!", {
@@ -307,7 +309,7 @@ const Login = () => {
     } catch (err) {
       const msg =
         err.response?.data?.message ||
-        (err.response?.status === 401
+        (err.response?.status === 400
           ? "Invalid email or password."
           : "Server error. Please try again later.");
 

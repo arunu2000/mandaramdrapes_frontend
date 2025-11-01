@@ -3261,10 +3261,11 @@ const Customerdashboard = () => {
   }, []);
 
   // --- HANDLERS ---
-
+const {notifyAuthChange} = useCart();
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    notifyAuthChange(); // Notify other components about auth change
     setUserProfile(null);
     navigate("/login");
   };

@@ -501,9 +501,172 @@
 
 
 
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+// import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+// import axios from 'axios';
+// import { domainUrl } from '../utils/constant';
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// // Provider Component
+// export const CartProvider = ({ children }) => {
+//     // 1. STATE MANAGEMENT
+//     const [cartItems, setCartItems] = useState([]);
+//     const [cartTotal, setCartTotal] = useState(0);
+//     const [loading, setLoading] = useState(true); 
+//     const [error, setError] = useState(null);
+
+//     const getToken = () => localStorage.getItem("token");
+
+//     // 2. FETCH FUNCTION
+//     const fetchCart = useCallback(async () => {
+//         setLoading(true);
+//         setError(null);
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 setCartItems([]);
+//                 setCartTotal(0);
+//                 setLoading(false);
+//                 return;
+//             }
+            
+//             const res = await axios.get(`${domainUrl}/cart/list`, { 
+//                 headers: { Authorization: token }
+//             });
+          
+//             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//             const newCartItems = backendCart?.items?.map(item => ({
+//                 _id: item._id, 
+//                 productId: item.product._id, 
+//                 name: item.product.name,
+//                 price: item.product.price,
+//                 image: item.product.image,
+//                 quantity: item.quantity,
+//                 selectedSize: item.selectedSize || null,
+//             }));
+
+//             setCartItems(newCartItems);
+//             setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+
+//         } catch (err) {
+//             console.error("Failed to fetch cart:", err.response?.data || err.message);
+//             setError("Could not load cart data. Please ensure you are logged in.");
+//             setCartItems([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     }, []); 
+    
+//     // 3. EFFECT: Fetch cart on component mount
+//     useEffect(() => {
+//         fetchCart();
+//     }, [fetchCart]);
+
+
+//     // 4. ACTION: Remove from Cart
+//     const removeFromCart = async (productId) => { 
+//         setLoading(true);
+//         try {
+//             const token = getToken();
+//             await axios.delete(`${domainUrl}/cart/remove/${productId}`, { 
+//                  headers: { Authorization: `Bearer ${token}` }
+//             });
+//             await fetchCart(); 
+//         } catch(err) {
+//             console.log("Error removing item:", err.response?.data || err.message);
+//             setLoading(false);
+//         }
+//     };
+    
+//     // 5. ACTION: Update Quantity 
+//     const updateQuantity = async (productId, newQuantity) => { 
+//         if (newQuantity <= 0) {
+//             removeFromCart(productId);
+//             return;
+//         }
+        
+//         setCartItems(currentItems => currentItems.map(item => 
+//             item.productId === productId ? { ...item, quantity: newQuantity } : item
+//         ));
+
+//         try {
+//             const token = getToken();
+//             await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, { 
+//                 quantity: newQuantity
+//             }, {
+//                 headers: { Authorization: token }
+//             });
+            
+//             fetchCart(); 
+            
+//         } catch(err) {
+//             console.log("Error updating quantity:", err.response);
+//             fetchCart(); 
+//         }
+//     };
+
+//     // 6. ACTION: Place Order 
+//     const placeOrder = async () => {
+//         try {
+//             const token = getToken();
+//             if (!token) {
+//                 throw { message: "User not authenticated." }; 
+//             }
+
+//             const response = await axios.post(`${domainUrl}/order/place`, {}, {
+//                 headers: { Authorization: token }
+//             });
+            
+//             return response.data; 
+
+//         } catch (err) {
+//             console.error("Error placing order:", err.response?.data || err.message);
+//             throw err.response?.data || err; 
+//         }
+//     };
+    
+//     // 7. ACTION: Clear Cart Locally (NEW)
+//     const clearCart = () => {
+//         setCartItems([]);
+//         setCartTotal(0);
+//     };
+
+//     return (
+//         <CartContext.Provider value={{ 
+//             cartItems, 
+//             loading, 
+//             error,
+//             cartTotal,
+//             fetchCart, 
+//             removeFromCart, 
+//             updateQuantity,
+//             placeOrder,
+//             clearCart // <--- EXPORTED
+//         }}>
+//             {children}
+//         </CartContext.Provider>
+//     );
+// };
+
+
+
+
+
+
+
+
+
+import React, { createContext, useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { domainUrl } from '../utils/constant';
+
+// NOTE: Since this code is presented in isolation, we must define the imports
+// that would typically come from external files/packages.
+// const domainUrl = "https://your-api-domain.com"; // Mocked external constant
+const useAuth = () => ({ userId: 'mock-user-id' }); // Mocked auth hook for context purposes
 
 const CartContext = createContext();
 
@@ -511,42 +674,67 @@ export const useCart = () => useContext(CartContext);
 
 // Provider Component
 export const CartProvider = ({ children }) => {
+    // Utility to read token
+    const getToken = () => localStorage.getItem("token");
+
     // 1. STATE MANAGEMENT
     const [cartItems, setCartItems] = useState([]);
     const [cartTotal, setCartTotal] = useState(0);
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null);
+    
+    // --- FIX: REACTIVITY TRIGGER STATE ---
+    // Tracks the current authentication status to trigger useEffect re-runs.
+    const [tokenStatus, setTokenStatus] = useState(getToken() ? 'ready' : 'none');
+    // ------------------------------------
 
-    const getToken = () => localStorage.getItem("token");
+    // --- FIX: REACTIVITY TRIGGER FUNCTION ---
+    /**
+     * MUST be called by the login/logout components after they change the token 
+     * in localStorage to force a cart refresh.
+     */
+    const notifyAuthChange = useCallback(() => {
+        const tokenExists = !!getToken();
+        setTokenStatus(tokenExists ? 'ready' : 'none');
+    }, []);
+    // ----------------------------------------
+
 
     // 2. FETCH FUNCTION
     const fetchCart = useCallback(async () => {
         setLoading(true);
         setError(null);
+        
+        const token = getToken();
+
+        // 1. Check for token availability first
+        if (!token) {
+            console.log("No token found. Setting cart to empty.");
+            setCartItems([]);
+            setCartTotal(0);
+            setLoading(false);
+            return;
+        }
+
+        console.log("Token found. Attempting to fetch cart...");
+        
         try {
-            const token = getToken();
-            if (!token) {
-                setCartItems([]);
-                setCartTotal(0);
-                setLoading(false);
-                return;
-            }
-            
             const res = await axios.get(`${domainUrl}/cart/list`, { 
-                headers: { Authorization: token }
+                headers: { Authorization: `Bearer ${token}` } // Added 'Bearer ' which is standard
             });
-          
+            
             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
 
             const newCartItems = backendCart?.items?.map(item => ({
                 _id: item._id, 
-                productId: item.product._id, 
-                name: item.product.name,
-                price: item.product.price,
-                image: item.product.image,
+                // Ensure you handle potential null product objects (e.g., if a product was deleted)
+                productId: item.product?._id, 
+                name: item.product?.name,
+                price: item.product?.price,
+                image: item.product?.image,
                 quantity: item.quantity,
                 selectedSize: item.selectedSize || null,
-            }));
+            })).filter(item => item.productId); // Filter out items with deleted products
 
             setCartItems(newCartItems);
             setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
@@ -555,17 +743,19 @@ export const CartProvider = ({ children }) => {
             console.error("Failed to fetch cart:", err.response?.data || err.message);
             setError("Could not load cart data. Please ensure you are logged in.");
             setCartItems([]);
+            // On failure, if the error is 401/403, you might want to force a logout/token clear
         } finally {
             setLoading(false);
         }
-    }, []); 
-    
-    // 3. EFFECT: Fetch cart on component mount
+    }, []); // fetchCart now has no dependencies, making it stable
+
+    // 3. EFFECT: Fetch cart on component mount AND whenever authentication status changes.
     useEffect(() => {
+        // This effect will run on mount, and whenever notifyAuthChange is called.
         fetchCart();
-    }, [fetchCart]);
+    }, [fetchCart, tokenStatus]); // <-- FIX: DEPENDENCY ADDED
 
-
+    
     // 4. ACTION: Remove from Cart
     const removeFromCart = async (productId) => { 
         setLoading(true);
@@ -588,6 +778,7 @@ export const CartProvider = ({ children }) => {
             return;
         }
         
+        // Optimistic UI Update (optional but good practice)
         setCartItems(currentItems => currentItems.map(item => 
             item.productId === productId ? { ...item, quantity: newQuantity } : item
         ));
@@ -597,13 +788,15 @@ export const CartProvider = ({ children }) => {
             await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, { 
                 quantity: newQuantity
             }, {
-                headers: { Authorization: token }
+                headers: { Authorization: `Bearer ${token}` }
             });
             
+            // Re-fetch to get the official, recalculated total from the backend
             fetchCart(); 
             
         } catch(err) {
             console.log("Error updating quantity:", err.response);
+            // Revert optimistic update and fetch old data on error
             fetchCart(); 
         }
     };
@@ -617,7 +810,7 @@ export const CartProvider = ({ children }) => {
             }
 
             const response = await axios.post(`${domainUrl}/order/place`, {}, {
-                headers: { Authorization: token }
+                headers: { Authorization: `Bearer ${token}` }
             });
             
             return response.data; 
@@ -634,19 +827,23 @@ export const CartProvider = ({ children }) => {
         setCartTotal(0);
     };
 
+    const contextValue = useMemo(() => ({
+        cartItems, 
+        loading, 
+        error,
+        cartTotal,
+        fetchCart, 
+        removeFromCart, 
+        updateQuantity,
+        placeOrder,
+        clearCart,
+        notifyAuthChange, // <-- EXPORTED FIX
+    }), [cartItems, loading, error, cartTotal, fetchCart, removeFromCart, updateQuantity, placeOrder, clearCart, notifyAuthChange]);
+
     return (
-        <CartContext.Provider value={{ 
-            cartItems, 
-            loading, 
-            error,
-            cartTotal,
-            fetchCart, 
-            removeFromCart, 
-            updateQuantity,
-            placeOrder,
-            clearCart // <--- EXPORTED
-        }}>
+        <CartContext.Provider value={contextValue}>
             {children}
         </CartContext.Provider>
     );
 };
+
