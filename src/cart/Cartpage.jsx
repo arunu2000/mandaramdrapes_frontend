@@ -1123,7 +1123,308 @@
 // }
 
 
-import React from "react";
+// import React from "react";
+// import { useCart } from "../context/CartContext";
+// import { Link, useNavigate } from "react-router-dom";
+// import { domainUrl } from "../utils/constant";
+// import { ChevronDownIcon } from "@heroicons/react/16/solid";
+// import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// export default function Cartpage() {
+//     const navigate = useNavigate();
+//     const {
+//         cartItems,
+//         loading,
+//         error,
+//         removeFromCart,
+//         updateQuantity,
+//         cartTotal,
+//         placeOrder, 
+//         clearCart, // <--- IMPORTED
+//     } = useCart();
+
+//     // 🟢 Update quantity
+//     const handleQuantityChange = (item, event) => {
+//         event.stopPropagation();
+        
+//         const newQty = parseInt(event.target.value);
+//         if (newQty >= 1) {
+//             updateQuantity(item.productId, newQty);
+//             toast.info(`Updated ${item.name} to ${newQty}`, {
+//                 icon: "🔄",
+//                 autoClose: 1500,
+//             });
+//         }
+//     };
+
+//     // 🔴 Remove item
+//     const handleRemoveItem = (item) => {
+//         removeFromCart(item.productId);
+//         toast.info(`${item.name} removed from cart 🗑️`, {
+//             autoClose: 1500,
+//             style: {
+//                 background: "#fff5f5",
+//                 color: "#a33",
+//             },
+//         });
+//     };
+
+//     // 🟢 Place order - UPDATED SUCCESS HANDLER
+//     const handlePlaceOrder = async (e) => {
+//         e.preventDefault();
+//         if (cartItems.length === 0) return;
+
+//         toast.promise(
+//             placeOrder(),
+//             {
+//                 pending: "Processing your order...",
+//                 success: {
+//                     render: ({ data }) => {
+//                         return (
+//                             <div className="text-left">
+//                                 <p className="font-bold text-lg">Order Success!</p>
+//                                 <p className="text-sm">
+//                                     Your order totaling <span className="font-semibold">₹{cartTotal}</span> has been confirmed.
+//                                 </p>
+//                                 <p className="text-xs mt-1 opacity-80">
+//                                     You will be redirected to your orders page.
+//                                 </p>
+//                             </div>
+//                         );
+//                     },
+//                     onClose: () => {
+//                         clearCart(); // <--- FIX: Clear local state before navigation
+//                         navigate("/myorders");
+//                     },
+//                 },
+//                 error: ({ data }) => {
+//                     const errorMessage = data?.message || "Failed to place order. Please try again.";
+//                     return (
+//                         <div className="text-left">
+//                             <p className="font-bold text-lg">Order Failed</p>
+//                             <p className="text-sm">{errorMessage}</p>
+//                         </div>
+//                     );
+//                 },
+//             },
+//             {
+//                 position: "top-center",
+//                 autoClose: 3500, 
+//                 transition: Slide,
+//                 theme: "colored",
+//             }
+//         );
+//     };
+
+//     // 🖼️ Handle image
+//     const getImageUrl = (path) => {
+//         if (!path) return "https://via.placeholder.com/100?text=No+Image";
+//         return path.startsWith("http") ? path : `${domainUrl}/${path}`;
+//     };
+
+//     // 🕒 Loading state
+//     if (loading)
+//         return (
+//             <div className="text-center py-20 text-indigo-600 text-lg">
+//                 <svg
+//                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600 inline"
+//                     xmlns="http://www.w3.org/2000/svg"
+//                     fill="none"
+//                     viewBox="0 0 24 24"
+//                 >
+//                     <circle
+//                         className="opacity-25"
+//                         cx="12"
+//                         cy="12"
+//                         r="10"
+//                         stroke="currentColor"
+//                         strokeWidth="4"
+//                     ></circle>
+//                     <path
+//                         className="opacity-75"
+//                         fill="currentColor"
+//                         d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4zm2 5.29A7.96 7.96 0 014 12H0c0 3.04 1.13 5.82 3 7.94l3-2.65z"
+//                     ></path>
+//                 </svg>
+//                 Loading your cart...
+//             </div>
+//         );
+
+//     // ❌ Error
+//     if (error)
+//         return <div className="text-center py-20 text-red-600">{error}</div>;
+
+//     // 🛒 Empty cart
+//     if (cartItems.length === 0)
+//         return (
+//             <div className="text-center py-20">
+//                 <h1 className="text-2xl font-bold">Your Cart is Empty</h1>
+//                 <p className="mt-2 text-gray-500">
+//                     Looks like you haven't added anything yet.
+//                 </p>
+//                 <Link
+//                     to="/"
+//                     className="mt-4 inline-block text-indigo-600 hover:text-indigo-500 font-medium"
+//                 >
+//                     Start Shopping
+//                 </Link>
+//             </div>
+//         );
+
+//     // ✅ Cart layout
+//     return (
+//         <div className="bg-white">
+//             <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
+//                 <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+//                     Shopping Cart
+//                 </h1>
+
+//                 <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+//                     <section aria-labelledby="cart-heading" className="lg:col-span-7">
+//                         <ul
+//                             role="list"
+//                             className="divide-y divide-gray-200 border-t border-b border-gray-200"
+//                         >
+//                             {cartItems.map((item) => (
+//                                 <li key={item._id} className="flex py-6 sm:py-10">
+//                                     <div className="shrink-0">
+//                                         <img
+//                                             alt={item.name}
+//                                             src={getImageUrl(item.image)}
+//                                             className="size-24 rounded-md object-cover sm:size-48"
+//                                         />
+//                                     </div>
+
+//                                     <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
+//                                         <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+//                                             <div>
+//                                                 <div className="flex justify-between">
+//                                                     <h3 className="text-sm">
+//                                                         <Link
+//                                                             to={`/products/${item.productId}`}
+//                                                             className="font-medium text-gray-700 hover:text-gray-800"
+//                                                         >
+//                                                             {item.name}
+//                                                         </Link>
+//                                                     </h3>
+//                                                 </div>
+//                                                 <p className="mt-1 flex text-sm">
+//                                                     <span className="text-gray-500">
+//                                                         ₹{item.price.toFixed(2)} / pc
+//                                                     </span>
+//                                                     {item.selectedSize && (
+//                                                         <span className="ml-4 border-l border-gray-200 pl-4 text-gray-500">Size: {item.selectedSize}</span>
+//                                                     )}
+//                                                 </p>
+//                                                 <p className="mt-1 text-base font-medium text-gray-900">
+//                                                     ₹{(item.price * item.quantity).toFixed(2)}
+//                                                 </p>
+//                                             </div>
+
+//                                             <div className="mt-4 sm:mt-0 sm:pr-9">
+//                                                 <div className="grid w-full max-w-16 grid-cols-1">
+//                                                     <select
+//                                                         name={`quantity-${item._id}`}
+//                                                         value={item.quantity}
+//                                                         onChange={(e) => handleQuantityChange(item, e)}
+//                                                         className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-indigo-600 sm:text-sm"
+//                                                     >
+//                                                         {Array.from({ length: 10 }, (_, i) => i + 1).map(
+//                                                             (q) => (
+//                                                                 <option key={q} value={q}>
+//                                                                     {q}
+//                                                                 </option>
+//                                                             )
+//                                                         )}
+//                                                     </select>
+//                                                     <ChevronDownIcon
+//                                                         aria-hidden="true"
+//                                                         className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+//                                                     />
+//                                                 </div>
+
+//                                                 <div className="absolute top-0 right-0">
+//                                                     <button
+//                                                         type="button"
+//                                                         onClick={() => handleRemoveItem(item)}
+//                                                         className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+//                                                     >
+//                                                         <span className="sr-only">Remove</span>
+//                                                         <XMarkIcon
+//                                                             aria-hidden="true"
+//                                                             className="size-5"
+//                                                         />
+//                                                     </button>
+//                                                 </div>
+//                                             </div>
+//                                         </div>
+
+//                                         <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+//                                             <CheckIcon
+//                                                 aria-hidden="true"
+//                                                 className="size-5 shrink-0 text-green-500"
+//                                             />
+//                                             <span>In stock</span>
+//                                         </p>
+//                                     </div>
+//                                 </li>
+//                             ))}
+//                         </ul>
+//                     </section>
+
+//                     {/* Summary */}
+//                     <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+//                         <h2 className="text-lg font-medium text-gray-900">
+//                             Order summary
+//                         </h2>
+
+//                         <dl className="mt-6 space-y-4">
+//                             <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+//                                 <dt className="text-base font-medium text-gray-900">
+//                                     Order total
+//                                 </dt>
+//                                 <dd className="text-base font-medium text-gray-900">
+//                                     ₹{cartTotal}
+//                                 </dd>
+//                             </div>
+//                         </dl>
+
+//                         <form onSubmit={handlePlaceOrder} className="mt-6">
+//                             <button
+//                                 type="submit" 
+//                                 disabled={loading || cartItems.length === 0}
+//                                 className="w-full rounded-md bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
+//                             >
+//                                 {loading ? "Processing..." : "Place Order"}
+//                             </button>
+//                         </form>
+//                     </section>
+//                 </div>
+//             </div>
+
+//             {/* Local ToastContainer */}
+//             <ToastContainer
+//                 position="top-center"
+//                 autoClose={2000}
+//                 hideProgressBar={false}
+//                 closeOnClick
+//                 pauseOnHover
+//                 draggable
+//                 transition={Slide}
+//                 toastStyle={{
+//                     borderRadius: "10px",
+//                     fontFamily: "Inter, sans-serif",
+//                     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+//                 }}
+//             />
+//         </div>
+//     );
+// }
+
+
+
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { domainUrl } from "../utils/constant";
@@ -1131,294 +1432,329 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useEffect, useState } from "react"; // ⬅️ ADDED: useState and useEffect
 
 export default function Cartpage() {
-    const navigate = useNavigate();
-    const {
-        cartItems,
-        loading,
-        error,
-        removeFromCart,
-        updateQuantity,
-        cartTotal,
-        placeOrder, 
-        clearCart, // <--- IMPORTED
-    } = useCart();
+    const navigate = useNavigate();
+    const {
+        cartItems,
+        loading,
+        error,
+        removeFromCart,
+        updateQuantity,
+        cartTotal,
+        placeOrder, 
+        clearCart,
+        cartId, 
+        checkAndCleanCart, // ⬅️ NEW: Function to check and clean the cart
+    } = useCart();
+    
+    // State to ensure the initial load is complete before running cleanup
+    const [cleanupAttempted, setCleanupAttempted] = useState(false);
 
-    // 🟢 Update quantity
-    const handleQuantityChange = (item, event) => {
-        event.stopPropagation();
-        
-        const newQty = parseInt(event.target.value);
-        if (newQty >= 1) {
-            updateQuantity(item.productId, newQty);
-            toast.info(`Updated ${item.name} to ${newQty}`, {
-                icon: "🔄",
-                autoClose: 1500,
-            });
+    // 🎯 CORE LOGIC CHANGE: Trigger cleanup on the first load, which is what happens on refresh.
+    useEffect(() => {
+        // Run cleanup only once after the cart has finished loading and is not empty.
+        // This ensures the deleted item is visible initially, and the automatic client-side
+        // cleanup runs shortly after, removing the item from the display.
+        if (!loading && cartItems.length > 0 && cartId && !cleanupAttempted) {
+            setCleanupAttempted(true);
+            
+            const runCleanup = async () => {
+                const result = await checkAndCleanCart(cartItems, cartId);
+                
+                if (result.cleaned) {
+                    toast.warn("Unavailable items have been removed from your cart.", {
+                        icon: "⚠️",
+                        autoClose: 3000,
+                        position: "top-center",
+                    });
+                }
+            };
+
+            runCleanup();
         }
-    };
+        
+    }, [loading, cartItems, cartId, checkAndCleanCart, cleanupAttempted]); 
 
-    // 🔴 Remove item
-    const handleRemoveItem = (item) => {
-        removeFromCart(item.productId);
-        toast.info(`${item.name} removed from cart 🗑️`, {
-            autoClose: 1500,
-            style: {
-                background: "#fff5f5",
-                color: "#a33",
-            },
-        });
-    };
+    // 🟢 Update quantity
+    const handleQuantityChange = (item, event) => {
+        event.stopPropagation();
+        
+        const newQty = parseInt(event.target.value);
+        if (newQty >= 1) {
+            updateQuantity(item.productId, newQty);
+            toast.info(`Updated ${item.name} to ${newQty}`, {
+                icon: "🔄",
+                autoClose: 1500,
+            });
+        }
+    };
 
-    // 🟢 Place order - UPDATED SUCCESS HANDLER
-    const handlePlaceOrder = async (e) => {
-        e.preventDefault();
-        if (cartItems.length === 0) return;
+    // 🔴 Remove item
+    const handleRemoveItem = (item) => {
+        removeFromCart(item.productId);
+        toast.info(`${item.name} removed from cart 🗑️`, {
+            autoClose: 1500,
+            style: {
+                background: "#fff5f5",
+                color: "#a33",
+            },
+        });
+    };
 
-        toast.promise(
-            placeOrder(),
-            {
-                pending: "Processing your order...",
-                success: {
-                    render: ({ data }) => {
-                        return (
-                            <div className="text-left">
-                                <p className="font-bold text-lg">Order Success!</p>
-                                <p className="text-sm">
-                                    Your order totaling <span className="font-semibold">₹{cartTotal}</span> has been confirmed.
-                                </p>
-                                <p className="text-xs mt-1 opacity-80">
-                                    You will be redirected to your orders page.
-                                </p>
-                            </div>
-                        );
-                    },
-                    onClose: () => {
-                        clearCart(); // <--- FIX: Clear local state before navigation
-                        navigate("/myorders");
-                    },
-                },
-                error: ({ data }) => {
-                    const errorMessage = data?.message || "Failed to place order. Please try again.";
-                    return (
-                        <div className="text-left">
-                            <p className="font-bold text-lg">Order Failed</p>
-                            <p className="text-sm">{errorMessage}</p>
-                        </div>
-                    );
-                },
-            },
-            {
-                position: "top-center",
-                autoClose: 3500, 
-                transition: Slide,
-                theme: "colored",
-            }
-        );
-    };
+    // 🟢 Place order - UPDATED SUCCESS HANDLER
+    const handlePlaceOrder = async (e) => {
+        e.preventDefault();
+        if (cartItems.length === 0) return;
 
-    // 🖼️ Handle image
-    const getImageUrl = (path) => {
-        if (!path) return "https://via.placeholder.com/100?text=No+Image";
-        return path.startsWith("http") ? path : `${domainUrl}/${path}`;
-    };
+        toast.promise(
+            placeOrder(),
+            {
+                pending: "Processing your order...",
+                success: {
+                    render: ({ data }) => {
+                        return (
+                            <div className="text-left">
+                                <p className="font-bold text-lg">Order Success!</p>
+                                <p className="text-sm">
+                                    Your order totaling <span className="font-semibold">₹{cartTotal}</span> has been confirmed.
+                                </p>
+                                <p className="text-xs mt-1 opacity-80">
+                                    You will be redirected to your orders page.
+                                </p>
+                            </div>
+                        );
+                    },
+                    onClose: () => {
+                        clearCart(); // <--- FIX: Clear local state before navigation
+                        navigate("/myorders");
+                    },
+                },
+                error: ({ data }) => {
+                    const errorMessage = data?.message || "Failed to place order. Please try again.";
+                    return (
+                        <div className="text-left">
+                            <p className="font-bold text-lg">Order Failed</p>
+                            <p className="text-sm">{errorMessage}</p>
+                        </div>
+                    );
+                },
+            },
+            {
+                position: "top-center",
+                autoClose: 3500, 
+                transition: Slide,
+                theme: "colored",
+            }
+        );
+    };
 
-    // 🕒 Loading state
-    if (loading)
-        return (
-            <div className="text-center py-20 text-indigo-600 text-lg">
-                <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600 inline"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                >
-                    <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                    ></circle>
-                    <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4zm2 5.29A7.96 7.96 0 014 12H0c0 3.04 1.13 5.82 3 7.94l3-2.65z"
-                    ></path>
-                </svg>
-                Loading your cart...
-            </div>
-        );
+    // 🖼️ Handle image
+    const getImageUrl = (path) => {
+        // ... (implementation remains the same)
+        if (!path) return "https://via.placeholder.com/100?text=No+Image";
+        return path.startsWith("http") ? path : `${domainUrl}/${path}`;
+    };
 
-    // ❌ Error
-    if (error)
-        return <div className="text-center py-20 text-red-600">{error}</div>;
+    // 🕒 Loading state
+    if (loading)
+        return (
+            // ... (loading spinner markup remains the same)
+            <div className="text-center py-20 text-indigo-600 text-lg">
+                <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600 inline"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                    ></circle>
+                    <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.37 0 0 5.37 0 12h4zm2 5.29A7.96 7.96 0 014 12H0c0 3.04 1.13 5.82 3 7.94l3-2.65z"
+                    ></path>
+                </svg>
+                Loading your cart...
+            </div>
+        );
 
-    // 🛒 Empty cart
-    if (cartItems.length === 0)
-        return (
-            <div className="text-center py-20">
-                <h1 className="text-2xl font-bold">Your Cart is Empty</h1>
-                <p className="mt-2 text-gray-500">
-                    Looks like you haven't added anything yet.
-                </p>
-                <Link
-                    to="/"
-                    className="mt-4 inline-block text-indigo-600 hover:text-indigo-500 font-medium"
-                >
-                    Start Shopping
-                </Link>
-            </div>
-        );
+    // ❌ Error
+    if (error)
+        return <div className="text-center py-20 text-red-600">{error}</div>;
 
-    // ✅ Cart layout
-    return (
-        <div className="bg-white">
-            <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                    Shopping Cart
-                </h1>
+    // 🛒 Empty cart
+    if (cartItems.length === 0)
+        return (
+            // ... (empty cart markup remains the same)
+            <div className="text-center py-20">
+                <h1 className="text-2xl font-bold">Your Cart is Empty</h1>
+                <p className="mt-2 text-gray-500">
+                    Looks like you haven't added anything yet.
+                </p>
+                <Link
+                    to="/"
+                    className="mt-4 inline-block text-indigo-600 hover:text-indigo-500 font-medium"
+                >
+                    Start Shopping
+                </Link>
+            </div>
+        );
 
-                <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-                    <section aria-labelledby="cart-heading" className="lg:col-span-7">
-                        <ul
-                            role="list"
-                            className="divide-y divide-gray-200 border-t border-b border-gray-200"
-                        >
-                            {cartItems.map((item) => (
-                                <li key={item._id} className="flex py-6 sm:py-10">
-                                    <div className="shrink-0">
-                                        <img
-                                            alt={item.name}
-                                            src={getImageUrl(item.image)}
-                                            className="size-24 rounded-md object-cover sm:size-48"
-                                        />
-                                    </div>
+    // ✅ Cart layout
+    return (
+        // ... (remaining cart markup remains the same)
+        <div className="bg-white">
+            <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                    Shopping Cart
+                </h1>
 
-                                    <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                                        <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
-                                            <div>
-                                                <div className="flex justify-between">
-                                                    <h3 className="text-sm">
-                                                        <Link
-                                                            to={`/products/${item.productId}`}
-                                                            className="font-medium text-gray-700 hover:text-gray-800"
-                                                        >
-                                                            {item.name}
-                                                        </Link>
-                                                    </h3>
-                                                </div>
-                                                <p className="mt-1 flex text-sm">
-                                                    <span className="text-gray-500">
-                                                        ₹{item.price.toFixed(2)} / pc
-                                                    </span>
-                                                    {item.selectedSize && (
-                                                        <span className="ml-4 border-l border-gray-200 pl-4 text-gray-500">Size: {item.selectedSize}</span>
-                                                    )}
-                                                </p>
-                                                <p className="mt-1 text-base font-medium text-gray-900">
-                                                    ₹{(item.price * item.quantity).toFixed(2)}
-                                                </p>
-                                            </div>
+                <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+                    <section aria-labelledby="cart-heading" className="lg:col-span-7">
+                        <ul
+                            role="list"
+                            className="divide-y divide-gray-200 border-t border-b border-gray-200"
+                        >
+                            {cartItems.map((item) => (
+                                <li key={item._id} className="flex py-6 sm:py-10">
+                                    <div className="shrink-0">
+                                        <img
+                                            alt={item.name}
+                                            src={getImageUrl(item.image)}
+                                            className="size-24 rounded-md object-cover sm:size-48"
+                                        />
+                                    </div>
 
-                                            <div className="mt-4 sm:mt-0 sm:pr-9">
-                                                <div className="grid w-full max-w-16 grid-cols-1">
-                                                    <select
-                                                        name={`quantity-${item._id}`}
-                                                        value={item.quantity}
-                                                        onChange={(e) => handleQuantityChange(item, e)}
-                                                        className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-indigo-600 sm:text-sm"
-                                                    >
-                                                        {Array.from({ length: 10 }, (_, i) => i + 1).map(
-                                                            (q) => (
-                                                                <option key={q} value={q}>
-                                                                    {q}
-                                                                </option>
-                                                            )
-                                                        )}
-                                                    </select>
-                                                    <ChevronDownIcon
-                                                        aria-hidden="true"
-                                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                                                    />
-                                                </div>
+                                    <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
+                                        <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                                            <div>
+                                                <div className="flex justify-between">
+                                                    <h3 className="text-sm">
+                                                        <Link
+                                                            to={`/products/${item.productId}`}
+                                                            className="font-medium text-gray-700 hover:text-gray-800"
+                                                        >
+                                                            {item.name}
+                                                        </Link>
+                                                    </h3>
+                                                </div>
+                                                <p className="mt-1 flex text-sm">
+                                                    <span className="text-gray-500">
+                                                        ₹{item.price.toFixed(2)} / pc
+                                                    </span>
+                                                    {item.selectedSize && (
+                                                        <span className="ml-4 border-l border-gray-200 pl-4 text-gray-500">Size: {item.selectedSize}</span>
+                                                    )}
+                                                </p>
+                                                <p className="mt-1 text-base font-medium text-gray-900">
+                                                    ₹{(item.price * item.quantity).toFixed(2)}
+                                                </p>
+                                            </div>
 
-                                                <div className="absolute top-0 right-0">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveItem(item)}
-                                                        className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
-                                                    >
-                                                        <span className="sr-only">Remove</span>
-                                                        <XMarkIcon
-                                                            aria-hidden="true"
-                                                            className="size-5"
-                                                        />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <div className="mt-4 sm:mt-0 sm:pr-9">
+                                                <div className="grid w-full max-w-16 grid-cols-1">
+                                                    <select
+                                                        name={`quantity-${item._id}`}
+                                                        value={item.quantity}
+                                                        onChange={(e) => handleQuantityChange(item, e)}
+                                                        className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-indigo-600 sm:text-sm"
+                                                    >
+                                                        {Array.from({ length: 10 }, (_, i) => i + 1).map(
+                                                            (q) => (
+                                                                <option key={q} value={q}>
+                                                                    {q}
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </select>
+                                                    <ChevronDownIcon
+                                                        aria-hidden="true"
+                                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                                    />
+                                                </div>
 
-                                        <p className="mt-4 flex space-x-2 text-sm text-gray-700">
-                                            <CheckIcon
-                                                aria-hidden="true"
-                                                className="size-5 shrink-0 text-green-500"
-                                            />
-                                            <span>In stock</span>
-                                        </p>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
+                                                <div className="absolute top-0 right-0">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveItem(item)}
+                                                        className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+                                                    >
+                                                        <span className="sr-only">Remove</span>
+                                                        <XMarkIcon
+                                                            aria-hidden="true"
+                                                            className="size-5"
+                                                        />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                    {/* Summary */}
-                    <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
-                        <h2 className="text-lg font-medium text-gray-900">
-                            Order summary
-                        </h2>
+                                        <p className="mt-4 flex space-x-2 text-sm text-gray-700">
+                                            <CheckIcon
+                                                aria-hidden="true"
+                                                className="size-5 shrink-0 text-green-500"
+                                            />
+                                            <span>In stock</span>
+                                        </p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
 
-                        <dl className="mt-6 space-y-4">
-                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-                                <dt className="text-base font-medium text-gray-900">
-                                    Order total
-                                </dt>
-                                <dd className="text-base font-medium text-gray-900">
-                                    ₹{cartTotal}
-                                </dd>
-                            </div>
-                        </dl>
+                    {/* Summary */}
+                    <section className="mt-16 rounded-lg bg-gray-50 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+                        <h2 className="text-lg font-medium text-gray-900">
+                            Order summary
+                        </h2>
 
-                        <form onSubmit={handlePlaceOrder} className="mt-6">
-                            <button
-                                type="submit" 
-                                disabled={loading || cartItems.length === 0}
-                                className="w-full rounded-md bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
-                            >
-                                {loading ? "Processing..." : "Place Order"}
-                            </button>
-                        </form>
-                    </section>
-                </div>
-            </div>
+                        <dl className="mt-6 space-y-4">
+                            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                                <dt className="text-base font-medium text-gray-900">
+                                    Order total
+                                </dt>
+                                <dd className="text-base font-medium text-gray-900">
+                                    ₹{cartTotal}
+                                </dd>
+                            </div>
+                        </dl>
 
-            {/* Local ToastContainer */}
-            <ToastContainer
-                position="top-center"
-                autoClose={2000}
-                hideProgressBar={false}
-                closeOnClick
-                pauseOnHover
-                draggable
-                transition={Slide}
-                toastStyle={{
-                    borderRadius: "10px",
-                    fontFamily: "Inter, sans-serif",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                }}
-            />
-        </div>
-    );
+                        <form onSubmit={handlePlaceOrder} className="mt-6">
+                            <button
+                                type="submit" 
+                                disabled={loading || cartItems.length === 0}
+                                className="w-full rounded-md bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 disabled:opacity-50"
+                            >
+                                {loading ? "Processing..." : "Place Order"}
+                            </button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+
+            {/* Local ToastContainer */}
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                closeOnClick
+                pauseOnHover
+                draggable
+                transition={Slide}
+                toastStyle={{
+                    borderRadius: "10px",
+                    fontFamily: "Inter, sans-serif",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                }}
+            />
+        </div>
+    );
 }
