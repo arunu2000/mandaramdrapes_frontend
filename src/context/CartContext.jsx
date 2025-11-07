@@ -722,6 +722,9 @@ export const CartProvider = ({ children }) => {
             const res = await axios.get(`${domainUrl}/cart/list`, { 
                 headers: { Authorization: `Bearer ${token}` } // Added 'Bearer ' which is standard
             });
+
+            console.log("backend cart details",res.data.cart);
+            
             
             const backendCart = res.data.cart || { items: [], totalAmount: 0 };
 

@@ -339,816 +339,372 @@
 // updated with dropdown
 
 
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { FaEdit, FaTrash, FaChevronDown, FaChevronRight, FaSearch } from "react-icons/fa";
-// import { domainUrl } from "../utils/constant";
-
-// const Listproducts = () => {
-//   const [categories, setCategories] = useState([]);
-//   const [productsByCategory, setProductsByCategory] = useState({});
-//   const [expandedCategory, setExpandedCategory] = useState(null);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const [message, setMessage] = useState("");
-//   const [selectedProduct, setSelectedProduct] = useState(null);
-//   const [showEditModal, setShowEditModal] = useState(false);
-//   const [showDeleteModal, setShowDeleteModal] = useState(false);
-//   const [formData, setFormData] = useState({
-//     categoryCode: "",
-//     productCode: "",
-//     productName: "",
-//     description: "",
-//     price: "",
-//     image: null,
-//   });
-
-//   // 🔹 Fetch Categories on Mount
-//   useEffect(() => {
-//     fetchCategories();
-//   }, []);
-
-//   const fetchCategories = async () => {
-//     try {
-//       const res = await axios.get(`${domainUrl}/category/list`);
-//       setCategories(res.data.list || []);
-//     } catch (err) {
-//       console.error("Error fetching categories:", err);
-//     }
-//   };
-
-//   // 🔹 Fetch Products for a specific Category
-//   const fetchProductsByCategory = async (categoryId) => {
-//     try {
-//       const res = await axios.get(`${domainUrl}/product/list?categoryId=${categoryId}`);
-//       setProductsByCategory((prev) => ({
-//         ...prev,
-//         [categoryId]: res.data.list || [],
-//       }));
-//     } catch (err) {
-//       console.error("Error fetching products:", err);
-//     }
-//   };
-
-//   // 🔹 Toggle Dropdown
-//   const toggleCategory = (categoryId) => {
-//     if (expandedCategory === categoryId) {
-//       setExpandedCategory(null);
-//     } else {
-//       setExpandedCategory(categoryId);
-//       if (!productsByCategory[categoryId]) {
-//         fetchProductsByCategory(categoryId);
-//       }
-//     }
-//   };
-
-//   // 🔹 Filter by Search Term
-//   const filteredCategories = categories.filter((cat) =>
-//     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   // 🔹 Handle Edit / Delete
-//   const handleEditClick = (product) => {
-//     setSelectedProduct(product);
-//     setFormData({
-//       categoryCode: product.category?._id || "",
-//       productCode: product.code,
-//       productName: product.name,
-//       description: product.description,
-//       price: product.price,
-//       image: null,
-//     });
-//     setShowEditModal(true);
-//   };
-
-//   const handleDeleteClick = (product) => {
-//     setSelectedProduct(product);
-//     setShowDeleteModal(true);
-//   };
-
-//   const handleChange = (e) => {
-//     const { name, value, files } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: name === "image" ? files[0] : value,
-//     }));
-//   };
-
-//   // 🔹 Update Product
-//   const handleUpdate = async (e) => {
-//     e.preventDefault();
-//     setMessage("");
-
-//     try {
-//       const token = localStorage.getItem("token");
-//       const data = new FormData();
-//       data.append("category", formData.categoryCode);
-//       data.append("code", formData.productCode);
-//       data.append("name", formData.productName);
-//       data.append("description", formData.description);
-//       data.append("price", formData.price);
-//       if (formData.image) data.append("image", formData.image);
-
-//       await axios.put(`${domainUrl}/product/update/${selectedProduct._id}`, data, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       });
-
-//       setMessage("Product updated successfully!");
-//       setShowEditModal(false);
-//       fetchProductsByCategory(formData.categoryCode); // Refresh only affected category
-//     } catch (err) {
-//       console.error("Error updating product:", err);
-//       setMessage("Error updating product.");
-//     }
-//   };
-
-//   // 🔹 Delete Product
-//   const handleDelete = async () => {
-//     try {
-//       const token = localStorage.getItem("token");
-//       await axios.delete(`${domainUrl}/product/delete/${selectedProduct._id}`, {
-//         headers: { Authorization: `Bearer ${token}` },
-//       });
-//       setShowDeleteModal(false);
-//       fetchProductsByCategory(selectedProduct.category._id);
-//       setMessage(`Product "${selectedProduct.name}" deleted successfully!`);
-//     } catch (err) {
-//       console.error("Error deleting product:", err);
-//       setMessage("Error deleting product.");
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-[#f7faf7] py-12">
-//       <div className="max-w-6xl mx-auto px-6">
-//         <h1 className="text-3xl md:text-4xl font-extrabold text-[#2d412a] mb-6 text-center">
-//           Products by Category
-//         </h1>
-
-//         {/* 🔍 Search */}
-//         <div className="flex justify-center mb-8">
-//           <div className="relative w-full max-w-2xl">
-//             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-//               <FaSearch />
-//             </span>
-//             <input
-//               type="text"
-//               placeholder="Search categories..."
-//               value={searchTerm}
-//               onChange={(e) => setSearchTerm(e.target.value)}
-//               className="w-full bg-white border border-gray-200 rounded-full pl-12 pr-4 py-3 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cfe9d5]"
-//             />
-//           </div>
-//         </div>
-
-//         {message && (
-//           <p className="text-center text-[#5e785a] mt-4 font-medium p-3 bg-[#EEFFEB] rounded-lg">
-//             {message}
-//           </p>
-//         )}
-
-//         {/* 🔹 Category Dropdowns */}
-//         <div className="space-y-4">
-//           {filteredCategories.length > 0 ? (
-//             filteredCategories.map((category) => (
-//               <div key={category._id} className="bg-white rounded-2xl shadow">
-//                 {/* Header */}
-//                 <div
-//                   onClick={() => toggleCategory(category._id)}
-//                   className="flex justify-between items-center px-6 py-4 cursor-pointer hover:bg-[#f0f8f1] transition"
-//                 >
-//                   <h2 className="text-lg font-semibold text-[#2d412a]">
-//                     {category.name} ({category.code})
-//                   </h2>
-//                   {expandedCategory === category._id ? (
-//                     <FaChevronDown className="text-[#5e785a]" />
-//                   ) : (
-//                     <FaChevronRight className="text-[#5e785a]" />
-//                   )}
-//                 </div>
-
-//                 {/* Products Table */}
-//                 {expandedCategory === category._id && (
-//                   <div className="overflow-x-auto border-t">
-//                     <table className="w-full table-auto">
-//                       <thead className="bg-[#eaf6ea] text-[#2d412a]">
-//                         <tr>
-//                           <th className="text-left px-6 py-4 text-sm font-semibold">Code</th>
-//                           <th className="text-left px-6 py-4 text-sm font-semibold">Name</th>
-//                           <th className="text-left px-6 py-4 text-sm font-semibold">Price</th>
-//                           <th className="text-left px-6 py-4 text-sm font-semibold">Image</th>
-//                           <th className="text-right px-6 py-4 text-sm font-semibold">Actions</th>
-//                         </tr>
-//                       </thead>
-//                       <tbody>
-//                         {productsByCategory[category._id]?.length ? (
-//                           productsByCategory[category._id].map((prod, idx) => (
-//                             <tr
-//                               key={prod._id}
-//                               className={`border-t ${idx % 2 === 0 ? "" : "bg-gray-50"}`}
-//                             >
-//                               <td className="px-6 py-4 text-sm text-gray-700">{prod.code}</td>
-//                               <td className="px-6 py-4 text-sm text-gray-800">{prod.name}</td>
-//                               <td className="px-6 py-4 text-sm font-bold text-[#5e785a]">
-//                                 ₹{prod.price}
-//                               </td>
-//                               <td className="px-6 py-4">
-//                                 {prod.image ? (
-//                                   <img
-//                                     src={`${prod.image}`}
-//                                     alt={prod.name}
-//                                     className="h-16 w-16 rounded-md object-cover"
-//                                   />
-//                                 ) : (
-//                                   <div className="h-16 w-16 rounded-md border bg-gray-50 flex items-center justify-center text-gray-300">
-//                                     No Image
-//                                   </div>
-//                                 )}
-//                               </td>
-//                               <td className="px-6 py-4 text-right">
-//                                 <div className="inline-flex items-center gap-4">
-//                                   <button
-//                                     onClick={() => handleEditClick(prod)}
-//                                     className="text-blue-600 hover:text-blue-800"
-//                                   >
-//                                     <FaEdit size={18} />
-//                                   </button>
-//                                   <button
-//                                     onClick={() => handleDeleteClick(prod)}
-//                                     className="text-red-600 hover:text-red-800"
-//                                   >
-//                                     <FaTrash size={18} />
-//                                   </button>
-//                                 </div>
-//                               </td>
-//                             </tr>
-//                           ))
-//                         ) : (
-//                           <tr>
-//                             <td
-//                               colSpan="5"
-//                               className="text-center py-8 text-gray-500 italic"
-//                             >
-//                               No products found in this category.
-//                             </td>
-//                           </tr>
-//                         )}
-//                       </tbody>
-//                     </table>
-//                   </div>
-//                 )}
-//               </div>
-//             ))
-//           ) : (
-//             <p className="text-center text-gray-500 italic py-12">
-//               No categories found.
-//             </p>
-//           )}
-//         </div>
-
-//         {/* 🛠 Edit Modal */}
-//         {showEditModal && selectedProduct && (
-//           <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
-//             <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
-//               <h2 className="text-xl font-bold text-[#2d412a] mb-6 text-center">
-//                 Update Product: {selectedProduct.name}
-//               </h2>
-
-//               <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-//                 <select
-//                   name="categoryCode"
-//                   value={formData.categoryCode}
-//                   onChange={handleChange}
-//                   className="border rounded px-3 py-2 text-sm"
-//                   required
-//                 >
-//                   <option value="">Select Category</option>
-//                   {categories.map((cat) => (
-//                     <option key={cat._id} value={cat._id}>
-//                       {cat.name}
-//                     </option>
-//                   ))}
-//                 </select>
-//                 <input
-//                   type="number"
-//                   name="productCode"
-//                   value={formData.productCode}
-//                   onChange={handleChange}
-//                   placeholder="Product Code"
-//                   className="border rounded px-3 py-2 text-sm"
-//                 />
-//                 <input
-//                   type="text"
-//                   name="productName"
-//                   value={formData.productName}
-//                   onChange={handleChange}
-//                   placeholder="Product Name"
-//                   className="border rounded px-3 py-2 text-sm"
-//                 />
-//                 <input
-//                   type="number"
-//                   name="price"
-//                   value={formData.price}
-//                   onChange={handleChange}
-//                   placeholder="Price"
-//                   className="border rounded px-3 py-2 text-sm"
-//                 />
-//                 <textarea
-//                   name="description"
-//                   value={formData.description}
-//                   onChange={handleChange}
-//                   placeholder="Description"
-//                   className="border rounded px-3 py-2 text-sm"
-//                 />
-//                 <input type="file" name="image" onChange={handleChange} className="text-sm" />
-//                 <div className="flex justify-end gap-3">
-//                   <button
-//                     type="button"
-//                     onClick={() => setShowEditModal(false)}
-//                     className="bg-gray-300 px-4 py-2 rounded"
-//                   >
-//                     Cancel
-//                   </button>
-//                   <button type="submit" className="bg-[#5e785a] text-white px-4 py-2 rounded">
-//                     Save
-//                   </button>
-//                 </div>
-//               </form>
-//             </div>
-//           </div>
-//         )}
-
-//         {/* ❌ Delete Modal */}
-//         {showDeleteModal && selectedProduct && (
-//           <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
-//             <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm text-center">
-//               <h2 className="text-xl font-semibold text-red-700 mb-4">Confirm Deletion</h2>
-//               <p className="text-sm text-gray-600 mb-6">
-//                 Are you sure you want to delete <b>{selectedProduct.name}</b>?
-//               </p>
-//               <div className="flex justify-center gap-3">
-//                 <button
-//                   onClick={() => setShowDeleteModal(false)}
-//                   className="bg-gray-300 px-4 py-2 rounded"
-//                 >
-//                   Cancel
-//                 </button>
-//                 <button
-//                   onClick={handleDelete}
-//                   className="bg-red-600 text-white px-4 py-2 rounded"
-//                 >
-//                   Delete
-//                 </button>
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Listproducts;
-
-
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaChevronDown, FaChevronRight, FaSearch } from "react-icons/fa";
 import { domainUrl } from "../utils/constant";
 
-// Helper function to capitalize string (for display)
-const capitalize = (s) => s && s.charAt(0).toUpperCase() + s.slice(1);
-
 const Listproducts = () => {
-    const [categories, setCategories] = useState([]);
-    const [productsByCategory, setProductsByCategory] = useState({});
-    const [expandedCategory, setExpandedCategory] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [message, setMessage] = useState("");
-    const [messageStatus, setMessageStatus] = useState(null); // 'success' or 'error'
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [formData, setFormData] = useState({
-        categoryCode: "",
-        productCode: "",
-        productName: "",
-        description: "",
-        price: "",
-        image: null,
+  const [categories, setCategories] = useState([]);
+  const [productsByCategory, setProductsByCategory] = useState({});
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [formData, setFormData] = useState({
+    categoryCode: "",
+    productCode: "",
+    productName: "",
+    description: "",
+    price: "",
+    image: null,
+  });
+
+  // 🔹 Fetch Categories on Mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get(`${domainUrl}/category/list`);
+      setCategories(res.data.list || []);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  // 🔹 Fetch Products for a specific Category
+  const fetchProductsByCategory = async (categoryId) => {
+    try {
+      const res = await axios.get(`${domainUrl}/product/list?categoryId=${categoryId}`);
+      setProductsByCategory((prev) => ({
+        ...prev,
+        [categoryId]: res.data.list || [],
+      }));
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    }
+  };
+
+  // 🔹 Toggle Dropdown
+  const toggleCategory = (categoryId) => {
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(categoryId);
+      if (!productsByCategory[categoryId]) {
+        fetchProductsByCategory(categoryId);
+      }
+    }
+  };
+
+  // 🔹 Filter by Search Term
+  const filteredCategories = categories.filter((cat) =>
+    cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // 🔹 Handle Edit / Delete
+  const handleEditClick = (product) => {
+    setSelectedProduct(product);
+    setFormData({
+      categoryCode: product.category?._id || "",
+      productCode: product.code,
+      productName: product.name,
+      description: product.description,
+      price: product.price,
+      image: null,
     });
-    const [isUpdating, setIsUpdating] = useState(false);
+    setShowEditModal(true);
+  };
 
+  const handleDeleteClick = (product) => {
+    setSelectedProduct(product);
+    setShowDeleteModal(true);
+  };
 
-    // 🔹 Message Timeout Handler
-    useEffect(() => {
-        if (message) {
-            const timer = setTimeout(() => {
-                setMessage("");
-                setMessageStatus(null);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [message]);
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "image" ? files[0] : value,
+    }));
+  };
 
-    // 🔹 Fetch Categories on Mount
-    useEffect(() => {
-        fetchCategories();
-    }, []);
+  // 🔹 Update Product
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setMessage("");
 
-    const fetchCategories = async () => {
-        try {
-            const res = await axios.get(`${domainUrl}/category/list`);
-            setCategories(res.data.list || []);
-        } catch (err) {
-            console.error("Error fetching categories:", err);
-            setMessage("Error fetching categories list.");
-            setMessageStatus('error');
-        }
-    };
+    try {
+      const token = localStorage.getItem("token");
+      const data = new FormData();
+      data.append("category", formData.categoryCode);
+      data.append("code", formData.productCode);
+      data.append("name", formData.productName);
+      data.append("description", formData.description);
+      data.append("price", formData.price);
+      if (formData.image) data.append("image", formData.image);
 
-    // 🔹 Fetch Products for a specific Category
-    const fetchProductsByCategory = async (categoryId) => {
-        // Prevent loading if data already exists, except when explicitly refreshing
-        if (productsByCategory[categoryId]?.length) return; 
+      await axios.put(`${domainUrl}/product/update/${selectedProduct._id}`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        setProductsByCategory((prev) => ({
-            ...prev,
-            [categoryId]: null, // Set to null (loading state)
-        }));
+      setMessage("Product updated successfully!");
+      setShowEditModal(false);
+      fetchProductsByCategory(formData.categoryCode); // Refresh only affected category
+    } catch (err) {
+      console.error("Error updating product:", err);
+      setMessage("Error updating product.");
+    }
+  };
 
-        try {
-            const res = await axios.get(`${domainUrl}/product/list?categoryId=${categoryId}`);
-            setProductsByCategory((prev) => ({
-                ...prev,
-                [categoryId]: res.data.list || [],
-            }));
-        } catch (err) {
-            console.error(`Error fetching products for category ${categoryId}:`, err);
-            setProductsByCategory((prev) => ({
-                ...prev,
-                [categoryId]: [], // Set to empty array on error
-            }));
-        }
-    };
+  // 🔹 Delete Product
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${domainUrl}/product/delete/${selectedProduct._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setShowDeleteModal(false);
+      fetchProductsByCategory(selectedProduct.category._id);
+      setMessage(`Product "${selectedProduct.name}" deleted successfully!`);
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      setMessage("Error deleting product.");
+    }
+  };
 
-    // 🔹 Toggle Dropdown
-    const toggleCategory = (categoryId) => {
-        if (expandedCategory === categoryId) {
-            setExpandedCategory(null);
-        } else {
-            setExpandedCategory(categoryId);
-            // Fetch products only if they haven't been fetched yet
-            if (productsByCategory[categoryId] === undefined) {
-                fetchProductsByCategory(categoryId);
-            }
-        }
-    };
-    
-    // 🔹 Filter by Search Term (Filters categories by name/code)
-    const filteredCategories = categories.filter((cat) =>
-        cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cat.code.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  return (
+    <div className="min-h-screen bg-[#f7faf7] py-12">
+      <div className="max-w-6xl mx-auto px-6">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-[#2d412a] mb-6 text-center">
+          Products by Category
+        </h1>
 
-    // 🔹 Handle Edit / Delete
-    const handleEditClick = (product) => {
-        setSelectedProduct(product);
-        setFormData({
-            categoryCode: product.category?._id || "",
-            productCode: product.code,
-            productName: product.name,
-            description: product.description,
-            price: product.price,
-            image: null,
-        });
-        setShowEditModal(true);
-    };
-
-    const handleDeleteClick = (product) => {
-        setSelectedProduct(product);
-        setShowDeleteModal(true);
-    };
-
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: name === "image" ? files[0] : value,
-        }));
-    };
-
-    // 🔹 Update Product
-    const handleUpdate = async (e) => {
-        e.preventDefault();
-        setIsUpdating(true);
-        
-        // Use the ID of the category currently selected in the form
-        const categoryToRefresh = formData.categoryCode;
-
-        try {
-            const token = localStorage.getItem("token");
-            const data = new FormData();
-            
-            // Append form data
-            data.append("category", formData.categoryCode);
-            data.append("code", formData.productCode);
-            data.append("name", formData.productName);
-            data.append("description", formData.description);
-            data.append("price", formData.price);
-            if (formData.image) data.append("image", formData.image);
-
-            await axios.put(`${domainUrl}/product/update/${selectedProduct._id}`, data, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            setMessage(`Product "${formData.productName}" updated successfully!`);
-            setMessageStatus('success');
-            setShowEditModal(false);
-            
-            // Refresh only the category that holds the product now
-            await fetchProductsByCategory(categoryToRefresh); 
-            // If the category was changed, also refresh the old one to remove the product
-            if (selectedProduct.category?._id && selectedProduct.category._id !== categoryToRefresh) {
-                await fetchProductsByCategory(selectedProduct.category._id);
-            }
-
-        } catch (err) {
-            console.error("Error updating product:", err);
-            setMessage("Error updating product. Please try again.");
-            setMessageStatus('error');
-        } finally {
-            setIsUpdating(false);
-        }
-    };
-
-    // 🔹 Delete Product
-    const handleDelete = async () => {
-        const categoryToRefresh = selectedProduct.category._id;
-
-        try {
-            const token = localStorage.getItem("token");
-            await axios.delete(`${domainUrl}/product/delete/${selectedProduct._id}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            
-            setShowDeleteModal(false);
-            setMessage(`Product "${selectedProduct.name}" deleted successfully.`);
-            setMessageStatus('success');
-
-            // Refresh the category to remove the deleted product
-            await fetchProductsByCategory(categoryToRefresh);
-        } catch (err) {
-            console.error("Error deleting product:", err);
-            setMessage("Error deleting product.");
-            setMessageStatus('error');
-        }
-    };
-
-
-    return (
-        <div className="min-h-screen bg-[#f7faf7] py-12">
-            <div className="max-w-6xl mx-auto px-6">
-                <h1 className="text-3xl md:text-4xl font-extrabold text-[#2d412a] mb-6 text-center">
-                 Products
-                </h1>
-
-                {/* 🔍 Search */}
-                <div className="flex justify-center mb-8">
-                    <div className="relative w-full max-w-2xl">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                            <FaSearch />
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Search categories by name or code..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-white border border-gray-200 rounded-full pl-12 pr-4 py-3 text-sm shadow-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cfe9d5] focus:border-white"
-                        />
-                    </div>
-                </div>
-
-                {/* Status Message Display */}
-                {message && (
-                    <p 
-                        className={`text-center mt-4 font-medium p-3 rounded-lg ${
-                            messageStatus === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}
-                    >
-                        {message}
-                    </p>
-                )}
-
-                {/* 🔹 Category Dropdowns */}
-                <div className="space-y-4 mt-8">
-                    {filteredCategories.length > 0 ? (
-                        filteredCategories.map((category) => (
-                            <div key={category._id} className="bg-white rounded-2xl shadow">
-                                {/* Header */}
-                                <div
-                                    onClick={() => toggleCategory(category._id)}
-                                    className="flex justify-between items-center px-6 py-4 cursor-pointer hover:bg-[#f0f8f1] transition"
-                                >
-                                    {/* Category Name/Code */}
-                                    <div className="flex-1">
-                                        <h2 className="text-lg font-semibold text-[#2d412a]">
-                                            {category.name}
-                                        </h2>
-                                        <p className="text-sm text-gray-600 mt-1">{category.code}</p>
-                                    </div>
-                                    
-                                    {/* Description (Hidden on small screens) */}
-                                    <p className="hidden md:block text-sm text-gray-500 max-w-sm truncate mr-4">
-                                        {category.description || 'No description provided.'}
-                                    </p>
-
-                                    {/* Dropdown Icon */}
-                                    {expandedCategory === category._id ? (
-                                        <FaChevronDown className="text-[#5e785a]" />
-                                    ) : (
-                                        <FaChevronRight className="text-[#5e785a]" />
-                                    )}
-                                </div>
-
-                                {/* Products Table */}
-                                {expandedCategory === category._id && (
-                                    <div className="overflow-x-auto border-t">
-                                        <table className="w-full table-auto">
-                                            <thead className="bg-[#eaf6ea] text-[#2d412a]">
-                                                <tr>
-                                                    <th className="text-left px-6 py-4 text-xs font-semibold w-1/4">Name/Code</th>
-                                                    <th className="text-left px-6 py-4 text-xs font-semibold w-1/4 hidden sm:table-cell">Description</th>
-                                                    <th className="text-left px-6 py-4 text-xs font-semibold w-1/5">Price</th>
-                                                    <th className="text-center px-6 py-4 text-xs font-semibold w-1/12">Image</th>
-                                                    <th className="text-right px-6 py-4 text-xs font-semibold w-1/12">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {productsByCategory[category._id] === null ? (
-                                                    <tr><td colSpan="5" className="text-center py-4 text-gray-500 italic">Loading products...</td></tr>
-                                                ) : productsByCategory[category._id]?.length ? (
-                                                    productsByCategory[category._id].map((prod, idx) => (
-                                                        <tr key={prod._id} className={`border-t ${idx % 2 === 0 ? "" : "bg-gray-50"}`}>
-                                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">
-                                                                {prod.name}
-                                                                <div className="text-xs text-gray-500 mt-0.5">Code: {prod.code}</div>
-                                                            </td>
-                                                            <td className="px-6 py-4 text-sm text-gray-600 truncate max-w-xs hidden sm:table-cell">{prod.description}</td>
-                                                            <td className="px-6 py-4 text-sm font-bold text-[#5e785a]">₹{prod.price}</td>
-                                                            <td className="px-6 py-4 text-center">
-                                                                {prod.image ? (
-                                                                    <img src={`${prod.image}`} alt={prod.name} className="h-10 w-10 rounded-md object-cover mx-auto" />
-                                                                ) : (
-                                                                    <div className="h-10 w-10 rounded-md border bg-gray-100 flex items-center justify-center text-gray-300 text-xs mx-auto">N/I</div>
-                                                                )}
-                                                            </td>
-                                                            <td className="px-6 py-4 text-right">
-                                                                <div className="inline-flex items-center gap-4">
-                                                                    <button onClick={() => handleEditClick(prod)} className="text-blue-600 hover:text-blue-800 transition">
-                                                                        <FaEdit size={16} />
-                                                                    </button>
-                                                                    <button onClick={() => handleDeleteClick(prod)} className="text-red-600 hover:text-red-800 transition">
-                                                                        <FaTrash size={16} />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr><td colSpan="5" className="text-center py-8 text-gray-500 italic">No products found in this category.</td></tr>
-                                                )}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-500 italic py-12">
-                            {searchTerm ? `No categories match "${searchTerm}".` : 'No categories found.'}
-                        </p>
-                    )}
-                </div>
-
-                {/* 🛠 Edit Modal */}
-                {showEditModal && selectedProduct && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-                        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
-                            <h2 className="text-2xl font-bold text-[#2d412a] mb-6 text-center border-b pb-2">Edit Product: {capitalize(selectedProduct.name)}</h2>
-
-                            <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-                                
-                                <label className="text-sm font-medium text-gray-700">Category</label>
-                                <select
-                                    name="categoryCode"
-                                    value={formData.categoryCode}
-                                    onChange={handleChange}
-                                    className="border rounded-lg px-3 py-2 text-base focus:ring-1 focus:ring-[#5e785a] focus:border-[#5e785a] transition"
-                                    required
-                                >
-                                    <option value="" disabled>Select Category</option>
-                                    {categories.map(cat => (
-                                        <option key={cat._id} value={cat._id}> 
-                                            {cat.name} ({cat.code})
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <label className="text-sm font-medium text-gray-700">Product Name</label>
-                                <input 
-                                    type="text" 
-                                    name="productName" 
-                                    value={formData.productName} 
-                                    onChange={handleChange} 
-                                    placeholder="Product Name" 
-                                    className="border rounded-lg px-3 py-2 text-base focus:ring-1 focus:ring-[#5e785a] focus:border-[#5e785a] transition" 
-                                    required 
-                                />
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700">Product Code</label>
-                                        <input 
-                                            type="text" 
-                                            name="productCode" 
-                                            value={formData.productCode} 
-                                            onChange={handleChange} 
-                                            placeholder="Code" 
-                                            className="border rounded-lg px-3 py-2 text-base w-full focus:ring-1 focus:ring-[#5e785a] focus:border-[#5e785a] transition" 
-                                            required 
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium text-gray-700">Price (₹)</label>
-                                        <input 
-                                            type="number" 
-                                            name="price" 
-                                            value={formData.price} 
-                                            onChange={handleChange} 
-                                            placeholder="Price" 
-                                            className="border rounded-lg px-3 py-2 text-base w-full focus:ring-1 focus:ring-[#5e785a] focus:border-[#5e785a] transition" 
-                                            required 
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <label className="text-sm font-medium text-gray-700">Description</label>
-                                <textarea 
-                                    name="description" 
-                                    value={formData.description} 
-                                    onChange={handleChange} 
-                                    placeholder="Product Description" 
-                                    rows={3}
-                                    className="border rounded-lg px-3 py-2 text-base resize-none focus:ring-1 focus:ring-[#5e785a] focus:border-[#5e785a] transition" 
-                                />
-
-                                <label htmlFor="updateImage" className="block text-sm font-medium text-gray-700">New Image (Optional)</label>
-                                <label htmlFor="updateImage" className="text-sm font-semibold text-center text-[#5e785a] border border-[#5e785a] px-4 py-2 rounded-lg cursor-pointer hover:bg-[#5e785a] hover:text-white transition">
-                                    {formData.image ? `Selected: ${formData.image.name}` : "Click to Change Product Image"}
-                                </label>
-                                <input type="file" id="updateImage" name="image" onChange={handleChange} className="hidden" accept="image/*" />
-
-                                <div className="flex justify-end gap-3 mt-5">
-                                    <button type="button" onClick={() => setShowEditModal(false)} className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 font-medium transition">Cancel</button>
-                                    <button type="submit" disabled={isUpdating} className="bg-[#5e785a] text-white px-4 py-2 rounded-lg hover:bg-[#2d412a] font-medium transition disabled:opacity-50">
-                                        {isUpdating ? 'Saving...' : 'Save Changes'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )}
-
-                {/* ❌ Delete Modal */}
-                {showDeleteModal && selectedProduct && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-                        <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-                            <h2 className="text-2xl font-semibold text-red-700 mb-4">⚠️ Confirm Deletion</h2>
-                            <p className="text-base text-gray-600 mb-6">Are you sure you want to delete the product: **{selectedProduct.name}**? This action cannot be undone.</p>
-
-                            <div className="flex justify-center gap-4">
-                                <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 font-medium transition">Cancel</button>
-                                <button onClick={handleDelete} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-medium transition">Yes, Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+        {/* 🔍 Search */}
+        <div className="flex justify-center mb-8">
+          <div className="relative w-full max-w-2xl">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <FaSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Search categories..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-full pl-12 pr-4 py-3 text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cfe9d5]"
+            />
+          </div>
         </div>
-    );
+
+        {message && (
+          <p className="text-center text-[#5e785a] mt-4 font-medium p-3 bg-[#EEFFEB] rounded-lg">
+            {message}
+          </p>
+        )}
+
+        {/* 🔹 Category Dropdowns */}
+        <div className="space-y-4">
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((category) => (
+              <div key={category._id} className="bg-white rounded-2xl shadow">
+                {/* Header */}
+                <div
+                  onClick={() => toggleCategory(category._id)}
+                  className="flex justify-between items-center px-6 py-4 cursor-pointer hover:bg-[#f0f8f1] transition"
+                >
+                  <h2 className="text-lg font-semibold text-[#2d412a]">
+                    {category.name} ({category.code})
+                  </h2>
+                  {expandedCategory === category._id ? (
+                    <FaChevronDown className="text-[#5e785a]" />
+                  ) : (
+                    <FaChevronRight className="text-[#5e785a]" />
+                  )}
+                </div>
+
+                {/* Products Table */}
+                {expandedCategory === category._id && (
+                  <div className="overflow-x-auto border-t">
+                    <table className="w-full table-auto">
+                      <thead className="bg-[#eaf6ea] text-[#2d412a]">
+                        <tr>
+                          <th className="text-left px-6 py-4 text-sm font-semibold">Code</th>
+                          <th className="text-left px-6 py-4 text-sm font-semibold">Name</th>
+                          <th className="text-left px-6 py-4 text-sm font-semibold">Price</th>
+                          <th className="text-left px-6 py-4 text-sm font-semibold">Image</th>
+                          <th className="text-right px-6 py-4 text-sm font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {productsByCategory[category._id]?.length ? (
+                          productsByCategory[category._id].map((prod, idx) => (
+                            <tr
+                              key={prod._id}
+                              className={`border-t ${idx % 2 === 0 ? "" : "bg-gray-50"}`}
+                            >
+                              <td className="px-6 py-4 text-sm text-gray-700">{prod.code}</td>
+                              <td className="px-6 py-4 text-sm text-gray-800">{prod.name}</td>
+                              <td className="px-6 py-4 text-sm font-bold text-[#5e785a]">
+                                ₹{prod.price}
+                              </td>
+                              <td className="px-6 py-4">
+                                {prod.image ? (
+                                  <img
+                                    src={`${prod.image}`}
+                                    alt={prod.name}
+                                    className="h-16 w-16 rounded-md object-cover"
+                                  />
+                                ) : (
+                                  <div className="h-16 w-16 rounded-md border bg-gray-50 flex items-center justify-center text-gray-300">
+                                    No Image
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <div className="inline-flex items-center gap-4">
+                                  <button
+                                    onClick={() => handleEditClick(prod)}
+                                    className="text-blue-600 hover:text-blue-800"
+                                  >
+                                    <FaEdit size={18} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteClick(prod)}
+                                    className="text-red-600 hover:text-red-800"
+                                  >
+                                    <FaTrash size={18} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              className="text-center py-8 text-gray-500 italic"
+                            >
+                              No products found in this category.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 italic py-12">
+              No categories found.
+            </p>
+          )}
+        </div>
+
+        {/* 🛠 Edit Modal */}
+        {showEditModal && selectedProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg relative">
+              <h2 className="text-xl font-bold text-[#2d412a] mb-6 text-center">
+                Update Product: {selectedProduct.name}
+              </h2>
+
+              <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+                <select
+                  name="categoryCode"
+                  value={formData.categoryCode}
+                  onChange={handleChange}
+                  className="border rounded px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="number"
+                  name="productCode"
+                  value={formData.productCode}
+                  onChange={handleChange}
+                  placeholder="Product Code"
+                  className="border rounded px-3 py-2 text-sm"
+                />
+                <input
+                  type="text"
+                  name="productName"
+                  value={formData.productName}
+                  onChange={handleChange}
+                  placeholder="Product Name"
+                  className="border rounded px-3 py-2 text-sm"
+                />
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  placeholder="Price"
+                  className="border rounded px-3 py-2 text-sm"
+                />
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Description"
+                  className="border rounded px-3 py-2 text-sm"
+                />
+                <input type="file" name="image" onChange={handleChange} className="text-sm" />
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="bg-gray-300 px-4 py-2 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="bg-[#5e785a] text-white px-4 py-2 rounded">
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ❌ Delete Modal */}
+        {showDeleteModal && selectedProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+            <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm text-center">
+              <h2 className="text-xl font-semibold text-red-700 mb-4">Confirm Deletion</h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Are you sure you want to delete <b>{selectedProduct.name}</b>?
+              </p>
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="bg-gray-300 px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="bg-red-600 text-white px-4 py-2 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Listproducts;
-
-
-
-
-
-
-
-
-
-
-

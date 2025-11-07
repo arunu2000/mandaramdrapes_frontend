@@ -703,14 +703,448 @@
 
 
 
+// 'use client'
+
+// import React, { useState, useEffect, Fragment } from 'react';
+// import { Link, Outlet, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { motion, AnimatePresence } from "framer-motion"; // Keep AnimatePresence and motion if you use them elsewhere
+// import { ClipLoader } from "react-spinners"; 
+// import { FaUserCircle } from "react-icons/fa"; // Keep FaUserCircle if needed
+
+// import {
+//   Dialog,
+//   DialogBackdrop,
+//   DialogPanel,
+//   Menu,
+//   MenuButton,
+//   MenuItem,
+//   MenuItems,
+//   TransitionChild,
+// } from '@headlessui/react'
+// import {
+//   Bars3Icon,
+//   HomeIcon,
+//   XMarkIcon,
+//   UsersIcon, 
+//   FolderIcon,
+//   TagIcon, // Custom icon for Categories
+//   CubeTransparentIcon, // Custom icon for Products
+//   ShoppingBagIcon, // Custom icon for Orders
+//   ChevronDownIcon, // From solid
+//   // Removed: BellIcon, MagnifyingGlassIcon, ChartPieIcon, DocumentDuplicateIcon, CalendarIcon, Cog6ToothIcon
+// } from '@heroicons/react/24/outline'
+
+// // --- 1. ADMIN NAVIGATION DATA (MAPPED FROM YOUR LINKS) ---
+// const adminNavigation = [
+//   { 
+//     name: 'Dashboard', 
+//     href: '/admindashboard', 
+//     icon: HomeIcon, 
+//     current: true 
+//   },
+//   {
+//     name: 'User Management',
+//     icon: UsersIcon,
+//     subLinks: [
+//       { name: 'Add User', href: '/admindashboard/manageuser/adduser' },
+//       { name: 'List Users', href: '/admindashboard/manageuser/listusers' },
+//     ],
+//   },
+//   {
+//     name: 'Category Management',
+//     icon: TagIcon, // Using TagIcon for Categories
+//     subLinks: [
+//       { name: 'Add Category', href: '/admindashboard/managecategories/addcategory' },
+//       { name: 'List Categories', href: '/admindashboard/managecategories/listcategory' },
+//     ],
+//   },
+//   {
+//     name: 'Product Management',
+//     icon: CubeTransparentIcon, // Using CubeTransparentIcon for Products
+//     subLinks: [
+//       { name: 'Add Products', href: '/admindashboard/manageproducts/addproducts' },
+//       { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
+//     ],
+//   },
+//   { 
+//     name: 'Order Management', 
+//     href: '/admindashboard/adminordermanagement', 
+//     icon: ShoppingBagIcon, 
+//     current: false 
+//   },
+// ]
+
+// const userNavigation = [
+//   { name: 'Your profile', href: '#' },
+// ]
+
+// function classNames(...classes) {
+//   return classes.filter(Boolean).join(' ')
+// }
+
+// // Custom Link Component to handle current state and collapse menus
+// const NavLink = ({ item, openMenu, toggleMenu }) => {
+//     // Determine if the link has sub-links (dropdown)
+//     const hasSubLinks = item.subLinks && item.subLinks.length > 0;
+    
+//     // Check if the current route matches any link or sub-link
+//     const isCurrent = item.href ? window.location.pathname === item.href : false;
+//     const isActiveParent = hasSubLinks && openMenu === item.name;
+
+//     const baseClasses = 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer';
+//     const activeClasses = 'bg-white/10 text-white';
+//     const inactiveClasses = 'text-gray-300 hover:bg-white/10 hover:text-white';
+
+//     const renderLink = (
+//         <li key={item.name}>
+//             <div
+//                 onClick={() => {
+//                     if (hasSubLinks) {
+//                         toggleMenu(item.name);
+//                     } else {
+//                         // For direct links, navigate and potentially close sidebar
+//                         // For simplicity, we use Link if not a submenu item
+//                     }
+//                 }}
+//                 className={classNames(
+//                     isCurrent || isActiveParent ? activeClasses : inactiveClasses,
+//                     baseClasses,
+//                     // Apply appropriate navigation element
+//                     !hasSubLinks && 'w-full' // Stretch if it's a primary link
+//                 )}
+//             >
+//                 <item.icon aria-hidden="true" className="size-6 shrink-0" />
+//                 {item.name}
+//             </div>
+//         </li>
+//     );
+
+//     if (!hasSubLinks) {
+//         return (
+//             <li key={item.name}>
+//                 <Link to={item.href} className={classNames(
+//                     isCurrent ? activeClasses : inactiveClasses,
+//                     baseClasses,
+//                     'w-full'
+//                 )}>
+//                     <item.icon aria-hidden="true" className="size-6 shrink-0" />
+//                     {item.name}
+//                 </Link>
+//             </li>
+//         );
+//     }
+    
+//     // Render parent button and dropdown
+//     return (
+//         <li key={item.name}>
+//             <button
+//                 onClick={() => toggleMenu(item.name)}
+//                 className={classNames(
+//                     isActiveParent ? activeClasses : inactiveClasses,
+//                     baseClasses,
+//                     'w-full flex justify-between items-center'
+//                 )}
+//             >
+//                 <div className="flex items-center gap-x-3">
+//                     <item.icon aria-hidden="true" className="size-6 shrink-0" />
+//                     {item.name}
+//                 </div>
+//                 <ChevronDownIcon 
+//                     className={classNames(
+//                         'size-5 transition-transform duration-200',
+//                         isActiveParent ? 'rotate-180' : 'rotate-0'
+//                     )}
+//                 />
+//             </button>
+//             <motion.ul
+//                 initial={false}
+//                 animate={{ height: isActiveParent ? 'auto' : 0 }}
+//                 transition={{ duration: 0.2 }}
+//                 className={classNames(
+//                     'mt-1 space-y-1 overflow-hidden ml-4 p-1 rounded-md bg-black/20'
+//                 )}
+//             >
+//                 {item.subLinks.map((subItem) => (
+//                     <li key={subItem.name}>
+//                         <Link 
+//                             to={subItem.href} 
+//                             className="block p-2 text-sm text-gray-400 rounded-md hover:bg-black/30 hover:text-white transition-colors duration-200"
+//                         >
+//                             {subItem.name}
+//                         </Link>
+//                     </li>
+//                 ))}
+//             </motion.ul>
+//         </li>
+//     );
+// };
+// // -----------------------------------------------------------------
+
+
+// export default function Admindashboard() {
+//     const [sidebarOpen, setSidebarOpen] = useState(false);
+//     const [openMenu, setOpenMenu] = useState(""); // State for managing dropdown menus
+//     const [adminInfo, setAdminInfo] = useState(null);
+//     const [isLoading, setIsLoading] = useState(true); 
+//     const navigate = useNavigate();
+    
+//     // Toggle side menus (integrated from your original logic)
+//     const toggleMenu = (menuName) => {
+//         setOpenMenu(openMenu === menuName ? "" : menuName);
+//     };
+
+//     // Logout function
+//     const handleLogout = () => {
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("role"); 
+//         setAdminInfo(null);
+//         navigate("/login");
+//     };
+
+//     // Load and validate admin info from localStorage
+//     useEffect(() => {
+//         const token = localStorage.getItem("token");
+//         const role = localStorage.getItem("role");
+
+//         // --- 🔑 Admin Protection Logic ---
+//         if (!token || role !== "admin") {
+//             localStorage.removeItem("token");
+//             localStorage.removeItem("role");
+//             navigate("/login", { replace: true });
+//             return;
+//         }
+        
+//         // Data Retrieval 
+//         // IMPORTANT: In a real app, you would fetch the name/email from an API here.
+
+//          const res = await axios.get(
+//                 `${domainUrl}/admin/adminProfile`,
+//                 data,
+//                 {
+//                     headers: {
+//                         "Content-Type": "multipart/form-data",
+//                         Authorization: `Bearer ${token}`,
+//                     },
+//                 }
+//             );
+
+
+        
+
+        
+       
+//         setAdminInfo({
+//             name: "Admin User", // Placeholder name
+//             role: role,
+//         });
+        
+//         setIsLoading(false); 
+        
+//     }, [navigate]);
+    
+//     // 🛡️ Guard Clause: Show loading spinner until validation is complete
+//     if (isLoading) {
+//         return (
+//             <div className="flex items-center justify-center h-screen w-full bg-gray-50">
+//                 <ClipLoader color="#343e32" size={35} />
+//             </div>
+//         );
+//     }
+
+//   return (
+//     <>
+//       <div>
+//         {/* Mobile sidebar */}
+//         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+//           <DialogBackdrop
+//             transition
+//             className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-closed:opacity-0"
+//           />
+
+//           <div className="fixed inset-0 flex">
+//             <DialogPanel
+//               transition
+//               className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-closed:-translate-x-full"
+//             >
+//               <TransitionChild>
+//                 <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
+//                   <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
+//                     <span className="sr-only">Close sidebar</span>
+//                     <XMarkIcon aria-hidden="true" className="size-6 text-white" />
+//                   </button>
+//                 </div>
+//               </TransitionChild>
+
+//               {/* Sidebar component - Mobile */}
+//               <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
+//                 <div className="relative flex h-16 shrink-0 items-center">
+//                     {/* Your Logo (Mandaram Drapes) */}
+//                     <img
+//                         alt="Mandaram Drapes Logo"
+//                         src="/logo123.png" // Use your actual logo path
+//                         className="h-10 w-auto"
+//                     />
+//                 </div>
+//                 <nav className="relative flex flex-1 flex-col">
+//                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
+//                     <li>
+//                       <ul role="list" className="-mx-2 space-y-1">
+//                         {adminNavigation.map((item) => (
+//                           <NavLink 
+//                                 key={item.name} 
+//                                 item={item} 
+//                                 openMenu={openMenu} 
+//                                 toggleMenu={toggleMenu} 
+//                             />
+//                         ))}
+//                       </ul>
+//                     </li>
+//                   </ul>
+//                     <a
+//                         onClick={handleLogout}
+//                         className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-white/10 hover:text-white mt-auto cursor-pointer"
+//                     >
+//                         <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+//                         Logout
+//                     </a>
+//                 </nav>
+//               </div>
+//             </DialogPanel>
+//           </div>
+//         </Dialog>
+
+//         {/* Static sidebar for desktop */}
+//         <div className="hidden bg-[#343e32] lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+//           {/* Sidebar component - Desktop */}
+//           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
+//             <div className="flex h-16 shrink-0 items-center">
+//                 {/* Your Logo (Mandaram Drapes) */}
+//                 <img
+//                     alt="Mandaram Drapes Logo"
+//                     src="/logo123.png" // Use your actual logo path
+//                     className="h-10 w-auto"
+//                 />
+//             </div>
+//             <nav className="flex flex-1 flex-col">
+//               <ul role="list" className="flex flex-1 flex-col gap-y-7">
+//                 <li>
+//                   <ul role="list" className="-mx-2 space-y-1">
+//                     {adminNavigation.map((item) => (
+//                       <NavLink 
+//                             key={item.name} 
+//                             item={item} 
+//                             openMenu={openMenu} 
+//                             toggleMenu={toggleMenu} 
+//                         />
+//                     ))}
+//                   </ul>
+//                 </li>
+//                 {/* Removed "Your teams" section as per provided data */}
+//                 <li className="mt-auto">
+//                   <a
+//                     onClick={handleLogout}
+//                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+//                   >
+//                     <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+//                     Logout
+//                   </a>
+//                 </li>
+//               </ul>
+//             </nav>
+//           </div>
+//         </div>
+
+//         {/* Main Content Area */}
+//         <div className="lg:pl-72">
+//           
+//             {/* Top Navbar (Integrated from Tailwind template, simplified) */}
+//           <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
+//             <button
+//               type="button"
+//               onClick={() => setSidebarOpen(true)}
+//               className="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
+//             >
+//               <span className="sr-only">Open sidebar</span>
+//               <Bars3Icon aria-hidden="true" className="size-6" />
+//             </button>
+
+//             {/* Separator */}
+//             <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
+
+//             <div className="flex flex-1 justify-end self-stretch">
+//               <div className="flex items-center gap-x-4 lg:gap-x-6">
+//                 {/* Removed Search and BellIcon */}
+
+//                 {/* Separator */}
+//                 <div
+//                   aria-hidden="true"
+//                   className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
+//                 />
+
+//                 {/* Profile dropdown (Combined with your adminInfo logic) */}
+//                 <Menu as="div" className="relative">
+//                   <MenuButton className="relative flex items-center">
+//                     <span className="absolute -inset-1.5" />
+//                     <span className="sr-only">Open user menu</span>
+//                     {/* Using your FaUserCircle style here */}
+//                     <FaUserCircle size={28} className="text-gray-700" />
+//                     
+//                     <span className="hidden lg:flex lg:items-center">
+//                       <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
+//                         {adminInfo?.name || "Admin"}
+//                       </span>
+//                       <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
+//                     </span>
+//                   </MenuButton>
+//                   <MenuItems
+//                     transition
+//                     className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+//                   >
+//                         <div className="px-3 py-1 text-sm text-gray-600 border-b mb-1">
+//                             <p className="font-semibold">{adminInfo?.name || "Admin User"}</p>
+//                             <p className="text-xs text-gray-500">Role: {adminInfo?.role || 'N/A'}</p>
+//                         </div>
+//                         <MenuItem>
+//                             <a
+//                                 onClick={handleLogout}
+//                                 className="block px-3 py-1 text-sm/6 text-red-600 hover:bg-gray-50 cursor-pointer"
+//                             >
+//                                 Sign out
+//                             </a>
+//                         </MenuItem>
+//                   </MenuItems>
+//                 </Menu>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Main Outlet for Content */}
+//           <main>
+//             <div>
+//                 <Outlet />
+//             </div>
+//           </main>
+//         </div>
+//       </div>
+//     </>
+//   )
+// }
+
+// Export the component for use in your routing
+// export default Admindashboard;
+
+
 'use client'
 
-import React, { useState, useEffect, Fragment } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { motion, AnimatePresence } from "framer-motion"; // Keep AnimatePresence and motion if you use them elsewhere
+import React, { useRef, useState, useEffect, Fragment } from "react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion"; 
 import { ClipLoader } from "react-spinners"; 
-import { FaUserCircle } from "react-icons/fa"; // Keep FaUserCircle if needed
+import { FaUserCircle } from "react-icons/fa"; 
+import { domainUrl } from "../utils/constant"; // Assuming this path is correct
+
 
 import {
   Dialog,
@@ -726,99 +1160,66 @@ import {
   Bars3Icon,
   HomeIcon,
   XMarkIcon,
-  UsersIcon, 
-  FolderIcon,
-  TagIcon, // Custom icon for Categories
-  CubeTransparentIcon, // Custom icon for Products
-  ShoppingBagIcon, // Custom icon for Orders
-  ChevronDownIcon, // From solid
-  // Removed: BellIcon, MagnifyingGlassIcon, ChartPieIcon, DocumentDuplicateIcon, CalendarIcon, Cog6ToothIcon
+  UsersIcon, 
+  TagIcon, 
+  CubeTransparentIcon, 
+  ShoppingBagIcon, 
+  ChevronDownIcon, 
 } from '@heroicons/react/24/outline'
 
 // --- 1. ADMIN NAVIGATION DATA (MAPPED FROM YOUR LINKS) ---
 const adminNavigation = [
   { 
-    name: 'Dashboard', 
-    href: '/admindashboard', 
-    icon: HomeIcon, 
-    current: true 
-  },
-  {
-    name: 'User Management',
-    icon: UsersIcon,
-    subLinks: [
-      { name: 'Add User', href: '/admindashboard/manageuser/adduser' },
-      { name: 'List Users', href: '/admindashboard/manageuser/listusers' },
-    ],
+    name: 'Dashboard', 
+    href: '/admindashboard', 
+    icon: HomeIcon, 
+    current: true 
   },
   {
-    name: 'Category Management',
-    icon: TagIcon, // Using TagIcon for Categories
-    subLinks: [
-      { name: 'Add Category', href: '/admindashboard/managecategories/addcategory' },
-      { name: 'List Categories', href: '/admindashboard/managecategories/listcategory' },
-    ],
+    name: 'User Management',
+    icon: UsersIcon,
+    subLinks: [
+      { name: 'Add User', href: '/admindashboard/manageuser/adduser' },
+      { name: 'List Users', href: '/admindashboard/manageuser/listusers' },
+    ],
   },
   {
-    name: 'Product Management',
-    icon: CubeTransparentIcon, // Using CubeTransparentIcon for Products
-    subLinks: [
-      { name: 'Add Products', href: '/admindashboard/manageproducts/addproducts' },
-      { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
-    ],
+    name: 'Category Management',
+    icon: TagIcon, 
+    subLinks: [
+      { name: 'Add Category', href: '/admindashboard/managecategories/addcategory' },
+      { name: 'List Categories', href: '/admindashboard/managecategories/listcategory' },
+    ],
   },
-  { 
-    name: 'Order Management', 
-    href: '/admindashboard/adminordermanagement', 
-    icon: ShoppingBagIcon, 
-    current: false 
-  },
-]
-
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
+  {
+    name: 'Product Management',
+    icon: CubeTransparentIcon, 
+    subLinks: [
+      { name: 'Add Products', href: '/admindashboard/manageproducts/addproducts' },
+      { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
+    ],
+  },
+  { 
+    name: 'Order Management', 
+    href: '/admindashboard/adminordermanagement', 
+    icon: ShoppingBagIcon, 
+    current: false 
+  },
 ]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-// Custom Link Component to handle current state and collapse menus
+// Custom Link Component (Assumes motion is imported)
 const NavLink = ({ item, openMenu, toggleMenu }) => {
-    // Determine if the link has sub-links (dropdown)
     const hasSubLinks = item.subLinks && item.subLinks.length > 0;
-    
-    // Check if the current route matches any link or sub-link
     const isCurrent = item.href ? window.location.pathname === item.href : false;
     const isActiveParent = hasSubLinks && openMenu === item.name;
 
     const baseClasses = 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer';
     const activeClasses = 'bg-white/10 text-white';
     const inactiveClasses = 'text-gray-300 hover:bg-white/10 hover:text-white';
-
-    const renderLink = (
-        <li key={item.name}>
-            <div
-                onClick={() => {
-                    if (hasSubLinks) {
-                        toggleMenu(item.name);
-                    } else {
-                        // For direct links, navigate and potentially close sidebar
-                        // For simplicity, we use Link if not a submenu item
-                    }
-                }}
-                className={classNames(
-                    isCurrent || isActiveParent ? activeClasses : inactiveClasses,
-                    baseClasses,
-                    // Apply appropriate navigation element
-                    !hasSubLinks && 'w-full' // Stretch if it's a primary link
-                )}
-            >
-                <item.icon aria-hidden="true" className="size-6 shrink-0" />
-                {item.name}
-            </div>
-        </li>
-    );
 
     if (!hasSubLinks) {
         return (
@@ -835,7 +1236,6 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
         );
     }
     
-    // Render parent button and dropdown
     return (
         <li key={item.name}>
             <button
@@ -858,7 +1258,7 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
                 />
             </button>
             <motion.ul
-                initial={false}
+                initial={{ height: 0 }}
                 animate={{ height: isActiveParent ? 'auto' : 0 }}
                 transition={{ duration: 0.2 }}
                 className={classNames(
@@ -884,17 +1284,15 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
 
 export default function Admindashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [openMenu, setOpenMenu] = useState(""); // State for managing dropdown menus
+    const [openMenu, setOpenMenu] = useState(""); 
     const [adminInfo, setAdminInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true); 
     const navigate = useNavigate();
     
-    // Toggle side menus (integrated from your original logic)
     const toggleMenu = (menuName) => {
         setOpenMenu(openMenu === menuName ? "" : menuName);
     };
 
-    // Logout function
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role"); 
@@ -902,31 +1300,57 @@ export default function Admindashboard() {
         navigate("/login");
     };
 
-    // Load and validate admin info from localStorage
+    // 🔑 ADMIN PROFILE FETCHING FUNCTION
+    const fetchAdminProfile = async (token) => {
+        setIsLoading(true);
+        try {
+            const res = await axios.get(`${domainUrl}/admin/adminProfile`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            // Use the specified response field: res.data.adminData
+            const adminData = res.data.adminData; 
+            
+            // Set the state with the fetched admin's name and role
+            setAdminInfo({
+                name: adminData.username || adminData.name || "Administrator",
+                role: adminData.role || "Admin",
+            });
+
+        } catch (error) {
+            console.error("Error fetching admin profile:", error);
+            // If fetching fails, clear tokens and redirect to login
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            navigate("/login", { replace: true });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+    // 🔑 AUTHENTICATION AND DATA FETCHING EFFECT
     useEffect(() => {
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
 
-        // --- 🔑 Admin Protection Logic ---
+        // --- 1. Admin Protection Logic ---
         if (!token || role !== "admin") {
+            // Not logged in or incorrect role - clear data and redirect
             localStorage.removeItem("token");
             localStorage.removeItem("role");
             navigate("/login", { replace: true });
             return;
         }
         
-        // Data Retrieval 
-        // IMPORTANT: In a real app, you would fetch the name/email from an API here.
-        setAdminInfo({
-            name: "Admin User", // Placeholder name
-            role: role,
-        });
-        
-        setIsLoading(false); 
+        // --- 2. If valid, fetch profile data ---
+        fetchAdminProfile(token);
         
     }, [navigate]);
     
-    // 🛡️ Guard Clause: Show loading spinner until validation is complete
+    // 🛡️ Guard Clause: Show loading spinner until validation and data retrieval is complete
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-screen w-full bg-gray-50">
@@ -935,187 +1359,189 @@ export default function Admindashboard() {
         );
     }
 
-  return (
-    <>
-      <div>
-        {/* Mobile sidebar */}
-        <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
-          <DialogBackdrop
-            transition
-            className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-closed:opacity-0"
-          />
+    // --- RENDER ---
+    return (
+        <>
+            <div>
+                {/* Mobile sidebar */}
+                <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+                    <DialogBackdrop
+                        transition
+                        className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-closed:opacity-0"
+                    />
 
-          <div className="fixed inset-0 flex">
-            <DialogPanel
-              transition
-              className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-closed:-translate-x-full"
-            >
-              <TransitionChild>
-                <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
-                    <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="size-6 text-white" />
-                  </button>
-                </div>
-              </TransitionChild>
+                    <div className="fixed inset-0 flex">
+                        <DialogPanel
+                            transition
+                            className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-closed:-translate-x-full"
+                        >
+                            <TransitionChild>
+                                <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
+                                    <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
+                                        <span className="sr-only">Close sidebar</span>
+                                        <XMarkIcon aria-hidden="true" className="size-6 text-white" />
+                                    </button>
+                                </div>
+                            </TransitionChild>
 
-              {/* Sidebar component - Mobile */}
-              <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
-                <div className="relative flex h-16 shrink-0 items-center">
-                    {/* Your Logo (Mandaram Drapes) */}
-                    <img
-                        alt="Mandaram Drapes Logo"
-                        src="/logo123.png" // Use your actual logo path
-                        className="h-10 w-auto"
-                    />
-                </div>
-                <nav className="relative flex flex-1 flex-col">
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li>
-                      <ul role="list" className="-mx-2 space-y-1">
-                        {adminNavigation.map((item) => (
-                          <NavLink 
-                                key={item.name} 
-                                item={item} 
-                                openMenu={openMenu} 
-                                toggleMenu={toggleMenu} 
+                            {/* Sidebar component - Mobile */}
+                            <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
+                                <div className="relative flex h-16 shrink-0 items-center">
+                                    {/* Your Logo (Mandaram Drapes) */}
+                                    <img
+                                        alt="Mandaram Drapes Logo"
+                                        src="/logo123.png" 
+                                        className="h-10 w-auto"
+                                    />
+                                </div>
+                                <nav className="relative flex flex-1 flex-col">
+                                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                                        <li>
+                                            <ul role="list" className="-mx-2 space-y-1">
+                                                {adminNavigation.map((item) => (
+                                                    <NavLink 
+                                                        key={item.name} 
+                                                        item={item} 
+                                                        openMenu={openMenu} 
+                                                        toggleMenu={toggleMenu} 
+                                                    />
+                                                ))}
+                                            </ul>
+                                        </li>
+                                        <a
+                                            onClick={handleLogout}
+                                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-white/10 hover:text-white mt-auto cursor-pointer"
+                                        >
+                                            <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+                                            Logout
+                                        </a>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </Dialog>
+
+                {/* Static sidebar for desktop */}
+                <div className="hidden bg-[#343e32] lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+                    {/* Sidebar component - Desktop */}
+                    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
+                        <div className="flex h-16 shrink-0 items-center">
+                            {/* Your Logo (Mandaram Drapes) */}
+                            <img
+                                alt="Mandaram Drapes Logo"
+                                src="/logo123.png" 
+                                className="h-10 w-auto"
                             />
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-                    <a
-                        onClick={handleLogout}
-                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-white/10 hover:text-white mt-auto cursor-pointer"
-                    >
-                        <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
-                        Logout
-                    </a>
-                </nav>
-              </div>
-            </DialogPanel>
-          </div>
-        </Dialog>
-
-        {/* Static sidebar for desktop */}
-        <div className="hidden bg-[#343e32] lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          {/* Sidebar component - Desktop */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
-                {/* Your Logo (Mandaram Drapes) */}
-                <img
-                    alt="Mandaram Drapes Logo"
-                    src="/logo123.png" // Use your actual logo path
-                    className="h-10 w-auto"
-                />
-            </div>
-            <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-1">
-                    {adminNavigation.map((item) => (
-                      <NavLink 
-                            key={item.name} 
-                            item={item} 
-                            openMenu={openMenu} 
-                            toggleMenu={toggleMenu} 
-                        />
-                    ))}
-                  </ul>
-                </li>
-                {/* Removed "Your teams" section as per provided data */}
-                <li className="mt-auto">
-                  <a
-                    onClick={handleLogout}
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-                  >
-                    <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
-                    Logout
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="lg:pl-72">
-          
-            {/* Top Navbar (Integrated from Tailwind template, simplified) */}
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
-            >
-              <span className="sr-only">Open sidebar</span>
-              <Bars3Icon aria-hidden="true" className="size-6" />
-            </button>
-
-            {/* Separator */}
-            <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
-
-            <div className="flex flex-1 justify-end self-stretch">
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
-                {/* Removed Search and BellIcon */}
-
-                {/* Separator */}
-                <div
-                  aria-hidden="true"
-                  className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
-                />
-
-                {/* Profile dropdown (Combined with your adminInfo logic) */}
-                <Menu as="div" className="relative">
-                  <MenuButton className="relative flex items-center">
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">Open user menu</span>
-                    {/* Using your FaUserCircle style here */}
-                    <FaUserCircle size={28} className="text-gray-700" />
-                    
-                    <span className="hidden lg:flex lg:items-center">
-                      <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                        {adminInfo?.name || "Admin"}
-                      </span>
-                      <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
-                    </span>
-                  </MenuButton>
-                  <MenuItems
-                    transition
-                    className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                  >
-                        <div className="px-3 py-1 text-sm text-gray-600 border-b mb-1">
-                            <p className="font-semibold">{adminInfo?.name || "Admin User"}</p>
-                            <p className="text-xs text-gray-500">Role: {adminInfo?.role || 'N/A'}</p>
                         </div>
-                        <MenuItem>
-                            <a
-                                onClick={handleLogout}
-                                className="block px-3 py-1 text-sm/6 text-red-600 hover:bg-gray-50 cursor-pointer"
-                            >
-                                Sign out
-                            </a>
-                        </MenuItem>
-                  </MenuItems>
-                </Menu>
-              </div>
-            </div>
-          </div>
+                        <nav className="flex flex-1 flex-col">
+                            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                                <li>
+                                    <ul role="list" className="-mx-2 space-y-1">
+                                        {adminNavigation.map((item) => (
+                                            <NavLink 
+                                                key={item.name} 
+                                                item={item} 
+                                                openMenu={openMenu} 
+                                                toggleMenu={toggleMenu} 
+                                            />
+                                        ))}
+                                    </ul>
+                                </li>
+                                <li className="mt-auto">
+                                    <a
+                                        onClick={handleLogout}
+                                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                                    >
+                                        <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+                                        Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
 
-          {/* Main Outlet for Content */}
-          <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">
-                <Outlet />
+                {/* Main Content Area */}
+                <div className="lg:pl-72">
+                    
+                    {/* Top Navbar (Integrated from Tailwind template, simplified) */}
+                    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
+                        <button
+                            type="button"
+                            onClick={() => setSidebarOpen(true)}
+                            className="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
+                        >
+                            <span className="sr-only">Open sidebar</span>
+                            <Bars3Icon aria-hidden="true" className="size-6" />
+                        </button>
+
+                        {/* Separator */}
+                        <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
+
+                        <div className="flex flex-1 justify-end self-stretch">
+                            <div className="flex items-center gap-x-4 lg:gap-x-6">
+
+                                {/* Separator */}
+                                <div
+                                    aria-hidden="true"
+                                    className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
+                                />
+
+                                {/* Profile dropdown (Combined with your adminInfo logic) */}
+                                <Menu as="div" className="relative">
+                                    <MenuButton className="relative flex items-center">
+                                        <span className="absolute -inset-1.5" />
+                                        <span className="sr-only">Open user menu</span>
+                                        {/* Using your FaUserCircle style here */}
+                                        <FaUserCircle size={28} className="text-gray-700" />
+                                        
+                                        <span className="hidden lg:flex lg:items-center">
+                                            <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
+                                                {adminInfo?.name || "Administrator"}
+                                            </span>
+                                            <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
+                                        </span>
+                                    </MenuButton>
+                                    <MenuItems
+                                        transition
+                                        className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                                    >
+                                        <div className="px-3 py-1 text-sm text-gray-600 border-b mb-1">
+                                            <p className="font-semibold">{adminInfo?.name || "Administrator"}</p>
+                                            <p className="text-xs text-gray-500">Role: {adminInfo?.role || 'N/A'}</p>
+                                        </div>
+                                        <MenuItem>
+                                            <a
+                                                onClick={handleLogout}
+                                                className="block px-3 py-1 text-sm/6 text-red-600 hover:bg-gray-50 cursor-pointer"
+                                            >
+                                                Sign out
+                                            </a>
+                                        </MenuItem>
+                                    </MenuItems>
+                                </Menu>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Outlet for Content */}
+                    <main>
+                        <div>
+                            <Outlet />
+                        </div>
+                    </main>
+                </div>
             </div>
-          </main>
-        </div>
-      </div>
-    </>
-  )
+        </>
+    )
 }
 
-// Export the component for use in your routing
-// export default Admindashboard;
+
+
+
+
+
 
 
 

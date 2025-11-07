@@ -572,6 +572,7 @@ import {domainUrl} from '../utils/constant'
 // We are defining a placeholder domainUrl here to ensure the code compiles and runs.
  
 import { ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
+import { Navigate } from 'react-router-dom';
 
 // Helper function to get the status icon (already handles 'Cancelled')
 const getStatusIcon = (status) => {
@@ -603,7 +604,7 @@ export default function MyOrdersPage() {
     try {
       const token = getToken();
       if (!token) {
-        setError("Please log in to view your orders.");
+        setError("Please Login To See Your Order History");
         setLoading(false);
         return;
       }
@@ -627,7 +628,7 @@ export default function MyOrdersPage() {
   }, [fetchOrders]);
 
   if (loading) return <div className="text-center py-20 text-xl font-medium text-indigo-600">Loading order history...</div>;
-  if (error) return <div className="text-center py-20 text-xl font-semibold text-red-600 border border-red-300 p-4 rounded-lg bg-red-50">{error}</div>;
+  if (error) return <div className="text-center py-20 text-xl font-semibold   p-4 rounded-lg text-red-500">{error}</div>;
   if (orders.length === 0) return <div className="text-center py-20 text-lg text-gray-500">No orders placed yet. Start shopping!</div>;
 
   return (

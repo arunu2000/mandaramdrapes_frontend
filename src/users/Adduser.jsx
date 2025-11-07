@@ -222,6 +222,251 @@
 // export default AddUser;
 
 
+// import React, { useState } from "react";
+// import axios from "axios";
+// import { FaEye, FaEyeSlash } from "react-icons/fa";
+// import { domainUrl } from "../utils/constant";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const AddUser = () => {
+//   const [formData, setFormData] = useState({
+//     username: "",
+//     email: "",
+//     phone: "",
+//     password: "",
+//     role: "",
+//   });
+
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   // Handle input change
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   // Validation logic
+//   const validate = () => {
+//     const { username, email, phone, password, role } = formData;
+
+//     if (!username.trim() || !email.trim() || !phone.trim() || !password.trim() || !role) {
+//       return "Please fill in all fields.";
+//     }
+
+//     if (!/^[a-zA-Z\s]+$/.test(username)) {
+//       return "Name should contain only letters and spaces.";
+//     }
+
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!emailRegex.test(email)) {
+//       return "Enter a valid email address.";
+//     }
+
+//     const phoneRegex = /^[0-9]{10}$/;
+//     if (!phoneRegex.test(phone)) {
+//       return "Enter a valid 10-digit phone number.";
+//     }
+
+//     if (password.length < 6) {
+//       return "Password must be at least 6 characters long.";
+//     }
+
+//     if (!role) {
+//       return "Please select a role.";
+//     }
+
+//     return null;
+//   };
+
+//   // Submit form
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     const validationError = validate();
+//     if (validationError) {
+//       toast.error(validationError, {
+//         style: {
+//           background: "#ffeded",
+//           color: "#c62828",
+//           fontWeight: "500",
+//         },
+//       });
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+//       const token = localStorage.getItem("token");
+
+//       const res = await axios.post(
+//         `${domainUrl}/admin/users`,
+//         formData,
+//         {
+//           headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       toast.success(res.data.message || "User added successfully!", {
+//         style: {
+//           background: "#EEFFEB",
+//           color: "#2f4f2f",
+//           fontWeight: "500",
+//         },
+//         icon: "🌿",
+//       });
+
+//       setFormData({
+//         username: "",
+//         email: "",
+//         phone: "",
+//         password: "",
+//         role: "",
+//       });
+//     } catch (err) {
+//       const msg =
+//         err.response?.data?.Error ||
+//         err.response?.data?.message ||
+//         "Failed to add user. Please try again.";
+//       toast.error(msg, {
+//         style: {
+//           background: "#ffeded",
+//           color: "#c62828",
+//           fontWeight: "500",
+//         },
+//       });
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <div className="flex items-center justify-center h-[100vh] bg-[#f4f5f7] overflow-hidden">
+
+
+
+//         <div
+//           className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm 
+//           transition-all duration-300 animate-fadeIn"
+//         >
+//           <h1 className="text-[#343e32] text-2xl font-bold text-center">
+//             Add New User
+//           </h1>
+//           <p className="text-gray-500 text-sm text-center mt-1">
+//             Fill in details to create a new account
+//           </p>
+
+//           <form
+//             onSubmit={handleSubmit}
+//             className="flex flex-col mt-6 gap-3"
+//             autoComplete="off"
+//           >
+//             {/* Username */}
+//             <input
+//               type="text"
+//               name="username"
+//               value={formData.username}
+//               onChange={handleChange}
+//               placeholder="Full Name"
+//               className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+//             />
+
+//             {/* Email */}
+//             <input
+//               type="text"
+//               name="email"
+//               value={formData.email}
+//               onChange={handleChange}
+//               placeholder="Email address"
+//               className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+//             />
+
+//             {/* Phone */}
+//             <input
+//               type="text"
+//               name="phone"
+//               value={formData.phone}
+//               onChange={handleChange}
+//               placeholder="Phone number"
+//               className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+//             />
+
+//             {/* Password */}
+//             <div className="relative">
+//               <input
+//                 type={showPassword ? "text" : "password"}
+//                 name="password"
+//                 value={formData.password}
+//                 onChange={handleChange}
+//                 placeholder="Set Password"
+//                 className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+//               />
+//               <span
+//                 onClick={() => setShowPassword(!showPassword)}
+//                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-[#5e785a]"
+//               >
+//                 {showPassword ? <FaEyeSlash /> : <FaEye />}
+//               </span>
+//             </div>
+
+//             {/* Role */}
+//             <select
+//               name="role"
+//               value={formData.role}
+//               onChange={handleChange}
+//               className="text-sm border border-gray-300 rounded px-3 py-2 
+//               focus:outline-none focus:border-[#5e785a] w-full bg-white text-[#343e32]"
+//             >
+//               <option value="" disabled hidden>
+//                 Select Role
+//               </option>
+//               <option value="customer">Customer</option>
+//               <option value="admin">Admin</option>
+//             </select>
+
+//             {/* Submit */}
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 rounded 
+//               hover:bg-[#4f644d] transition disabled:opacity-70 disabled:cursor-not-allowed"
+//             >
+//               {loading ? "Adding..." : "Add User"}
+//             </button>
+//           </form>
+//         </div>
+//       </div>
+
+//       {/* Toasts */}
+//       <ToastContainer
+//         position="top-right"
+//         autoClose={2000}
+//         hideProgressBar={false}
+//         closeOnClick
+//         pauseOnHover
+//         draggable
+//         transition={Slide}
+//         toastStyle={{
+//           borderRadius: "10px",
+//           fontFamily: "Inter, sans-serif",
+//           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+//         }}
+//       />
+//     </>
+//   );
+// };
+
+// export default AddUser;
+
+
 import React, { useState } from "react";
 import axios from "axios";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -241,7 +486,6 @@ const AddUser = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -250,7 +494,6 @@ const AddUser = () => {
     }));
   };
 
-  // Validation logic
   const validate = () => {
     const { username, email, phone, password, role } = formData;
 
@@ -283,7 +526,6 @@ const AddUser = () => {
     return null;
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -303,16 +545,12 @@ const AddUser = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const res = await axios.post(
-        `${domainUrl}/admin/users`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.post(`${domainUrl}/admin/users`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       toast.success(res.data.message || "User added successfully!", {
         style: {
@@ -349,21 +587,21 @@ const AddUser = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#e2e4e1] px-4 sm:px-6 md:px-8 py-6">
         <div
-          className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-sm 
-          transition-all duration-300 animate-fadeIn"
+          className="bg-white w-full max-w-md sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-md
+          p-6 sm:p-8 rounded-2xl shadow-lg transition-all duration-300"
         >
-          <h1 className="text-[#343e32] text-2xl font-bold text-center">
+          <h1 className="text-[#343e32] text-xl sm:text-2xl font-bold text-center">
             Add New User
           </h1>
-          <p className="text-gray-500 text-sm text-center mt-1">
+          <p className="text-gray-500 text-xs sm:text-sm text-center mt-1">
             Fill in details to create a new account
           </p>
 
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col mt-6 gap-3"
+            className="flex flex-col mt-6 gap-3 sm:gap-4"
             autoComplete="off"
           >
             {/* Username */}
@@ -373,7 +611,7 @@ const AddUser = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="Full Name"
-              className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+              className="text-sm border border-gray-300 rounded px-3 py-2 sm:py-2.5 w-full focus:outline-none focus:border-[#5e785a]"
             />
 
             {/* Email */}
@@ -383,7 +621,7 @@ const AddUser = () => {
               value={formData.email}
               onChange={handleChange}
               placeholder="Email address"
-              className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+              className="text-sm border border-gray-300 rounded px-3 py-2 sm:py-2.5 w-full focus:outline-none focus:border-[#5e785a]"
             />
 
             {/* Phone */}
@@ -393,7 +631,7 @@ const AddUser = () => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="Phone number"
-              className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+              className="text-sm border border-gray-300 rounded px-3 py-2 sm:py-2.5 w-full focus:outline-none focus:border-[#5e785a]"
             />
 
             {/* Password */}
@@ -404,7 +642,7 @@ const AddUser = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Set Password"
-                className="text-sm border border-gray-300 rounded px-3 py-2 w-full focus:outline-none focus:border-[#5e785a]"
+                className="text-sm border border-gray-300 rounded px-3 py-2 sm:py-2.5 w-full focus:outline-none focus:border-[#5e785a]"
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -419,7 +657,7 @@ const AddUser = () => {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="text-sm border border-gray-300 rounded px-3 py-2 
+              className="text-sm border border-gray-300 rounded px-3 py-2 sm:py-2.5 
               focus:outline-none focus:border-[#5e785a] w-full bg-white text-[#343e32]"
             >
               <option value="" disabled hidden>
@@ -433,7 +671,7 @@ const AddUser = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 rounded 
+              className="w-full mt-3 text-white bg-[#5e785a] px-4 py-2 sm:py-2.5 rounded 
               hover:bg-[#4f644d] transition disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? "Adding..." : "Add User"}
@@ -442,7 +680,7 @@ const AddUser = () => {
         </div>
       </div>
 
-      {/* Toasts */}
+      {/* Toast Notifications */}
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -462,3 +700,8 @@ const AddUser = () => {
 };
 
 export default AddUser;
+
+
+
+
+

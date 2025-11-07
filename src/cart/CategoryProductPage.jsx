@@ -804,3 +804,458 @@ export default CategoryProductsPage;
 // };
 
 // export default CategoryProductsPage;
+
+
+
+
+
+//with navbar
+
+// import React, { useEffect, useState, useCallback, Fragment } from 'react';
+// import { useParams, Link, useNavigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { domainUrl } from '../utils/constant';
+// import { useCart } from '../context/CartContext'; // Import useCart
+// import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'; // Import Headless UI components
+// import { Bars3Icon, ShoppingCartIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'; // Import Icons
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+
+// // --- SIMPLIFIED NAVIGATION DATA (from Customerdashboard) ---
+// const simpleNavigation = {
+//     pages: [
+//         { name: 'Home', href: '/' },
+//         { name: 'Cart', href: '/cart' },
+//         { name: 'My Orders', href: '/myorders' },
+//     ],
+// };
+// // --- END NAVIGATION DATA ---
+
+
+// // --- PRODUCT CARD COMPONENT (Kept the same) ---
+// const ProductCard = ({ product }) => {
+//     const name = product?.name || "Product Name Missing";
+//     const price = product?.price ? `₹${product.price.toFixed(2)}` : "Price N/A";
+    
+//     const imageUrl = product?.image 
+//         ? (product.image.startsWith('http') ? product.image : `${domainUrl}/${product.image}`)
+//         : "https://placehold.co/600x400/e0e0e0/333333?text=Image+Error";
+    
+//     const productLink = `/products/${product?._id || 'unknown'}`;
+//     const categoryName = product?.category?.name || 'N/A';
+//     const imageAlt = product?.imageAlt || `Image of ${name}`;
+
+//     return (
+//         <Link 
+//             to={productLink} 
+//             className="group block relative 
+//                        transition-all duration-300 
+//                        hover:shadow-lg hover:bg-gray-50/50 rounded-lg"
+//         >
+//             <div className="aspect-h-3 aspect-w-2 w-full bg-gray-100 lg:h-96 overflow-hidden rounded-lg"> 
+//                 <img
+//                     alt={imageAlt}
+//                     src={imageUrl}
+//                     className="h-full w-full object-cover object-center 
+//                                transition-transform duration-500 
+//                                group-hover:scale-105"
+//                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/e0e0e0/333333?text=Image+Error"; }}
+//                 />
+//             </div>
+//             <div className="p-2 pt-4 flex flex-col"> 
+//                 <h3 className="text-base font-semibold text-gray-900 
+//                                group-hover:text-indigo-700 transition duration-300 line-clamp-1">
+//                     {name}
+//                 </h3>
+//                 <p className="mt-1 text-sm text-gray-500">{categoryName}</p> 
+//                 <p className="mt-2 text-xl font-extrabold text-gray-800"> 
+//                     {price}
+//                 </p>
+//             </div>
+//         </Link>
+//     );
+// };
+// // -----------------------------------------------------------------
+
+
+// const CategoryProductsPage = () => {
+//     const { slug } = useParams();
+//     const navigate = useNavigate(); // Must be present for navigation
+
+//     // --- NAVBAR & AUTH STATE (COPIED FROM DASHBOARD) ---
+//     const token = localStorage.getItem("token");
+//     const role = localStorage.getItem("role");
+//     const { cartItems, notifyAuthChange } = useCart(); // Use notifyAuthChange from CartContext
+//     const [userProfile, setUserProfile] = useState(null);
+//     const [isProfileLoading, setIsProfileLoading] = useState(true); // Renamed to avoid conflict
+//     const [showModal, setShowModal] = useState(false); // For Profile Modal
+//     const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // For Mobile Menu
+//     const cartItemCount = cartItems.length;
+
+//     // Fetch Profile Logic (Copied from Customerdashboard)
+//     useEffect(() => {
+//         if (token && role === "user") {
+//             const fetchProfile = async () => {
+//                 setIsProfileLoading(true);
+//                 try {
+//                     const res = await axios.get(`${domainUrl}/user/profile`, {
+//                         headers: { Authorization: `Bearer ${token}` },
+//                     });
+//                     setUserProfile(res.data.users);
+//                 } catch (err) {
+//                     console.error("Error fetching profile:", err);
+//                 } finally {
+//                     setIsProfileLoading(false);
+//                 }
+//             };
+//             fetchProfile();
+//         } else {
+//             setIsProfileLoading(false);
+//         }
+//     }, [token, role]);
+
+//     const handleLogout = () => {
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("role");
+//         notifyAuthChange(); // Notify cart/global state of log out
+//         setUserProfile(null);
+//         navigate("/login");
+//     };
+
+//     const handleUserIconClick = () => {
+//         if (!token || role !== "user") {
+//             navigate("/login");
+//         } else {
+//             setShowModal(true);
+//         }
+//     };
+//     // --- END NAVBAR & AUTH STATE ---
+
+//     // --- CATEGORY PAGE STATE & LOGIC ---
+//     const [products, setProducts] = useState([]);
+//     const [loading, setLoading] = useState(true);
+//     const [error, setError] = useState(null);
+    
+//     const getCategoryName = () => {
+//         if (products.length > 0 && products[0].category && products[0].category.name) {
+//             return products[0].category.name;
+//         }
+//         return slug ? slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, ' ') : 'Category';
+//     }
+
+//     const fetchProductsByCategory = useCallback(async () => {
+//         if (!slug) {
+//             setLoading(false);
+//             setError("No category selected in the URL.");
+//             return;
+//         }
+
+//         setLoading(true);
+//         setError(null);
+        
+//         const API_URL = `${domainUrl}/user/shop/categories/${slug}`; 
+
+//         try {
+//             const res = await axios.get(API_URL);
+//             setProducts(res.data.getProducts || []); 
+            
+//         } catch (err) {
+//             console.error(`Error fetching products for slug "${slug}":`, err);
+            
+//             const status = err.response?.status;
+//             let errorMessage = `Could not load products. Status: ${status || 'Network Error'}.`;
+
+//             if (status === 404) {
+//                 errorMessage = `Category "${slug}" not found on the server. (Status 404)`;
+//             } else if (status === 500) {
+//                  errorMessage = "Server error (Status 500). Please check backend logs for Mongoose/database errors.";
+//             } 
+            
+//             setError(errorMessage);
+//             setProducts([]);
+//         } finally {
+//             setLoading(false);
+//         }
+//     }, [slug]);
+
+//     useEffect(() => {
+//         fetchProductsByCategory();
+//     }, [fetchProductsByCategory]);
+
+//     // --- RENDER LOGIC ---
+
+//     if (loading) {
+//         return <div className="text-center py-20 text-xl font-medium text-indigo-600">Loading products in {slug}...</div>;
+//     }
+
+//     if (error) {
+//         return <div className="text-center py-20 text-red-600 bg-red-50 p-6 m-4 rounded-lg border border-red-300">{error}</div>;
+//     }
+    
+//     const displayTitle = getCategoryName();
+
+//     return (
+//         <div className="bg-white min-h-screen">
+            
+//             {/* --- MOBILE MENU (COPIED FROM DASHBOARD) --- */}
+//             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="relative z-40 lg:hidden">
+//                 <DialogBackdrop
+//                     transition
+//                     className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
+//                 />
+//                 <div className="fixed inset-0 z-40 flex">
+//                     <DialogPanel
+//                         transition
+//                         className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
+//                     >
+//                         <div className="flex px-4 pt-5 pb-2">
+//                             <button
+//                                 type="button"
+//                                 onClick={() => setMobileMenuOpen(false)}
+//                                 className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+//                             >
+//                                 <span className="absolute -inset-0.5" />
+//                                 <span className="sr-only">Close menu</span>
+//                                 <XMarkIcon aria-hidden="true" className="size-6" />
+//                             </button>
+//                         </div>
+
+//                         {/* Mobile Navigation Links */}
+//                         <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+//                             {simpleNavigation.pages.map((page) => (
+//                                 <div key={page.name} className="flow-root">
+//                                     <Link to={page.href} className="-m-2 block p-2 font-medium text-gray-900" onClick={() => setMobileMenuOpen(false)}>
+//                                         {page.name}
+//                                     </Link>
+//                                 </div>
+//                             ))}
+//                         </div>
+
+//                         {/* Auth Links */}
+//                         <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+//                             {!token ? (
+//                                 <>
+//                                     <div className="flow-root">
+//                                         <Link to="/login" className="-m-2 block p-2 font-medium text-gray-900" onClick={() => setMobileMenuOpen(false)}>
+//                                             Sign in
+//                                         </Link>
+//                                     </div>
+//                                     <div className="flow-root">
+//                                         <Link to="/signup" className="-m-2 block p-2 font-medium text-gray-900" onClick={() => setMobileMenuOpen(false)}>
+//                                             Create an account
+//                                         </Link>
+//                                     </div>
+//                                 </>
+//                             ) : (
+//                                 <div className="flow-root">
+//                                     <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="-m-2 block p-2 font-medium text-gray-900">
+//                                         Logout
+//                                     </button>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </DialogPanel>
+//                 </div>
+//             </Dialog>
+
+//             {/* --- FIXED NAVBAR (COPIED FROM DASHBOARD) --- */}
+//             <header className="relative z-30">
+//                 <div className="fixed top-0 w-full z-40 shadow-lg">
+//                     <nav aria-label="Top">
+//                         {/* Top navigation - Info Banner */}
+//                         <div className="bg-gray-900">
+//                             <div className="mx-auto flex h-10 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+                                
+//                                 <div className="hidden lg:block lg:flex-1" />
+
+//                                 <p className="flex-1 text-center text-sm font-medium text-white lg:flex-none">
+//                                     Get free delivery on orders over ₹100
+//                                 </p>
+
+//                                 {/* Auth Links (Desktop) */}
+//                                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
+//                                     {!token ? (
+//                                         <>
+//                                             <Link to="/login" className="text-sm font-medium text-white hover:text-gray-100">
+//                                                 Sign in
+//                                             </Link>
+//                                             <span aria-hidden="true" className="h-6 w-px bg-gray-600" />
+//                                             <Link to="/signup" className="text-sm font-medium text-white hover:text-gray-100">
+//                                                 Create an account
+//                                             </Link>
+//                                         </>
+//                                     ) : (
+//                                         <button onClick={handleLogout} className="text-sm font-medium text-white hover:text-gray-100">
+//                                             Logout
+//                                         </button>
+//                                     )}
+//                                 </div>
+//                             </div>
+//                         </div>
+
+//                         {/* Secondary navigation - Main Menu */}
+//                         <div className="bg-white">
+//                             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+//                                 <div className="border-b border-gray-200">
+//                                     <div className="flex h-16 items-center justify-between">
+                                        
+//                                         {/* Mobile Menu Icon (lg-) */}
+//                                         <div className="flex flex-1 items-center lg:hidden">
+//                                             <button
+//                                                 type="button"
+//                                                 onClick={() => setMobileMenuOpen(true)}
+//                                                 className="-ml-2 rounded-md bg-white p-2 text-gray-400"
+//                                             >
+//                                                 <span className="sr-only">Open menu</span>
+//                                                 <Bars3Icon aria-hidden="true" className="size-6" />
+//                                             </button>
+//                                             <div className="ml-2 p-2 w-6 h-6" aria-hidden="true" />
+//                                         </div>
+
+//                                         {/* Logo */}
+//                                         <div className="flex items-center justify-center lg:flex-none lg:justify-start">
+//                                             <Link to="/">
+//                                                 <span className="sr-only">Mandaram Drapes</span>
+//                                                 <img
+//                                                     alt="Mandaram Drapes Logo"
+//                                                     src="/logo123.png"
+//                                                     className="h-10 w-auto"
+//                                                 />
+//                                             </Link>
+//                                         </div>
+
+//                                         {/* Main Navigation (Desktop) */}
+//                                         <div className="hidden h-full lg:flex flex-1 items-center justify-center">
+//                                             <div className="flex h-full justify-center space-x-8">
+//                                                 {simpleNavigation.pages.map((page) => (
+//                                                     <Link
+//                                                         key={page.name}
+//                                                         to={page.href}
+//                                                         className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+//                                                     >
+//                                                         {page.name}
+//                                                     </Link>
+//                                                 ))}
+//                                             </div>
+//                                         </div>
+
+//                                         {/* Icons (Account, Cart) */}
+//                                         <div className="flex flex-1 items-center justify-end">
+//                                             <div className="flex items-center lg:ml-8">
+//                                                 <div className="flex space-x-8">
+//                                                     <div className="hidden lg:flex w-6 h-6" aria-hidden="true" />
+
+//                                                     {/* Account/User Icon */}
+//                                                     <div className="flex">
+//                                                         <button onClick={handleUserIconClick} className="-m-2 p-2 text-gray-400 hover:text-gray-500 focus:outline-none">
+//                                                             <span className="sr-only">Account</span>
+//                                                             <UserIcon aria-hidden="true" className="size-6" />
+//                                                         </button>
+//                                                     </div>
+//                                                 </div>
+
+//                                                 <span aria-hidden="true" className="mx-4 h-6 w-px bg-gray-200 lg:mx-6" />
+
+//                                                 {/* Cart Icon */}
+//                                                 <div className="flow-root">
+//                                                     <Link to="/cart" className="group -m-2 flex items-center p-2">
+//                                                         <ShoppingCartIcon
+//                                                             aria-hidden="true"
+//                                                             className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
+//                                                         />
+//                                                         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+//                                                             {cartItemCount}
+//                                                         </span>
+//                                                         <span className="sr-only">items in cart, view bag</span>
+//                                                     </Link>
+//                                                 </div>
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </nav>
+//                 </div>
+//             </header>
+
+//             {/* --- PROFILE MODAL (COPIED FROM DASHBOARD) --- */}
+//             <Dialog
+//                 open={showModal}
+//                 onClose={() => setShowModal(false)}
+//                 className="relative z-50"
+//             >
+//                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+//                 <div className="fixed inset-0 flex items-center justify-center p-4">
+//                     <DialogPanel
+//                         className="mx-auto w-full max-w-sm rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-6 shadow-2xl"
+//                     >
+//                         <Dialog.Title className="text-lg font-semibold text-white mb-4 text-center">
+//                             Profile Details
+//                         </Dialog.Title>
+//                         {isProfileLoading ? (
+//                             <p className="text-gray-200 text-sm text-center">Loading...</p>
+//                         ) : userProfile ? (
+//                             <div className="space-y-3 text-white">
+//                                 <div>
+//                                     <p className="text-sm font-medium text-gray-300">Name:</p>
+//                                     <p className="font-semibold">{userProfile.username}</p>
+//                                 </div>
+//                                 <div>
+//                                     <p className="text-sm font-medium text-gray-300">Email:</p>
+//                                     <p className="font-semibold">{userProfile.email}</p>
+//                                 </div>
+//                                 <button
+//                                     onClick={() => {
+//                                         handleLogout();
+//                                         setShowModal(false);
+//                                     }}
+//                                     className="mt-4 w-full rounded-md bg-red-500 text-white py-2 hover:bg-red-600 transition"
+//                                 >
+//                                     Logout
+//                                 </button>
+//                             </div>
+//                         ) : (
+//                             <p className="text-gray-200 text-sm text-center">Failed to load profile</p>
+//                         )}
+//                     </DialogPanel>
+//                 </div>
+//             </Dialog>
+
+
+//             {/* --- CATEGORY PAGE CONTENT START --- */}
+//             {/* Margin added to prevent content overlap with the fixed header (Total height: h-10 + h-16 = 6.5rem) */}
+//             <div className="mt-[6.5rem] bg-white min-h-screen">
+//                 <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+                    
+//                     <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-10 border-b-2 pb-3">
+//                         {displayTitle}
+//                     </h1>
+
+//                     {products.length === 0 ? (
+//                         <div className="text-center py-20 text-lg text-gray-500 bg-white p-10 rounded-xl shadow-lg border border-gray-200">
+//                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto mb-4 text-indigo-500">
+//                                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.5 2.108 8.43c-.588.666-1.354 1.054-2.193 1.076H7.47c-.84 0-1.606-.39-2.194-1.076l2.108-8.433m10.742 2.871-2.493-2.492m-2.492 2.492-2.493-2.492" />
+//                             </svg>
+//                             <h2 className="text-xl font-semibold text-gray-800">No products available.</h2>
+//                             <p className="mt-2 text-sm text-gray-500">
+//                                 This category currently has no items listed.
+//                             </p>
+//                         </div>
+//                     ) : (
+//                         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+//                             {products.map((product) => (
+//                                 <ProductCard key={product._id} product={product} />
+//                             ))}
+//                         </div>
+//                     )}
+//                 </div>
+//             </div>
+//             {/* --- CATEGORY PAGE CONTENT END --- */}
+
+//         </div>
+//     );
+// };
+
+// export default CategoryProductsPage;

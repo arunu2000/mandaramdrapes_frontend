@@ -204,52 +204,241 @@
 
 // export default ListUsers;
 
+// import React, { useEffect, useState, useMemo } from "react";
+// import axios from "axios";
+// import { ChevronLeftIcon, ChevronRightIcon, UserGroupIcon } from "@heroicons/react/20/solid";
+// import { domainUrl } from "../utils/constant";
+
+// // Pagination Component
+// const PaginationControls = ({ currentPage, totalPages, onPageChange }) => (
+//   <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-xl">
+//     <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+//       <p className="text-sm text-gray-600">
+//         Showing <span className="font-semibold">{(currentPage - 1) * 10 + 1}</span> to{" "}
+//         <span className="font-semibold">{Math.min(currentPage * 10, totalPages * 10)}</span> of{" "}
+//         <span className="font-semibold">{totalPages * 10}</span> results
+//       </p>
+//       <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+//         <button
+//           onClick={() => onPageChange(currentPage - 1)}
+//           disabled={currentPage === 1}
+//           className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
+//         >
+//           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+//         </button>
+
+//         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+//           <button
+//             key={page}
+//             onClick={() => onPageChange(page)}
+//             className={`relative hidden md:inline-flex items-center px-4 py-2 text-sm font-medium ${
+//               page === currentPage
+//                 ? "z-10 bg-[#48633f] text-white"
+//                 : "text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+//             }`}
+//           >
+//             {page}
+//           </button>
+//         ))}
+
+//         <button
+//           onClick={() => onPageChange(currentPage + 1)}
+//           disabled={currentPage === totalPages}
+//           className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
+//         >
+//           <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+//         </button>
+//       </nav>
+//     </div>
+//   </div>
+// );
+
+// const ListUsers = () => {
+//   const [allUsers, setAllUsers] = useState([]);
+//   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(true);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const USERS_PER_PAGE = 10;
+
+//   useEffect(() => {
+//     const token = localStorage.getItem("token");
+//     setLoading(true);
+
+//     axios
+//       .get(`${domainUrl}/admin/users`, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       })
+//       .then((res) => {
+//         setAllUsers(res.data.users || []);
+//         setError("");
+//         setCurrentPage(1);
+//       })
+//       .catch(() => {
+//         setError("Failed to load users. Please check your network or try again....");
+//         setAllUsers([]);
+//       })
+//       .finally(() => setLoading(false));
+//   }, []);
+
+//   const totalPages = Math.ceil(allUsers.length / USERS_PER_PAGE);
+//   const usersOnCurrentPage = useMemo(() => {
+//     const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+//     const endIndex = startIndex + USERS_PER_PAGE;
+//     return allUsers.slice(startIndex, endIndex);
+//   }, [allUsers, currentPage]);
+
+//   const handlePageChange = (page) => {
+//     if (page >= 1 && page <= totalPages) setCurrentPage(page);
+//   };
+
+//   return (
+//     <div className="px-4 sm:px-6 lg:px-8 pt-10 pb-16 min-h-screen bg-gray-50 transition-all duration-300">
+//       {/* Header */}
+//       <div className="flex flex-col items-center mb-8 text-center animate-fadeIn">
+//         <div className="flex items-center gap-2">
+//           {/* <UserGroupIcon className="h-7 w-7 text-[#48633f]" /> */}
+//           <h1 className="text-2xl font-semibold text-gray-900">Users List</h1>
+//         </div>
+//         <p className="mt-1 text-sm text-gray-600">
+//           All Registered users Details .
+//         </p>
+//         <div className="mt-4 w-24 border-b-4 border-[#48633f] rounded-full"></div>
+//       </div>
+
+//       {/* Status Messages */}
+//       {loading && (
+//         <p className="text-[#48633f] text-center text-md mt-8 font-medium animate-pulse">
+//           Loading users...
+//         </p>
+//       )}
+
+//       {error && (
+//         <p className="text-red-600 text-center text-md mt  py-3  shadow-sm">
+//           ⚠️ {error}
+//         </p>
+//       )}
+
+//       {/* Users Table */}
+//       {!loading && !error && (
+//         <div className="bg-white shadow-lg rounded-xl overflow-hidden animate-fadeIn">
+//           {usersOnCurrentPage.length === 0 ? (
+//             <p className="text-gray-600 text-center py-10 text-sm">No users found.</p>
+//           ) : (
+//             <>
+//               <table className="min-w-full divide-y divide-gray-200">
+//                 <thead className="bg-gray-100">
+//                   <tr>
+//                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+//                       Username
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+//                       Email
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+//                       Phone
+//                     </th>
+//                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+//                       Role
+//                     </th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="divide-y divide-gray-100 bg-white">
+//                   {usersOnCurrentPage.map((user) => (
+//                     <tr
+//                       key={user._id}
+//                       className="hover:bg-gray-50 transition-all duration-150"
+//                     >
+//                       <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+//                         {user.username}
+//                       </td>
+//                       <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+//                       <td className="px-6 py-4 text-sm text-gray-600">
+//                         {user.phone || "N/A"}
+//                       </td>
+//                       <td className="px-6 py-4 text-sm text-gray-600 capitalize">
+//                         {user.role}
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+
+//               {/* Pagination */}
+//               <PaginationControls
+//                 currentPage={currentPage}
+//                 totalPages={totalPages}
+//                 onPageChange={handlePageChange}
+//               />
+//             </>
+//           )}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ListUsers;
+
+
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { ChevronLeftIcon, ChevronRightIcon, UserGroupIcon } from "@heroicons/react/20/solid";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  UserGroupIcon,
+} from "@heroicons/react/20/solid";
 import { domainUrl } from "../utils/constant";
 
 // Pagination Component
 const PaginationControls = ({ currentPage, totalPages, onPageChange }) => (
-  <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-xl">
-    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-      <p className="text-sm text-gray-600">
-        Showing <span className="font-semibold">{(currentPage - 1) * 10 + 1}</span> to{" "}
-        <span className="font-semibold">{Math.min(currentPage * 10, totalPages * 10)}</span> of{" "}
-        <span className="font-semibold">{totalPages * 10}</span> results
-      </p>
-      <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-        <button
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
-        >
-          <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
-        </button>
+  <div className="flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-b-xl">
+    <p className="text-sm text-gray-600 mb-3 sm:mb-0 text-center sm:text-left">
+      Showing{" "}
+      <span className="font-semibold">
+        {(currentPage - 1) * 10 + 1}
+      </span>{" "}
+      to{" "}
+      <span className="font-semibold">
+        {Math.min(currentPage * 10, totalPages * 10)}
+      </span>{" "}
+      of <span className="font-semibold">{totalPages * 10}</span> results
+    </p>
 
+    <nav className="flex items-center justify-center space-x-1" aria-label="Pagination">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="flex items-center justify-center rounded-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
+      >
+        <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+      </button>
+
+      <div className="hidden md:flex">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`relative hidden md:inline-flex items-center px-4 py-2 text-sm font-medium ${
+            className={`px-4 py-2 text-sm font-medium rounded-md ${
               page === currentPage
-                ? "z-10 bg-[#48633f] text-white"
+                ? "bg-[#48633f] text-white"
                 : "text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
             }`}
           >
             {page}
           </button>
         ))}
+      </div>
 
-        <button
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
-        >
-          <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
-        </button>
-      </nav>
-    </div>
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="flex items-center justify-center rounded-md px-2 py-2 text-gray-500 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40"
+      >
+        <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+      </button>
+    </nav>
   </div>
 );
 
@@ -276,7 +465,7 @@ const ListUsers = () => {
         setCurrentPage(1);
       })
       .catch(() => {
-        setError("Failed to load users. Please check your network or try again.");
+        setError("Failed to load users. Please check your network or try again...");
         setAllUsers([]);
       })
       .finally(() => setLoading(false));
@@ -302,7 +491,7 @@ const ListUsers = () => {
           <h1 className="text-2xl font-semibold text-gray-900">Users List</h1>
         </div>
         <p className="mt-1 text-sm text-gray-600">
-          A clean overview of all registered users in your system.
+          All registered user details.
         </p>
         <div className="mt-4 w-24 border-b-4 border-[#48633f] rounded-full"></div>
       </div>
@@ -315,7 +504,7 @@ const ListUsers = () => {
       )}
 
       {error && (
-        <p className="text-red-600 text-center text-md mt-6 bg-red-50 border border-red-200 py-3 rounded-lg shadow-sm">
+        <p className="text-red-600 text-center text-md mt-4 py-3 shadow-sm">
           ⚠️ {error}
         </p>
       )}
@@ -324,46 +513,79 @@ const ListUsers = () => {
       {!loading && !error && (
         <div className="bg-white shadow-lg rounded-xl overflow-hidden animate-fadeIn">
           {usersOnCurrentPage.length === 0 ? (
-            <p className="text-gray-600 text-center py-10 text-sm">No users found.</p>
+            <p className="text-gray-600 text-center py-10 text-sm">
+              No users found.
+            </p>
           ) : (
             <>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Username
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Role
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
-                  {usersOnCurrentPage.map((user) => (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-gray-50 transition-all duration-150"
-                    >
-                      <td className="px-6 py-4 text-sm text-gray-800 font-medium">
-                        {user.username}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
-                        {user.phone || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 capitalize">
-                        {user.role}
-                      </td>
+              {/* Table for medium+ screens */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Username
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Phone
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Role
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 bg-white">
+                    {usersOnCurrentPage.map((user) => (
+                      <tr
+                        key={user._id}
+                        className="hover:bg-gray-50 transition-all duration-150"
+                      >
+                        <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+                          {user.username}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {user.email}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {user.phone || "N/A"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600 capitalize">
+                          {user.role}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Card view for mobile */}
+              <div className="md:hidden grid grid-cols-1 gap-4 p-4">
+                {usersOnCurrentPage.map((user) => (
+                  <div
+                    key={user._id}
+                    className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white hover:shadow-md transition"
+                  >
+                    <p className="font-semibold text-gray-900 text-base">
+                      {user.username}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Email: </span>
+                      {user.email}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Phone: </span>
+                      {user.phone || "N/A"}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Role: </span>
+                      {user.role}
+                    </p>
+                  </div>
+                ))}
+              </div>
 
               {/* Pagination */}
               <PaginationControls
@@ -380,13 +602,6 @@ const ListUsers = () => {
 };
 
 export default ListUsers;
-
-
-
-
-
-
-
 
 
 
