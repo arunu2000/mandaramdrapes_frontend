@@ -4154,6 +4154,9 @@ import { domainUrl } from "../utils/constant";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import FeaturedProducts from "../components/FeaturedProducts";
+
+
+
 import FooterSection from "../components/FooterSection";
 import HeroCarousel from "../components/HeroCarousel";
 import Loader from "../components/Loader";
