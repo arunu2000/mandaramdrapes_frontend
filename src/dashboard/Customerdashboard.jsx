@@ -4138,6 +4138,455 @@
 
 // export default Customerdashboard;
 
+// "use client";
+
+// import React, { useRef, useState, useEffect, Fragment } from "react";
+// import { Link, useNavigate } from "react-router-dom";
+// import CategorySection from "../cart/CategorySection";
+// import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+// import {
+//   Bars3Icon,
+//   ShoppingCartIcon,
+//   UserIcon,
+//   XMarkIcon,
+// } from "@heroicons/react/24/outline";
+// import { domainUrl } from "../utils/constant";
+// import axios from "axios";
+// import Navbar from "../components/Navbar";
+// import FeaturedProducts from "../components/FeaturedProducts";
+
+
+
+// import FooterSection from "../components/FooterSection";
+// import HeroCarousel from "../components/HeroCarousel";
+// import Loader from "../components/Loader";
+// import CustomerLayout from "../layouts/CustomerLayout";
+
+// // --- HOOKS & CONTEXT ---
+// import { useCart } from "../context/CartContext";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// // --- SIMPLIFIED NAVIGATION DATA ---
+// const simpleNavigation = {
+//   pages: [
+//     { name: "Home", href: "/", protected: false },
+//     { name: "Cart", href: "/cart", protected: true },
+//     { name: "My Orders", href: "/myorders", protected: true },
+//   ],
+// };
+
+// const Customerdashboard = () => {
+//   const scrollContainerRef = useRef(null);
+//   const navigate = useNavigate();
+//   const token = localStorage.getItem("token");
+//   const role = localStorage.getItem("role"); // --- STATE ---
+
+//   const [userProfile, setUserProfile] = useState(null);
+//   const [isProfileLoading, setIsProfileLoading] = useState(true);
+//   const [showModal, setShowModal] = useState(false);
+//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // State for Featured Products
+
+//   const [featuredProducts, setFeaturedProducts] = useState([]);
+//   const [productsLoading, setProductsLoading] = useState(true);
+//   const [productsError, setProductsError] = useState(null); // State for "Add to Bag" button loading
+//   const [isAdding, setIsAdding] = useState(null); // --- CART CONTEXT ---
+
+//   const { cartItems, fetchCart, notifyAuthChange } = useCart(); // --- ROLE REDIRECTION AND PROFILE FETCH ---
+
+//   useEffect(() => {
+//     const checkAuthAndFetchProfile = async () => {
+//       setIsProfileLoading(true); // 1. Check for redirection FIRST
+
+//       if (token && role === "admin") {
+//         console.log("Admin detected locally. Redirecting...");
+//         navigate("/admindashboard", { replace: true }); // *** FIX 1: Use { replace: true } ***
+//         return;
+//       } // 2. Fetch profile only if user/customer role is possible
+//       if (token && role === "user") {
+//         try {
+//           const res = await axios.get(`${domainUrl}/user/profile`, {
+//             headers: { Authorization: `Bearer ${token}` },
+//           }); // FINAL SAFETY CHECK: If API returns admin role, redirect (shouldn't happen often)
+//           if (res.data.users?.role === "admin") {
+//             localStorage.setItem("role", "admin");
+//             navigate("/admindashboard", { replace: true }); // *** FIX 2: Use { replace: true } ***
+//             return;
+//           }
+//           setUserProfile(res.data.users);
+//         } catch (err) {
+//           console.error("Error fetching profile:", err);
+//         } finally {
+//           setIsProfileLoading(false);
+//         }
+//       } else {
+//         setIsProfileLoading(false); // Not logged in
+//       }
+//     };
+
+//     checkAuthAndFetchProfile();
+//   }, [token, role, navigate]); // --- DATA FETCHING --- // Fetch Featured Products
+
+//   useEffect(() => {
+//     const fetchFeaturedProducts = async () => {
+//       setProductsLoading(true);
+//       setProductsError(null);
+//       try {
+//         const res = await axios.get(`${domainUrl}/user/shop/products`);
+//         if (res.data && res.data.products) {
+//           setFeaturedProducts(res.data.products);
+//         } else {
+//           setFeaturedProducts([]);
+//         }
+//       } catch (err) {
+//         console.error("Error fetching products:", err);
+//         setProductsError("Could not load featured products.");
+//       } finally {
+//         setProductsLoading(false);
+//       }
+//     };
+
+//     fetchFeaturedProducts();
+//   }, []); // --- HANDLERS ---
+
+//   const handleLogout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("role");
+//     notifyAuthChange();
+//     setUserProfile(null);
+//     navigate("/login");
+//   }; // Gated Navigation Handler for main navbar links
+//   const handleGatedNavigation = (e, path, isProtected) => {
+//     if (isProtected && !token) {
+//       e.preventDefault();
+//       toast.warn("Please log in to view this page.", {
+//         onClose: () => navigate("/login"),
+//         autoClose: 2000,
+//         icon: "🔒",
+//       });
+//     } else if (isProtected && role === "admin") {
+//       e.preventDefault();
+//       navigate("/admindashboard");
+//     } else {
+//       navigate(path);
+//     }
+//   }; // Horizontal scroll handler
+
+//   const scroll = (direction) => {
+//     if (scrollContainerRef.current) {
+//       const scrollAmount = direction === "left" ? -300 : 300;
+//       scrollContainerRef.current.scrollBy({
+//         left: scrollAmount,
+//         behavior: "smooth",
+//       });
+//     }
+//   }; // Add to Cart Handler
+
+//   const handleAddToCart = async (product) => {
+//     if (!token || role !== "user") {
+//       toast.warn("Please log in to add items to your cart.", {
+//         onClose: () => navigate("/login"),
+//         autoClose: 2000,
+//       });
+//       return;
+//     }
+
+//     if (isAdding) return;
+
+//     setIsAdding(product._id);
+
+//     try {
+//       // Check if item is already in cart
+//       const isAlreadyInCart = cartItems.some(
+//         (item) => item.productId === product._id
+//       );
+
+//       if (isAlreadyInCart) {
+//         toast.info("Already in cart. Redirecting...", {
+//           icon: "🛒",
+//           autoClose: 1500,
+//           onClose: () => navigate("/cart"),
+//         });
+//         return;
+//       } // API call to add to cart
+
+//       const cartData = { productId: product._id, quantity: 1 };
+//       await axios.post(`${domainUrl}/cart/add`, cartData, {
+//         headers: { Authorization: `Bearer ${token}` },
+//       }); // Show success toast and redirect
+
+//       toast.success(`${product.name} added! Redirecting...`, {
+//         icon: "🛍️",
+//         autoClose: 1500,
+//         onClose: () => {
+//           fetchCart(); // Refresh cart context
+//           navigate("/cart");
+//         },
+//       });
+//     } catch (err) {
+//       console.error("Error adding to cart:", err);
+//       toast.error(err.response?.data?.message || "Failed to add to cart.");
+//     } finally {
+//       setIsAdding(null);
+//     }
+//   }; // Helper to format image URL
+
+//   const getImageUrl = (imagePath) => {
+//     if (!imagePath) return "https://via.placeholder.com/300?text=No+Image";
+//     return imagePath.startsWith("http")
+//       ? imagePath
+//       : `${domainUrl}/${imagePath}`;
+//   }; // --- PROFILE ICON HANDLER ---
+
+//   const handleUserIconClick = () => {
+//     if (!token || role !== "user") {
+//       navigate("/login");
+//     } else {
+//       setShowModal(true);
+//     }
+//   }; // --- RENDER ---
+
+//   // Display loading screen while profile is being checked
+//   if (isProfileLoading) {
+//     return <Loader message="Loading..." />;
+//   }
+
+//   // FINAL CHECK: If role is confirmed as admin at this point, show redirect notice
+//   if (token && role === "admin") {
+//     return (
+//       <div className="flex items-center justify-center min-h-screen bg-gray-50">
+//         <p className="text-gray-600 font-medium">Redirecting to Admin...</p>
+//       </div>
+//     );
+//   }
+
+//   const cartItemCount = cartItems.length;
+
+//   return (
+//     <div className="bg-white">
+//             {/* --- MOBILE MENU --- */}     {" "}
+//       <Dialog
+//         open={mobileMenuOpen}
+//         onClose={setMobileMenuOpen}
+//         className="relative z-40 lg:hidden"
+//       >
+//                {" "}
+//         <DialogBackdrop
+//           transition
+//           className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
+//         />
+//                {" "}
+//         <div className="fixed inset-0 z-40 flex">
+//                    {" "}
+//           <DialogPanel
+//             transition
+//             className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
+//           >
+//                        {" "}
+//             <div className="flex px-4 pt-5 pb-2">
+//                            {" "}
+//               <button
+//                 type="button"
+//                 onClick={() => setMobileMenuOpen(false)}
+//                 className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
+//               >
+//                                 <span className="absolute -inset-0.5" />       
+//                         <span className="sr-only">Close menu</span>             
+//                   <XMarkIcon aria-hidden="true" className="size-6" />           
+//                  {" "}
+//               </button>
+//                          {" "}
+//             </div>
+//                         {/* Mobile Navigation Links */}           {" "}
+//             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+//                            {" "}
+//               {simpleNavigation.pages.map((page) => (
+//                 <div key={page.name} className="flow-root">
+//                                     {/* Use handler for protected pages */}     
+//                              {" "}
+//                   <a
+//                     href={page.href}
+//                     className="-m-2 block p-2 font-medium text-gray-900"
+//                     onClick={(e) => {
+//                       handleGatedNavigation(e, page.href, page.protected);
+//                       setMobileMenuOpen(false);
+//                     }}
+//                   >
+//                                         {page.name}                 {" "}
+//                   </a>
+//                                  {" "}
+//                 </div>
+//               ))}
+//                          {" "}
+//             </div>
+//                         {/* Auth Links */}           {" "}
+//             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+//                              {" "}
+//               {!token ? (
+//                 <>
+//                                          {" "}
+//                   <div className="flow-root">
+//                                                {" "}
+//                     <Link
+//                       to="/login"
+//                       className="-m-2 block p-2 font-medium text-gray-900"
+//                       onClick={() => setMobileMenuOpen(false)}
+//                     >
+//                                                       Sign in                  
+//                                {" "}
+//                     </Link>
+//                                            {" "}
+//                   </div>
+//                                          {" "}
+//                   <div className="flow-root">
+//                                                {" "}
+//                     <Link
+//                       to="/register"
+//                       className="-m-2 block p-2 font-medium text-gray-900"
+//                       onClick={() => setMobileMenuOpen(false)}
+//                     >
+//                                                       Create an account        
+//                                          {" "}
+//                     </Link>
+//                                            {" "}
+//                   </div>
+//                                      {" "}
+//                 </>
+//               ) : (
+//                 <div className="flow-root">
+//                                          {" "}
+//                   <button
+//                     onClick={() => {
+//                       handleLogout();
+//                       setMobileMenuOpen(false);
+//                     }}
+//                     className="-m-2 block p-2 font-medium text-gray-900"
+//                   >
+//                                                 Logout                        {" "}
+//                   </button>
+//                                      {" "}
+//                 </div>
+//               )}
+//                          {" "}
+//             </div>
+//                                  {" "}
+//           </DialogPanel>
+//                  {" "}
+//         </div>
+//              {" "}
+//       </Dialog>
+//          {/* --- FIXED NAVBAR --- */}
+//       <Navbar
+//         token={token}
+//         role={role}
+//         cartItemCount={cartItems.length}
+//         handleLogout={handleLogout}
+//         handleUserIconClick={handleUserIconClick}
+//         handleGatedNavigation={handleGatedNavigation}
+//       />
+//             {/* --- PROFILE MODAL (Your existing code) --- */}     {" "}
+//       <Dialog
+//         open={showModal}
+//         onClose={() => setShowModal(false)}
+//         className="relative z-50"
+//       >
+//                {" "}
+//         <div
+//           className="fixed inset-0 bg-black/30 backdrop-blur-sm"
+//           aria-hidden="true"
+//         />
+//                {" "}
+//         <div className="fixed inset-0 flex items-center justify-center p-4">
+//                    {" "}
+//           <Dialog.Panel className="mx-auto w-full max-w-sm rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-6 shadow-2xl">
+//                        {" "}
+//             <Dialog.Title className="text-lg font-semibold text-white mb-4 text-center">
+//                             Profile Details            {" "}
+//             </Dialog.Title>
+//                        
+//             {isProfileLoading ? (
+//               <p className="text-gray-200 text-sm text-center">Loading...</p>
+//             ) : userProfile ? (
+//               <div className="space-y-3 text-white">
+//                                {" "}
+//                 <div>
+//                                    {" "}
+//                   <p className="text-sm font-medium text-gray-300">Name:</p>   
+//                                {" "}
+//                   <p className="font-semibold">{userProfile.username}</p>       
+//                          {" "}
+//                 </div>
+//                                {" "}
+//                 <div>
+//                                    {" "}
+//                   <p className="text-sm font-medium text-gray-300">Email:</p>   
+//                                {" "}
+//                   <p className="font-semibold">{userProfile.email}</p>         
+//                        {" "}
+//                 </div>
+//                                {" "}
+//                 <button
+//                   onClick={() => {
+//                     handleLogout();
+//                     setShowModal(false);
+//                   }}
+//                   className="mt-4 w-full rounded-md bg-red-500 text-white py-2 hover:bg-red-600 transition"
+//                 >
+//                                     Logout                {" "}
+//                 </button>
+//                              {" "}
+//               </div>
+//             ) : (
+//               <p className="text-gray-200 text-sm text-center">
+//                 Failed to load profile
+//               </p>
+//             )}
+//                      {" "}
+//           </Dialog.Panel>
+//                  {" "}
+//         </div>
+//              {" "}
+//       </Dialog>
+//             {/* --- END PROFILE MODAL --- */}      {/* Hero Section Carousel */}
+//            {" "}
+//       {/* Note: Added a margin-top to account for the fixed header, even though it's sticky now */}
+//            
+//       <HeroCarousel />      {/* Category Section */}
+//             <CategorySection />     {" "}
+//       {/* --- UPDATED Product Section (Horizontal Scroll) --- */}
+//            
+//       <FeaturedProducts
+//         featuredProducts={featuredProducts}
+//         productsLoading={productsLoading}
+//         productsError={productsError}
+//         handleAddToCart={handleAddToCart}
+//         isAdding={isAdding}
+//       />
+//                   {/* About Us Footer Section */}
+//            <FooterSection />           {" "}
+//       {/* Toast Container for notifications */}     {" "}
+//       <ToastContainer
+//         position="top-center"
+//         autoClose={2000}
+//         hideProgressBar={false}
+//         newestOnTop={false}
+//         closeOnClick
+//         pauseOnFocusLoss
+//         draggable
+//         pauseOnHover
+//         theme="colored"
+//         transition={Slide}
+//       />
+//          {" "}
+//     </div>
+//   );
+// };
+
+// export default Customerdashboard;
+
+
+
+
 "use client";
 
 import React, { useRef, useState, useEffect, Fragment } from "react";
@@ -4154,8 +4603,6 @@ import { domainUrl } from "../utils/constant";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import FeaturedProducts from "../components/FeaturedProducts";
-
-
 
 import FooterSection from "../components/FooterSection";
 import HeroCarousel from "../components/HeroCarousel";
@@ -4176,14 +4623,19 @@ const simpleNavigation = {
   ],
 };
 
+// Configure axios to send cookies (for session/JWT cookie)
+axios.defaults.withCredentials = true;
+
 const Customerdashboard = () => {
   const scrollContainerRef = useRef(null);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token"); // *** REMOVED: No longer reading token from localStorage ***
   const role = localStorage.getItem("role"); // --- STATE ---
 
   const [userProfile, setUserProfile] = useState(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
+  // Set isAuthenticated based on API response, not just local storage
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // State for Featured Products
 
@@ -4196,42 +4648,54 @@ const Customerdashboard = () => {
 
   useEffect(() => {
     const checkAuthAndFetchProfile = async () => {
-      setIsProfileLoading(true); // 1. Check for redirection FIRST
+      setIsProfileLoading(true);
 
-      if (token && role === "admin") {
+      // 1. Check for local admin redirection first (role is still in localStorage)
+      if (role === "admin") {
         console.log("Admin detected locally. Redirecting...");
-        navigate("/admindashboard", { replace: true }); // *** FIX 1: Use { replace: true } ***
+        navigate("/admindashboard", { replace: true });
         return;
-      } // 2. Fetch profile only if user/customer role is possible
-      if (token && role === "user") {
-        try {
-          const res = await axios.get(`${domainUrl}/user/profile`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }); // FINAL SAFETY CHECK: If API returns admin role, redirect (shouldn't happen often)
-          if (res.data.users?.role === "admin") {
-            localStorage.setItem("role", "admin");
-            navigate("/admindashboard", { replace: true }); // *** FIX 2: Use { replace: true } ***
-            return;
-          }
-          setUserProfile(res.data.users);
-        } catch (err) {
-          console.error("Error fetching profile:", err);
-        } finally {
-          setIsProfileLoading(false);
+      }
+
+      // 2. Attempt to fetch profile. Success implies authentication via cookie.
+      try {
+        // API call to check profile. Cookie is sent automatically by the browser.
+        const res = await axios.get(`${domainUrl}/user/profile`);
+
+        // If successful, set authenticated state and user profile
+        setIsAuthenticated(true);
+
+        // FINAL SAFETY CHECK: If API returns admin role, redirect
+        if (res.data.users?.role === "admin") {
+          localStorage.setItem("role", "admin"); // Update local storage
+          navigate("/admindashboard", { replace: true });
+          return;
         }
-      } else {
-        setIsProfileLoading(false); // Not logged in
+
+        // Standard user/customer flow
+        setUserProfile(res.data.users);
+        localStorage.setItem("role", res.data.users?.role || "user"); // Ensure role is 'user' in storage if successful
+      } catch (err) {
+        // An error (e.g., 401 Unauthorized) means no valid session cookie/token
+        console.error("Error fetching profile, assuming not logged in:", err.response?.status);
+        setIsAuthenticated(false);
+        setUserProfile(null);
+        // localStorage.removeItem("role"); // OPTIONAL: You might clear the role here too
+      } finally {
+        setIsProfileLoading(false);
       }
     };
 
     checkAuthAndFetchProfile();
-  }, [token, role, navigate]); // --- DATA FETCHING --- // Fetch Featured Products
+  }, [role, navigate]); // Removed 'token' from dependency array
 
+  // --- DATA FETCHING --- // Fetch Featured Products
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       setProductsLoading(true);
       setProductsError(null);
       try {
+        // No header needed, this is public data
         const res = await axios.get(`${domainUrl}/user/shop/products`);
         if (res.data && res.data.products) {
           setFeaturedProducts(res.data.products);
@@ -4249,15 +4713,30 @@ const Customerdashboard = () => {
     fetchFeaturedProducts();
   }, []); // --- HANDLERS ---
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+
+
+
+  const handleLogout = async () => {
+    try {
+      // 1. Invalidate session cookie on the server (best practice)
+      await axios.post(`${domainUrl}/user/logout`);
+    } catch (error) {
+      console.error("Logout API failed (cookie may still be cleared by browser soon):", error);
+    }
+
+    // 2. Clear local storage and state on the client
+    // localStorage.removeItem("token"); // *** REMOVED ***
+    localStorage.removeItem("role"); // Keep role clear as requested
     notifyAuthChange();
     setUserProfile(null);
+    setIsAuthenticated(false);
     navigate("/login");
-  }; // Gated Navigation Handler for main navbar links
+  };
+
+  // Gated Navigation Handler for main navbar links
   const handleGatedNavigation = (e, path, isProtected) => {
-    if (isProtected && !token) {
+    // Check if the page is protected AND the user is NOT authenticated
+    if (isProtected && !isAuthenticated) {
       e.preventDefault();
       toast.warn("Please log in to view this page.", {
         onClose: () => navigate("/login"),
@@ -4270,8 +4749,9 @@ const Customerdashboard = () => {
     } else {
       navigate(path);
     }
-  }; // Horizontal scroll handler
+  };
 
+  // Horizontal scroll handler (kept unchanged as it's UI logic)
   const scroll = (direction) => {
     if (scrollContainerRef.current) {
       const scrollAmount = direction === "left" ? -300 : 300;
@@ -4280,10 +4760,12 @@ const Customerdashboard = () => {
         behavior: "smooth",
       });
     }
-  }; // Add to Cart Handler
+  };
 
+  // Add to Cart Handler
   const handleAddToCart = async (product) => {
-    if (!token || role !== "user") {
+    // Check for authentication state derived from API call, not local token
+    if (!isAuthenticated || role !== "user") {
       toast.warn("Please log in to add items to your cart.", {
         onClose: () => navigate("/login"),
         autoClose: 2000,
@@ -4308,13 +4790,13 @@ const Customerdashboard = () => {
           onClose: () => navigate("/cart"),
         });
         return;
-      } // API call to add to cart
-
+      }
+      // API call to add to cart - Cookie is sent automatically
       const cartData = { productId: product._id, quantity: 1 };
-      await axios.post(`${domainUrl}/cart/add`, cartData, {
-        headers: { Authorization: `Bearer ${token}` },
-      }); // Show success toast and redirect
+      // *** REMOVED `headers: { Authorization: ... }` from here and next function call ***
+      await axios.post(`${domainUrl}/cart/add`, cartData);
 
+      // Show success toast and redirect
       toast.success(`${product.name} added! Redirecting...`, {
         icon: "🛍️",
         autoClose: 1500,
@@ -4325,26 +4807,38 @@ const Customerdashboard = () => {
       });
     } catch (err) {
       console.error("Error adding to cart:", err);
-      toast.error(err.response?.data?.message || "Failed to add to cart.");
+      // If 401 Unauthorized, the user's session might have expired.
+      if (err.response?.status === 401) {
+          toast.error("Session expired. Please log in again.", {
+            onClose: () => navigate("/login"),
+          });
+      } else {
+        toast.error(err.response?.data?.message || "Failed to add to cart.");
+      }
     } finally {
       setIsAdding(null);
     }
-  }; // Helper to format image URL
-
+  };
+  
+  // Helper to format image URL (kept unchanged)
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "https://via.placeholder.com/300?text=No+Image";
     return imagePath.startsWith("http")
       ? imagePath
       : `${domainUrl}/${imagePath}`;
-  }; // --- PROFILE ICON HANDLER ---
+  };
 
+  // --- PROFILE ICON HANDLER ---
   const handleUserIconClick = () => {
-    if (!token || role !== "user") {
+    // Check for authentication state, not local token
+    if (!isAuthenticated || role !== "user") {
       navigate("/login");
     } else {
       setShowModal(true);
     }
-  }; // --- RENDER ---
+  }; 
+
+  // --- RENDER ---
 
   // Display loading screen while profile is being checked
   if (isProfileLoading) {
@@ -4352,7 +4846,7 @@ const Customerdashboard = () => {
   }
 
   // FINAL CHECK: If role is confirmed as admin at this point, show redirect notice
-  if (token && role === "admin") {
+  if (role === "admin") {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <p className="text-gray-600 font-medium">Redirecting to Admin...</p>
@@ -4364,46 +4858,37 @@ const Customerdashboard = () => {
 
   return (
     <div className="bg-white">
-            {/* --- MOBILE MENU --- */}     {" "}
+      {/* --- MOBILE MENU --- */}      
       <Dialog
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
         className="relative z-40 lg:hidden"
       >
-               {" "}
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
         />
-               {" "}
         <div className="fixed inset-0 z-40 flex">
-                   {" "}
           <DialogPanel
             transition
             className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
           >
-                       {" "}
             <div className="flex px-4 pt-5 pb-2">
-                           {" "}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
                 className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
               >
-                                <span className="absolute -inset-0.5" />       
-                        <span className="sr-only">Close menu</span>             
-                  <XMarkIcon aria-hidden="true" className="size-6" />           
-                 {" "}
+                <span className="absolute -inset-0.5" />
+                <span className="sr-only">Close menu</span>
+                <XMarkIcon aria-hidden="true" className="size-6" />
               </button>
-                         {" "}
             </div>
-                        {/* Mobile Navigation Links */}           {" "}
+            {/* Mobile Navigation Links */}
             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                           {" "}
               {simpleNavigation.pages.map((page) => (
                 <div key={page.name} className="flow-root">
-                                    {/* Use handler for protected pages */}     
-                             {" "}
+                  {/* Use handler for protected pages */}
                   <a
                     href={page.href}
                     className="-m-2 block p-2 font-medium text-gray-900"
@@ -4412,49 +4897,36 @@ const Customerdashboard = () => {
                       setMobileMenuOpen(false);
                     }}
                   >
-                                        {page.name}                 {" "}
+                    {page.name}
                   </a>
-                                 {" "}
                 </div>
               ))}
-                         {" "}
             </div>
-                        {/* Auth Links */}           {" "}
+            {/* Auth Links */}
             <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                             {" "}
-              {!token ? (
+              {!isAuthenticated ? ( // *** CHANGED: Check isAuthenticated state ***
                 <>
-                                         {" "}
                   <div className="flow-root">
-                                               {" "}
                     <Link
                       to="/login"
                       className="-m-2 block p-2 font-medium text-gray-900"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                                                      Sign in                  
-                               {" "}
+                      Sign in
                     </Link>
-                                           {" "}
                   </div>
-                                         {" "}
                   <div className="flow-root">
-                                               {" "}
                     <Link
                       to="/register"
                       className="-m-2 block p-2 font-medium text-gray-900"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                                                      Create an account        
-                                         {" "}
+                      Create an account
                     </Link>
-                                           {" "}
                   </div>
-                                     {" "}
                 </>
               ) : (
                 <div className="flow-root">
-                                         {" "}
                   <button
                     onClick={() => {
                       handleLogout();
@@ -4462,69 +4934,51 @@ const Customerdashboard = () => {
                     }}
                     className="-m-2 block p-2 font-medium text-gray-900"
                   >
-                                                Logout                        {" "}
+                    Logout
                   </button>
-                                     {" "}
                 </div>
               )}
-                         {" "}
             </div>
-                                 {" "}
           </DialogPanel>
-                 {" "}
         </div>
-             {" "}
       </Dialog>
-         {/* --- FIXED NAVBAR --- */}
+      {/* --- FIXED NAVBAR --- */}
       <Navbar
-        token={token}
+        isAuthenticated={isAuthenticated} // *** CHANGED: Passing isAuthenticated prop instead of token ***
         role={role}
         cartItemCount={cartItems.length}
         handleLogout={handleLogout}
         handleUserIconClick={handleUserIconClick}
         handleGatedNavigation={handleGatedNavigation}
       />
-            {/* --- PROFILE MODAL (Your existing code) --- */}     {" "}
+      {/* --- PROFILE MODAL (Your existing code) --- */}
       <Dialog
         open={showModal}
         onClose={() => setShowModal(false)}
         className="relative z-50"
       >
-               {" "}
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-sm"
           aria-hidden="true"
         />
-               {" "}
         <div className="fixed inset-0 flex items-center justify-center p-4">
-                   {" "}
-          <Dialog.Panel className="mx-auto w-full max-w-sm rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-6 shadow-2xl">
-                       {" "}
+          <DialogPanel className="mx-auto w-full max-w-sm rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-6 shadow-2xl">
             <Dialog.Title className="text-lg font-semibold text-white mb-4 text-center">
-                            Profile Details            {" "}
+              Profile Details
             </Dialog.Title>
-                       
+            
             {isProfileLoading ? (
               <p className="text-gray-200 text-sm text-center">Loading...</p>
             ) : userProfile ? (
               <div className="space-y-3 text-white">
-                               {" "}
                 <div>
-                                   {" "}
-                  <p className="text-sm font-medium text-gray-300">Name:</p>   
-                               {" "}
-                  <p className="font-semibold">{userProfile.username}</p>       
-                         {" "}
+                  <p className="text-sm font-medium text-gray-300">Name:</p>
+                  <p className="font-semibold">{userProfile.username}</p>
                 </div>
-                               {" "}
                 <div>
-                                   {" "}
-                  <p className="text-sm font-medium text-gray-300">Email:</p>   
-                               {" "}
-                  <p className="font-semibold">{userProfile.email}</p>         
-                       {" "}
+                  <p className="text-sm font-medium text-gray-300">Email:</p>
+                  <p className="font-semibold">{userProfile.email}</p>
                 </div>
-                               {" "}
                 <button
                   onClick={() => {
                     handleLogout();
@@ -4532,29 +4986,23 @@ const Customerdashboard = () => {
                   }}
                   className="mt-4 w-full rounded-md bg-red-500 text-white py-2 hover:bg-red-600 transition"
                 >
-                                    Logout                {" "}
+                  Logout
                 </button>
-                             {" "}
               </div>
             ) : (
               <p className="text-gray-200 text-sm text-center">
                 Failed to load profile
               </p>
             )}
-                     {" "}
-          </Dialog.Panel>
-                 {" "}
+          </DialogPanel>
         </div>
-             {" "}
       </Dialog>
-            {/* --- END PROFILE MODAL --- */}      {/* Hero Section Carousel */}
-           {" "}
-      {/* Note: Added a margin-top to account for the fixed header, even though it's sticky now */}
-           
-      <HeroCarousel />      {/* Category Section */}
-            <CategorySection />     {" "}
+      {/* --- END PROFILE MODAL --- */}
+      {/* Hero Section Carousel */}
+      <HeroCarousel />
+      {/* Category Section */}
+      <CategorySection />
       {/* --- UPDATED Product Section (Horizontal Scroll) --- */}
-           
       <FeaturedProducts
         featuredProducts={featuredProducts}
         productsLoading={productsLoading}
@@ -4562,9 +5010,9 @@ const Customerdashboard = () => {
         handleAddToCart={handleAddToCart}
         isAdding={isAdding}
       />
-                  {/* About Us Footer Section */}
-           <FooterSection />           {" "}
-      {/* Toast Container for notifications */}     {" "}
+      {/* About Us Footer Section */}
+      <FooterSection />
+      {/* Toast Container for notifications */}
       <ToastContainer
         position="top-center"
         autoClose={2000}
@@ -4577,7 +5025,6 @@ const Customerdashboard = () => {
         theme="colored"
         transition={Slide}
       />
-         {" "}
     </div>
   );
 };

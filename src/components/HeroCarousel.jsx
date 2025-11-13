@@ -20,7 +20,7 @@ const HeroCarousel = () => {
   ];
 
   return (
-    <div className="mt-[6.5rem] relative w-full">
+    <div className=" relative w-full">
       <Carousel
         autoPlay
         infiniteLoop
