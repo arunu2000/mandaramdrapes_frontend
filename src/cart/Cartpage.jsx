@@ -1145,7 +1145,7 @@ export default function Cartpage() {
         clearCart, // <--- IMPORTED
     } = useCart();
 
-    // 🟢 Update quantity
+    //  Update quantity
     const handleQuantityChange = (item, event) => {
         event.stopPropagation();
         
@@ -1159,7 +1159,7 @@ export default function Cartpage() {
         }
     };
 
-    // 🔴 Remove item
+    //  Remove item
     const handleRemoveItem = (item) => {
         removeFromCart(item.productId);
         toast.info(`${item.name} removed from cart 🗑️`, {
@@ -1171,7 +1171,7 @@ export default function Cartpage() {
         });
     };
 
-    // 🟢 Place order - UPDATED SUCCESS HANDLER
+    //  Place order - UPDATED SUCCESS HANDLER
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
         if (cartItems.length === 0) return;

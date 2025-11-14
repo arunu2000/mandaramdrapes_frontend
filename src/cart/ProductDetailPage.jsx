@@ -1262,22 +1262,384 @@
 //   );
 // }
 
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate, Link } from "react-router-dom";
+// import axios from "axios";
+// import { StarIcon, CheckIcon } from "@heroicons/react/20/solid";
+// import { ShieldCheckIcon, TruckIcon } from "@heroicons/react/24/outline";
+// import { domainUrl } from "../utils/constant";
+// import { useCart } from "../context/CartContext";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// // FIX APPLIED: Corrected the import path for the CSS
+// import "react-toastify/dist/ReactToastify.css";
+
+// // --- DUMMY DATA ---
+// const DUMMY_REVIEWS = { average: 4, totalCount: 1624 };
+// const deliveryInfo = "Standard delivery (5-7 days) | Free shipping on orders over ₹100";
+// // ----------------------------------------------
+
+
+// function classNames(...classes) {
+//   return classes.filter(Boolean).join(" ");
+// }
+
+// export default function ProductDetailPage() {
+//   const { productId } = useParams();
+//   const navigate = useNavigate();
+//   const [product, setProduct] = useState(null);
+//   const [selectedSize, setSelectedSize] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [isAdding, setIsAdding] = useState(false);
+//   const [isAlreadyAdded, setIsAlreadyAdded] = useState(false);
+
+//   const { cartItems, fetchCart } = useCart();
+
+//   // --- Data Fetching and Initialization ---
+
+//   // Fetches product data
+//   useEffect(() => {
+//     const fetchProduct = async () => {
+//       try {
+//         setLoading(true);
+//         const res = await axios.get(
+//           `${domainUrl}/user/shop/product/${productId}`
+//         );
+//         const fetchedProduct = res.data.product;
+
+     
+        
+//         setProduct(fetchedProduct);
+
+//         if (fetchedProduct.sizes?.length > 0) {
+//           // Auto-select the first size by default
+//           setSelectedSize(fetchedProduct.sizes[0].name);
+//         }
+//       } catch (err) {
+//         const status = err.response?.status;
+//         let msg = `Error loading product: ${status || "Network Error"}`;
+//         if (status === 404)
+//           msg = `Product not found for ID: "${productId}". (Status 404)`;
+//         setError(msg);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     if (productId) fetchProduct();
+//   }, [productId]);
+
+//   // Checks if the product is already in the cart every time cartItems updates
+//   useEffect(() => {
+//     if (cartItems) {
+//       const filteredCartProduct = cartItems.some(
+//         (item) => item.productId === productId
+//       );
+//       setIsAlreadyAdded(filteredCartProduct);
+//     } else {
+//       setIsAlreadyAdded(false);
+//     }
+//   }, [cartItems, productId]);
+
+//   // --- Handlers ---
+
+//   const handleAddToCart = async (e) => {
+//     const token = localStorage.getItem("token");
+
+//     if (!token) {
+//       toast.warn("Please log in to add items to your cart.", {
+//         position: "top-center",
+//         autoClose: 1500,
+//         onClose: () => navigate("/login"),
+//       });
+//       return;
+//     }
+//     e.preventDefault();
+
+//     // Frontend validation: Stock is now always assumed TRUE based on your request
+//     if (!product || isAdding) return; 
+//     if (product.sizes && product.sizes?.length > 0 && !selectedSize) {
+//       toast.warn("Please select a size.", { autoClose: 1500 });
+//       return;
+//     }
+
+//     // HANDLE ALREADY ADDED / GO TO CART LOGIC
+//     if (isAlreadyAdded) {
+//       toast.info("Product is already in your cart. Redirecting...", {
+//         position: "top-center",
+//         autoClose: 1500,
+//         icon: "🛒",
+//         onClose: () => navigate('/cart'),
+//       });
+//       return;
+//     }
+
+//     setIsAdding(true);
+
+//     try {
+//       const cartData = {
+//         productId: product._id,
+//         quantity: 1,
+//         ...(product.sizes && { selectedSize: selectedSize }),
+//       };
+
+//       const ADD_CART_URL = `${domainUrl}/cart/add`;
+
+//       // API Call to add to cart
+//       await axios.post(
+//         ADD_CART_URL,
+//         cartData,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       // SHOW SUCCESS TOAST AND DELAY REDIRECT
+//       toast.success(`${product.name} added to cart!`, {
+//         position: "top-center",
+//         autoClose: 1500,
+//         icon: "🛍️",
+//         onClose: () => {
+//           fetchCart(); // Refresh cart data
+//           navigate("/cart");
+//         },
+//       });
+
+//     } catch (err) {
+//       console.log("Error adding to cart:", err.response?.data || err.message);
+
+//       // Show error toast
+//       toast.error(err.response?.data?.message || "Failed to add product to cart.", {
+//         position: "top-center",
+//         autoClose: 3000,
+//       });
+
+//     } finally {
+//       setIsAdding(false);
+//     }
+//   };
+
+//   // --- Render Logic ---
+
+//   if (loading)
+//     return (
+//       <div className="text-center py-20 text-xl text-gray-700 font-semibold">
+//         Loading Product Details...
+//       </div>
+//     );
+//   if (error)
+//     return <div className="text-center py-20 text-xl text-red-600 font-semibold">{error}</div>;
+//   if (!product)
+//     return (
+//       <div className="text-center py-20 text-xl text-gray-600 font-semibold">
+//         Product details unavailable.
+//       </div>
+//     );
+
+//   const productImageSrc = product.image
+//     ? product.image
+//     : "https://via.placeholder.com/600x800?text=Product+Image+Unavailable";
+
+//   // Assuming price is in INR (₹)
+//   const productPrice = product.price
+//     ? `₹${product.price.toFixed(2)}`
+//     : "Price Unavailable";
+    
+//   // *** CRITICAL CHANGE: Force isInStock to true based on your confirmation ***
+//   const isInStock = true; 
+
+
+//   return (
+//     <div className="bg-white">
+//       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+
+//         {/* --- Product Main Grid: Image and Details (Professional UI) --- */}
+//         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+
+//           {/* 1. Left Column: Image Gallery (Sticky on large screens) */}
+//           <div className="lg:sticky lg:top-20">
+//             <div className="flex flex-col items-center">
+//               {/* Main Image */}
+//               <div className="w-full h-[550px] lg:h-[700px] overflow-hidden rounded-xl shadow-lg border border-gray-100">
+//                 <img
+//                   src={productImageSrc}
+//                   alt={product.name}
+//                   className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* 2. Right Column: Details and Purchase Form */}
+//           <div className="mt-10 lg:mt-0">
+
+//             {/* A. Product Overview */}
+//             <div>
+//               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+//                 {product.name}
+//               </h1>
+
+//               <div className="mt-4 flex items-center justify-between">
+//                 <p className="text-3xl font-semibold text-gray-900">{productPrice}</p>
+
+//                 {/* Reviews */}
+//                 <div className="flex items-center space-x-2">
+//                   <div className="flex items-center text-yellow-500">
+//                     {[...Array(5)].map((_, i) => (
+//                       <StarIcon
+//                         key={i}
+//                         className={classNames(
+//                           i < DUMMY_REVIEWS.average ? "text-yellow-500" : "text-gray-300",
+//                           "w-5 h-5 flex-shrink-0"
+//                         )}
+//                         aria-hidden="true"
+//                       />
+//                     ))}
+//                   </div>
+//                   <p className="text-sm text-gray-500">({DUMMY_REVIEWS.totalCount} reviews)</p>
+//                 </div>
+//               </div>
+
+//               <div className="mt-4">
+//                 {/* Stock is always displayed as IN STOCK now */}
+//                 <p className="flex items-center text-md text-green-600 font-medium">
+//                     <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
+//                     In stock (99+)
+//                 </p>
+//               </div>
+
+//               {/* Delivery Info */}
+//               <div className="mt-6 border-t border-b border-gray-200 py-6">
+//                 <p className="flex items-center text-sm text-gray-600">
+//                   <TruckIcon className="h-5 w-5 mr-2 text-gray-400" aria-hidden="true" />
+//                   {deliveryInfo}
+//                 </p>
+//               </div>
+
+//             </div>
+
+//             {/* B. Purchase Form */}
+//             <form onSubmit={handleAddToCart} className="mt-10">
+
+//               {/* Size Selector */}
+//               {product.sizes?.length > 0 && (
+//                 <div className="mb-8">
+//                   <legend className="text-lg font-medium text-gray-700 border-b border-gray-100 pb-2 mb-4">
+//                     Choose Size
+//                   </legend>
+//                   <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+//                     {product.sizes.map((size) => (
+//                       <label
+//                         key={size.name}
+//                         className={classNames(
+//                           selectedSize === size.name
+//                             ? "border-indigo-600 ring-2 ring-indigo-600 bg-indigo-50 text-indigo-800"
+//                             : "border-gray-300 hover:border-gray-500 text-gray-900",
+//                           "border rounded-lg p-3 text-center text-sm font-medium cursor-pointer transition duration-150 ease-in-out"
+//                         )}
+//                         onClick={() => setSelectedSize(size.name)}
+//                       >
+//                         <input
+//                           type="radio"
+//                           name="size"
+//                           value={size.name}
+//                           checked={selectedSize === size.name}
+//                           readOnly
+//                           className="sr-only"
+//                         />
+//                         {size.name}
+//                       </label>
+//                     ))}
+//                   </div>
+//                 </div>
+//               )}
+
+//               {/* Add to Bag Button */}
+//               <button
+//                 type="submit"
+//                 // Disable if adding, or if sizes exist but none is selected
+//                 disabled={isAdding || (product.sizes?.length > 0 && !selectedSize)}
+//                 className={classNames(
+//                   "bg-indigo-600 hover:bg-indigo-700", // Now always uses the active color
+//                   "w-full rounded-md px-8 py-4 text-xl font-semibold text-white uppercase tracking-wider transition duration-150 ease-in-out shadow-lg disabled:opacity-60"
+//                 )}
+//               >
+//                 {isAdding
+//                   ? "Processing..."
+//                   : isAlreadyAdded
+//                     ? "Go to Cart"
+//                     : "Add to Bag"}
+//               </button>
+
+//               {/* Security/Guarantee Info */}
+//               <div className="mt-4 text-center text-sm text-gray-600 flex items-center justify-center">
+//                 <ShieldCheckIcon className="h-5 w-5 mr-1 text-gray-400" aria-hidden="true" />
+//                 <span className="font-medium">Secure Checkout</span> &bull; Lifetime Guarantee
+//               </div>
+
+//             </form>
+
+//             {/* C. Product Description (Below the form) */}
+//             <div className="mt-12 border-t border-gray-200 pt-8">
+//               <h2 className="text-2xl font-bold text-gray-900 mb-4">
+//                 Product Details
+//               </h2>
+//               <p className="text-base text-gray-700 leading-relaxed">
+//                 {product.description ||
+//                   "No detailed description is available for this product. High-quality fabric, comfortable fit, and timeless style."}
+//               </p>
+//             </div>
+
+//             {/* D. Additional Information (e.g., Fabric care) */}
+//             <div className="mt-8">
+//                 <h3 className="text-lg font-medium text-gray-900">Fabric & Care</h3>
+//                 <ul role="list" className="mt-4 space-y-2 text-sm text-gray-600 list-disc ml-5">
+//                     <li>Material: 100% Pure Handloom Cotton/Silk (Placeholder)</li>
+//                     <li>Care: Dry clean only or gentle hand wash.</li>
+//                     <li>Origin: Sourced from local artisans in India.</li>
+//                 </ul>
+//             </div>
+
+//           </div> {/* End Right Column */}
+//         </div>
+
+//       </div> {/* End Max Width Container */}
+
+//       {/* Toast Container */}
+//       <ToastContainer
+//         position="top-center"
+//         autoClose={2000}
+//         hideProgressBar={false}
+//         newestOnTop={false}
+//         closeOnClick
+//         pauseOnFocusLoss
+//         draggable
+//         pauseOnHover
+//         theme="colored"
+//         transition={Slide}
+//       />
+//     </div>
+//   );
+// }
+
+
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import { StarIcon, CheckIcon } from "@heroicons/react/20/solid";
 import { ShieldCheckIcon, TruckIcon } from "@heroicons/react/24/outline";
 import { domainUrl } from "../utils/constant";
+import api from "../utils/api"; // 🔥 using cookie-based axios instance
 import { useCart } from "../context/CartContext";
 import { ToastContainer, toast, Slide } from "react-toastify";
-// FIX APPLIED: Corrected the import path for the CSS
 import "react-toastify/dist/ReactToastify.css";
 
 // --- DUMMY DATA ---
 const DUMMY_REVIEWS = { average: 4, totalCount: 1624 };
-const deliveryInfo = "Standard delivery (5-7 days) | Free shipping on orders over ₹100";
-// ----------------------------------------------
-
+const deliveryInfo =
+  "Standard delivery (5-7 days) | Free shipping on orders over ₹100";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -1295,31 +1657,28 @@ export default function ProductDetailPage() {
 
   const { cartItems, fetchCart } = useCart();
 
-  // --- Data Fetching and Initialization ---
-
-  // Fetches product data
+  // -------------------------------
+  // Fetch Product
+  // -------------------------------
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          `${domainUrl}/user/shop/product/${productId}`
-        );
+        const res = await api.get(`/user/shop/product/${productId}`);
         const fetchedProduct = res.data.product;
 
-     
-        
         setProduct(fetchedProduct);
 
         if (fetchedProduct.sizes?.length > 0) {
-          // Auto-select the first size by default
           setSelectedSize(fetchedProduct.sizes[0].name);
         }
       } catch (err) {
         const status = err.response?.status;
         let msg = `Error loading product: ${status || "Network Error"}`;
+
         if (status === 404)
           msg = `Product not found for ID: "${productId}". (Status 404)`;
+
         setError(msg);
       } finally {
         setLoading(false);
@@ -1329,47 +1688,39 @@ export default function ProductDetailPage() {
     if (productId) fetchProduct();
   }, [productId]);
 
-  // Checks if the product is already in the cart every time cartItems updates
+  // -------------------------------
+  // Check if in cart already
+  // -------------------------------
   useEffect(() => {
     if (cartItems) {
-      const filteredCartProduct = cartItems.some(
+      const exists = cartItems.some(
         (item) => item.productId === productId
       );
-      setIsAlreadyAdded(filteredCartProduct);
+      setIsAlreadyAdded(exists);
     } else {
       setIsAlreadyAdded(false);
     }
   }, [cartItems, productId]);
 
-  // --- Handlers ---
-
+  // -------------------------------
+  // Add to Cart (Cookie Auth)
+  // -------------------------------
   const handleAddToCart = async (e) => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.warn("Please log in to add items to your cart.", {
-        position: "top-center",
-        autoClose: 1500,
-        onClose: () => navigate("/login"),
-      });
-      return;
-    }
     e.preventDefault();
 
-    // Frontend validation: Stock is now always assumed TRUE based on your request
-    if (!product || isAdding) return; 
-    if (product.sizes && product.sizes?.length > 0 && !selectedSize) {
+    if (!product || isAdding) return;
+
+    if (product.sizes?.length > 0 && !selectedSize) {
       toast.warn("Please select a size.", { autoClose: 1500 });
       return;
     }
 
-    // HANDLE ALREADY ADDED / GO TO CART LOGIC
     if (isAlreadyAdded) {
       toast.info("Product is already in your cart. Redirecting...", {
         position: "top-center",
         autoClose: 1500,
         icon: "🛒",
-        onClose: () => navigate('/cart'),
+        onClose: () => navigate("/cart"),
       });
       return;
     }
@@ -1380,57 +1731,59 @@ export default function ProductDetailPage() {
       const cartData = {
         productId: product._id,
         quantity: 1,
-        ...(product.sizes && { selectedSize: selectedSize }),
+        ...(product.sizes && { selectedSize }),
       };
 
-      const ADD_CART_URL = `${domainUrl}/cart/add`;
+      // 🔥 Cookie auth (no token, no headers)
+      await api.post(`/cart/add`, cartData);
 
-      // API Call to add to cart
-      await axios.post(
-        ADD_CART_URL,
-        cartData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // SHOW SUCCESS TOAST AND DELAY REDIRECT
       toast.success(`${product.name} added to cart!`, {
         position: "top-center",
         autoClose: 1500,
         icon: "🛍️",
         onClose: () => {
-          fetchCart(); // Refresh cart data
+          fetchCart();
           navigate("/cart");
         },
       });
-
     } catch (err) {
-      console.log("Error adding to cart:", err.response?.data || err.message);
+      const status = err.response?.status;
 
-      // Show error toast
-      toast.error(err.response?.data?.message || "Failed to add product to cart.", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+      if (status === 401) {
+        toast.warn("Please log in to add items to your cart.", {
+          position: "top-center",
+          autoClose: 1500,
+          onClose: () => navigate("/login"),
+        });
+        return;
+      }
 
+      toast.error(
+        err.response?.data?.message || "Failed to add product to cart.",
+        { position: "top-center", autoClose: 3000 }
+      );
     } finally {
       setIsAdding(false);
     }
   };
 
-  // --- Render Logic ---
-
+  // -------------------------------
+  // Render
+  // -------------------------------
   if (loading)
     return (
       <div className="text-center py-20 text-xl text-gray-700 font-semibold">
         Loading Product Details...
       </div>
     );
+
   if (error)
-    return <div className="text-center py-20 text-xl text-red-600 font-semibold">{error}</div>;
+    return (
+      <div className="text-center py-20 text-xl text-red-600 font-semibold">
+        {error}
+      </div>
+    );
+
   if (!product)
     return (
       <div className="text-center py-20 text-xl text-gray-600 font-semibold">
@@ -1442,26 +1795,21 @@ export default function ProductDetailPage() {
     ? product.image
     : "https://via.placeholder.com/600x800?text=Product+Image+Unavailable";
 
-  // Assuming price is in INR (₹)
   const productPrice = product.price
     ? `₹${product.price.toFixed(2)}`
     : "Price Unavailable";
-    
-  // *** CRITICAL CHANGE: Force isInStock to true based on your confirmation ***
-  const isInStock = true; 
 
+  const isInStock = true;
 
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
 
-        {/* --- Product Main Grid: Image and Details (Professional UI) --- */}
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
 
-          {/* 1. Left Column: Image Gallery (Sticky on large screens) */}
+          {/* LEFT IMAGE */}
           <div className="lg:sticky lg:top-20">
             <div className="flex flex-col items-center">
-              {/* Main Image */}
               <div className="w-full h-[550px] lg:h-[700px] overflow-hidden rounded-xl shadow-lg border border-gray-100">
                 <img
                   src={productImageSrc}
@@ -1472,10 +1820,9 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* 2. Right Column: Details and Purchase Form */}
+          {/* RIGHT DETAILS */}
           <div className="mt-10 lg:mt-0">
 
-            {/* A. Product Overview */}
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
                 {product.name}
@@ -1484,46 +1831,44 @@ export default function ProductDetailPage() {
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-3xl font-semibold text-gray-900">{productPrice}</p>
 
-                {/* Reviews */}
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center text-yellow-500">
                     {[...Array(5)].map((_, i) => (
                       <StarIcon
                         key={i}
                         className={classNames(
-                          i < DUMMY_REVIEWS.average ? "text-yellow-500" : "text-gray-300",
+                          i < DUMMY_REVIEWS.average
+                            ? "text-yellow-500"
+                            : "text-gray-300",
                           "w-5 h-5 flex-shrink-0"
                         )}
-                        aria-hidden="true"
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-gray-500">({DUMMY_REVIEWS.totalCount} reviews)</p>
+                  <p className="text-sm text-gray-500">
+                    ({DUMMY_REVIEWS.totalCount} reviews)
+                  </p>
                 </div>
               </div>
 
               <div className="mt-4">
-                {/* Stock is always displayed as IN STOCK now */}
                 <p className="flex items-center text-md text-green-600 font-medium">
-                    <CheckIcon className="h-5 w-5 mr-1" aria-hidden="true" />
-                    In stock (99+)
+                  <CheckIcon className="h-5 w-5 mr-1" />
+                  In stock (99+)
                 </p>
               </div>
 
-              {/* Delivery Info */}
               <div className="mt-6 border-t border-b border-gray-200 py-6">
                 <p className="flex items-center text-sm text-gray-600">
-                  <TruckIcon className="h-5 w-5 mr-2 text-gray-400" aria-hidden="true" />
+                  <TruckIcon className="h-5 w-5 mr-2 text-gray-400" />
                   {deliveryInfo}
                 </p>
               </div>
-
             </div>
 
-            {/* B. Purchase Form */}
+            {/* FORM */}
             <form onSubmit={handleAddToCart} className="mt-10">
 
-              {/* Size Selector */}
               {product.sizes?.length > 0 && (
                 <div className="mb-8">
                   <legend className="text-lg font-medium text-gray-700 border-b border-gray-100 pb-2 mb-4">
@@ -1533,21 +1878,19 @@ export default function ProductDetailPage() {
                     {product.sizes.map((size) => (
                       <label
                         key={size.name}
+                        onClick={() => setSelectedSize(size.name)}
                         className={classNames(
                           selectedSize === size.name
                             ? "border-indigo-600 ring-2 ring-indigo-600 bg-indigo-50 text-indigo-800"
                             : "border-gray-300 hover:border-gray-500 text-gray-900",
                           "border rounded-lg p-3 text-center text-sm font-medium cursor-pointer transition duration-150 ease-in-out"
                         )}
-                        onClick={() => setSelectedSize(size.name)}
                       >
                         <input
                           type="radio"
-                          name="size"
-                          value={size.name}
-                          checked={selectedSize === size.name}
-                          readOnly
                           className="sr-only"
+                          readOnly
+                          checked={selectedSize === size.name}
                         />
                         {size.name}
                       </label>
@@ -1556,13 +1899,11 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* Add to Bag Button */}
               <button
                 type="submit"
-                // Disable if adding, or if sizes exist but none is selected
                 disabled={isAdding || (product.sizes?.length > 0 && !selectedSize)}
                 className={classNames(
-                  "bg-indigo-600 hover:bg-indigo-700", // Now always uses the active color
+                  "bg-indigo-600 hover:bg-indigo-700",
                   "w-full rounded-md px-8 py-4 text-xl font-semibold text-white uppercase tracking-wider transition duration-150 ease-in-out shadow-lg disabled:opacity-60"
                 )}
               >
@@ -1573,15 +1914,12 @@ export default function ProductDetailPage() {
                     : "Add to Bag"}
               </button>
 
-              {/* Security/Guarantee Info */}
               <div className="mt-4 text-center text-sm text-gray-600 flex items-center justify-center">
-                <ShieldCheckIcon className="h-5 w-5 mr-1 text-gray-400" aria-hidden="true" />
+                <ShieldCheckIcon className="h-5 w-5 mr-1 text-gray-400" />
                 <span className="font-medium">Secure Checkout</span> &bull; Lifetime Guarantee
               </div>
-
             </form>
 
-            {/* C. Product Description (Below the form) */}
             <div className="mt-12 border-t border-gray-200 pt-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Product Details
@@ -1592,30 +1930,23 @@ export default function ProductDetailPage() {
               </p>
             </div>
 
-            {/* D. Additional Information (e.g., Fabric care) */}
             <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-900">Fabric & Care</h3>
-                <ul role="list" className="mt-4 space-y-2 text-sm text-gray-600 list-disc ml-5">
-                    <li>Material: 100% Pure Handloom Cotton/Silk (Placeholder)</li>
-                    <li>Care: Dry clean only or gentle hand wash.</li>
-                    <li>Origin: Sourced from local artisans in India.</li>
-                </ul>
+              <h3 className="text-lg font-medium text-gray-900">Fabric & Care</h3>
+              <ul className="mt-4 space-y-2 text-sm text-gray-600 list-disc ml-5">
+                <li>Material: 100% Pure Handloom Cotton/Silk (Placeholder)</li>
+                <li>Care: Dry clean only or gentle hand wash.</li>
+                <li>Origin: Sourced from local artisans in India.</li>
+              </ul>
             </div>
+          </div>
 
-          </div> {/* End Right Column */}
         </div>
+      </div>
 
-      </div> {/* End Max Width Container */}
-
-      {/* Toast Container */}
       <ToastContainer
         position="top-center"
         autoClose={2000}
         hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
         pauseOnHover
         theme="colored"
         transition={Slide}

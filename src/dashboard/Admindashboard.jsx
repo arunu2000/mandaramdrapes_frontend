@@ -2,7 +2,7 @@
 // import { Link, Outlet } from "react-router-dom";
 
 // const Admindashboard = () => {
-//   const [openMenu, setOpenMenu] = useState(""); 
+//   const [openMenu, setOpenMenu] = useState("");
 
 //   // toggle function
 //   const toggleMenu = (menuName) => {
@@ -76,7 +76,7 @@
 //                 {/* <Link to="/admindashboard/managecategories/deletecategory">
 //                   <li className="hover:bg-[#5a6d57] p-2 rounded">Delete Categories</li>
 //                 </Link> */}
-                
+
 //               </ul>
 //             </div>
 //           </li>
@@ -85,7 +85,7 @@
 //           <li>
 //             <button
 //               onClick={() => toggleMenu("products")}
-              
+
 //               className="w-full text-left hover:bg-[#5a6d57] p-2 rounded"
 //             >
 //               Manage Products
@@ -133,8 +133,6 @@
 // };
 
 // export default Admindashboard;
-
-
 
 // import React, { useState, useEffect } from "react";
 // import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -271,7 +269,7 @@
 //             Order Management
 //           </li>
 //           </Link>
-         
+
 //         </ul>
 
 //         {/* Logout */}
@@ -336,7 +334,6 @@
 
 // export default Admindashboard;
 
-
 // import React, { useState, useEffect } from "react";
 // import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { FaUserCircle } from "react-icons/fa";
@@ -352,32 +349,32 @@
 //   useEffect(() => {
 //     const token = localStorage.getItem("token");
 //     const role = localStorage.getItem("role");
-    
+
 //     // --- 🔑 Admin Protection Logic ---
 //     if (!token || role !== "admin") {
 //       // 1. Clear any inconsistent storage
 //       localStorage.removeItem("token");
 //       localStorage.removeItem("role");
-      
+
 //       // 2. Redirect non-admins to the login page (or home)
-//       navigate("/login", { replace: true }); 
-//       return; 
+//       navigate("/login", { replace: true });
+//       return;
 //     }
 //     // --- End Protection Logic ---
 
-//     // NOTE: Since the full admin object (name/email) wasn't stored, 
+//     // NOTE: Since the full admin object (name/email) wasn't stored,
 //     // we set a placeholder based on what we know.
 //     // Ideally, the Login component should store the full user object if you need name/email.
 //     // For now, let's assume the admin has been successfully logged in and stored the role.
 //     // If your Login API returned and stored the name, you would retrieve it here.
-    
+
 //     // Assuming you need to fetch the admin's name/email after successful login:
 //     // For now, we'll use a placeholder until you can pass the admin object.
 //     setAdminInfo({
 //         name: "Admin User", // Replace with a fetch call if needed
 //         role: role,
 //     });
-    
+
 //   }, [navigate]);
 
 //   // Toggle side menus (rest of the logic is fine)
@@ -392,7 +389,7 @@
 //     setAdminInfo(null);
 //     navigate("/login");
 //   };
-  
+
 //   // Guard clause to prevent rendering sensitive content while redirecting
 //   if (!adminInfo) {
 //     return null; // Or return a simple loading spinner
@@ -459,7 +456,6 @@
 
 // export default Admindashboard;
 
-
 // import React, { useState, useEffect } from "react";
 // import { Link, Outlet, useNavigate } from "react-router-dom";
 // import { FaUserCircle } from "react-icons/fa";
@@ -483,27 +479,27 @@
 //       // 1. If not logged in OR role is not 'admin', clear and redirect
 //       localStorage.removeItem("token");
 //       localStorage.removeItem("role");
-      
+
 //       // Navigate to /login (or / for customer home)
 //       navigate("/login", { replace: true });
 //       return; // Stop execution of the rest of the useEffect
 //     }
 
 //     // 2. Data Retrieval (Only runs if the protection check passes)
-//     // IMPORTANT: Since your Login component only stores token and role, 
-//     // we set a basic info object. If your API stored the full user object, 
+//     // IMPORTANT: Since your Login component only stores token and role,
+//     // we set a basic info object. If your API stored the full user object,
 //     // you would fetch or retrieve it here.
-    
+
 //     // For now, setting a basic info object based on existing data
 //     // Assuming you don't store the full JSON object under a single key.
 //     setAdminInfo({
 //         name: "Admin User", // Placeholder until you store the name on login
 //         role: role,
 //     });
-    
+
 //     // 3. Mark loading complete
-//     setIsLoading(false); 
-    
+//     setIsLoading(false);
+
 //   }, [navigate]);
 
 //   // Toggle side menus
@@ -514,12 +510,12 @@
 //   // Logout function
 //   const handleLogout = () => {
 //     localStorage.removeItem("token");
-//     localStorage.removeItem("role"); 
+//     localStorage.removeItem("role");
 //     setAdminInfo(null);
 //     setDropdownOpen(false); // Close dropdown on logout
 //     navigate("/login");
 //   };
-  
+
 //   // 🛡️ Guard Clause: Show loading spinner until validation is complete
 //   if (isLoading) {
 //     return (
@@ -529,7 +525,7 @@
 //         </div>
 //     );
 //   }
-  
+
 //   // If validation failed, the useEffect already redirected, so this part won't run.
 //   // If validation passed (isLoading is false), render the full dashboard:
 
@@ -636,7 +632,7 @@
 //              Order Management
 //           </li>
 //           </Link>
-          
+
 //         </ul>
 
 //         {/* Logout */}
@@ -700,16 +696,13 @@
 
 // export default Admindashboard;
 
-
-
-
 // 'use client'
 
 // import React, { useState, useEffect, Fragment } from 'react';
 // import { Link, Outlet, useNavigate } from 'react-router-dom';
 // import axios from 'axios';
 // import { motion, AnimatePresence } from "framer-motion"; // Keep AnimatePresence and motion if you use them elsewhere
-// import { ClipLoader } from "react-spinners"; 
+// import { ClipLoader } from "react-spinners";
 // import { FaUserCircle } from "react-icons/fa"; // Keep FaUserCircle if needed
 
 // import {
@@ -726,7 +719,7 @@
 //   Bars3Icon,
 //   HomeIcon,
 //   XMarkIcon,
-//   UsersIcon, 
+//   UsersIcon,
 //   FolderIcon,
 //   TagIcon, // Custom icon for Categories
 //   CubeTransparentIcon, // Custom icon for Products
@@ -737,11 +730,11 @@
 
 // // --- 1. ADMIN NAVIGATION DATA (MAPPED FROM YOUR LINKS) ---
 // const adminNavigation = [
-//   { 
-//     name: 'Dashboard', 
-//     href: '/admindashboard', 
-//     icon: HomeIcon, 
-//     current: true 
+//   {
+//     name: 'Dashboard',
+//     href: '/admindashboard',
+//     icon: HomeIcon,
+//     current: true
 //   },
 //   {
 //     name: 'User Management',
@@ -767,11 +760,11 @@
 //       { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
 //     ],
 //   },
-//   { 
-//     name: 'Order Management', 
-//     href: '/admindashboard/adminordermanagement', 
-//     icon: ShoppingBagIcon, 
-//     current: false 
+//   {
+//     name: 'Order Management',
+//     href: '/admindashboard/adminordermanagement',
+//     icon: ShoppingBagIcon,
+//     current: false
 //   },
 // ]
 
@@ -787,7 +780,7 @@
 // const NavLink = ({ item, openMenu, toggleMenu }) => {
 //     // Determine if the link has sub-links (dropdown)
 //     const hasSubLinks = item.subLinks && item.subLinks.length > 0;
-    
+
 //     // Check if the current route matches any link or sub-link
 //     const isCurrent = item.href ? window.location.pathname === item.href : false;
 //     const isActiveParent = hasSubLinks && openMenu === item.name;
@@ -834,7 +827,7 @@
 //             </li>
 //         );
 //     }
-    
+
 //     // Render parent button and dropdown
 //     return (
 //         <li key={item.name}>
@@ -850,7 +843,7 @@
 //                     <item.icon aria-hidden="true" className="size-6 shrink-0" />
 //                     {item.name}
 //                 </div>
-//                 <ChevronDownIcon 
+//                 <ChevronDownIcon
 //                     className={classNames(
 //                         'size-5 transition-transform duration-200',
 //                         isActiveParent ? 'rotate-180' : 'rotate-0'
@@ -867,8 +860,8 @@
 //             >
 //                 {item.subLinks.map((subItem) => (
 //                     <li key={subItem.name}>
-//                         <Link 
-//                             to={subItem.href} 
+//                         <Link
+//                             to={subItem.href}
 //                             className="block p-2 text-sm text-gray-400 rounded-md hover:bg-black/30 hover:text-white transition-colors duration-200"
 //                         >
 //                             {subItem.name}
@@ -881,14 +874,13 @@
 // };
 // // -----------------------------------------------------------------
 
-
 // export default function Admindashboard() {
 //     const [sidebarOpen, setSidebarOpen] = useState(false);
 //     const [openMenu, setOpenMenu] = useState(""); // State for managing dropdown menus
 //     const [adminInfo, setAdminInfo] = useState(null);
-//     const [isLoading, setIsLoading] = useState(true); 
+//     const [isLoading, setIsLoading] = useState(true);
 //     const navigate = useNavigate();
-    
+
 //     // Toggle side menus (integrated from your original logic)
 //     const toggleMenu = (menuName) => {
 //         setOpenMenu(openMenu === menuName ? "" : menuName);
@@ -897,7 +889,7 @@
 //     // Logout function
 //     const handleLogout = () => {
 //         localStorage.removeItem("token");
-//         localStorage.removeItem("role"); 
+//         localStorage.removeItem("role");
 //         setAdminInfo(null);
 //         navigate("/login");
 //     };
@@ -914,8 +906,8 @@
 //             navigate("/login", { replace: true });
 //             return;
 //         }
-        
-//         // Data Retrieval 
+
+//         // Data Retrieval
 //         // IMPORTANT: In a real app, you would fetch the name/email from an API here.
 
 //          const res = await axios.get(
@@ -929,20 +921,15 @@
 //                 }
 //             );
 
-
-        
-
-        
-       
 //         setAdminInfo({
 //             name: "Admin User", // Placeholder name
 //             role: role,
 //         });
-        
-//         setIsLoading(false); 
-        
+
+//         setIsLoading(false);
+
 //     }, [navigate]);
-    
+
 //     // 🛡️ Guard Clause: Show loading spinner until validation is complete
 //     if (isLoading) {
 //         return (
@@ -991,11 +978,11 @@
 //                     <li>
 //                       <ul role="list" className="-mx-2 space-y-1">
 //                         {adminNavigation.map((item) => (
-//                           <NavLink 
-//                                 key={item.name} 
-//                                 item={item} 
-//                                 openMenu={openMenu} 
-//                                 toggleMenu={toggleMenu} 
+//                           <NavLink
+//                                 key={item.name}
+//                                 item={item}
+//                                 openMenu={openMenu}
+//                                 toggleMenu={toggleMenu}
 //                             />
 //                         ))}
 //                       </ul>
@@ -1031,11 +1018,11 @@
 //                 <li>
 //                   <ul role="list" className="-mx-2 space-y-1">
 //                     {adminNavigation.map((item) => (
-//                       <NavLink 
-//                             key={item.name} 
-//                             item={item} 
-//                             openMenu={openMenu} 
-//                             toggleMenu={toggleMenu} 
+//                       <NavLink
+//                             key={item.name}
+//                             item={item}
+//                             openMenu={openMenu}
+//                             toggleMenu={toggleMenu}
 //                         />
 //                     ))}
 //                   </ul>
@@ -1057,7 +1044,7 @@
 
 //         {/* Main Content Area */}
 //         <div className="lg:pl-72">
-//           
+//
 //             {/* Top Navbar (Integrated from Tailwind template, simplified) */}
 //           <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
 //             <button
@@ -1089,7 +1076,7 @@
 //                     <span className="sr-only">Open user menu</span>
 //                     {/* Using your FaUserCircle style here */}
 //                     <FaUserCircle size={28} className="text-gray-700" />
-//                     
+//
 //                     <span className="hidden lg:flex lg:items-center">
 //                       <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
 //                         {adminInfo?.name || "Admin"}
@@ -1134,17 +1121,15 @@
 // Export the component for use in your routing
 // export default Admindashboard;
 
-
 // 'use client'
 
 // import React, { useRef, useState, useEffect, Fragment } from "react";
 // import { Link, Outlet, useNavigate } from "react-router-dom";
 // import axios from "axios";
-// import { motion } from "framer-motion"; 
-// import { ClipLoader } from "react-spinners"; 
-// import { FaUserCircle } from "react-icons/fa"; 
+// import { motion } from "framer-motion";
+// import { ClipLoader } from "react-spinners";
+// import { FaUserCircle } from "react-icons/fa";
 // import { domainUrl } from "../utils/constant"; // Assuming this path is correct
-
 
 // import {
 //   Dialog,
@@ -1160,20 +1145,20 @@
 //   Bars3Icon,
 //   HomeIcon,
 //   XMarkIcon,
-//   UsersIcon, 
-//   TagIcon, 
-//   CubeTransparentIcon, 
-//   ShoppingBagIcon, 
-//   ChevronDownIcon, 
+//   UsersIcon,
+//   TagIcon,
+//   CubeTransparentIcon,
+//   ShoppingBagIcon,
+//   ChevronDownIcon,
 // } from '@heroicons/react/24/outline'
 
 // // --- 1. ADMIN NAVIGATION DATA (MAPPED FROM YOUR LINKS) ---
 // const adminNavigation = [
-//   { 
-//     name: 'Dashboard', 
-//     href: '/admindashboard', 
-//     icon: HomeIcon, 
-//     current: true 
+//   {
+//     name: 'Dashboard',
+//     href: '/admindashboard',
+//     icon: HomeIcon,
+//     current: true
 //   },
 //   {
 //     name: 'User Management',
@@ -1185,7 +1170,7 @@
 //   },
 //   {
 //     name: 'Category Management',
-//     icon: TagIcon, 
+//     icon: TagIcon,
 //     subLinks: [
 //       { name: 'Add Category', href: '/admindashboard/managecategories/addcategory' },
 //       { name: 'List Categories', href: '/admindashboard/managecategories/listcategory' },
@@ -1193,17 +1178,17 @@
 //   },
 //   {
 //     name: 'Product Management',
-//     icon: CubeTransparentIcon, 
+//     icon: CubeTransparentIcon,
 //     subLinks: [
 //       { name: 'Add Products', href: '/admindashboard/manageproducts/addproducts' },
 //       { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
 //     ],
 //   },
-//   { 
-//     name: 'Order Management', 
-//     href: '/admindashboard/adminordermanagement', 
-//     icon: ShoppingBagIcon, 
-//     current: false 
+//   {
+//     name: 'Order Management',
+//     href: '/admindashboard/adminordermanagement',
+//     icon: ShoppingBagIcon,
+//     current: false
 //   },
 // ]
 
@@ -1235,7 +1220,7 @@
 //             </li>
 //         );
 //     }
-    
+
 //     return (
 //         <li key={item.name}>
 //             <button
@@ -1250,7 +1235,7 @@
 //                     <item.icon aria-hidden="true" className="size-6 shrink-0" />
 //                     {item.name}
 //                 </div>
-//                 <ChevronDownIcon 
+//                 <ChevronDownIcon
 //                     className={classNames(
 //                         'size-5 transition-transform duration-200',
 //                         isActiveParent ? 'rotate-180' : 'rotate-0'
@@ -1267,8 +1252,8 @@
 //             >
 //                 {item.subLinks.map((subItem) => (
 //                     <li key={subItem.name}>
-//                         <Link 
-//                             to={subItem.href} 
+//                         <Link
+//                             to={subItem.href}
 //                             className="block p-2 text-sm text-gray-400 rounded-md hover:bg-black/30 hover:text-white transition-colors duration-200"
 //                         >
 //                             {subItem.name}
@@ -1281,21 +1266,20 @@
 // };
 // // -----------------------------------------------------------------
 
-
 // export default function Admindashboard() {
 //     const [sidebarOpen, setSidebarOpen] = useState(false);
-//     const [openMenu, setOpenMenu] = useState(""); 
+//     const [openMenu, setOpenMenu] = useState("");
 //     const [adminInfo, setAdminInfo] = useState(null);
-//     const [isLoading, setIsLoading] = useState(true); 
+//     const [isLoading, setIsLoading] = useState(true);
 //     const navigate = useNavigate();
-    
+
 //     const toggleMenu = (menuName) => {
 //         setOpenMenu(openMenu === menuName ? "" : menuName);
 //     };
 
 //     const handleLogout = () => {
 //         localStorage.removeItem("token");
-//         localStorage.removeItem("role"); 
+//         localStorage.removeItem("role");
 //         setAdminInfo(null);
 //         navigate("/login");
 //     };
@@ -1311,8 +1295,8 @@
 //             });
 
 //             // Use the specified response field: res.data.adminData
-//             const adminData = res.data.adminData; 
-            
+//             const adminData = res.data.adminData;
+
 //             // Set the state with the fetched admin's name and role
 //             setAdminInfo({
 //                 name: adminData.username || adminData.name || "Administrator",
@@ -1330,7 +1314,6 @@
 //         }
 //     };
 
-
 //     // 🔑 AUTHENTICATION AND DATA FETCHING EFFECT
 //     useEffect(() => {
 //         const token = localStorage.getItem("token");
@@ -1344,12 +1327,12 @@
 //             navigate("/login", { replace: true });
 //             return;
 //         }
-        
+
 //         // --- 2. If valid, fetch profile data ---
 //         fetchAdminProfile(token);
-        
+
 //     }, [navigate]);
-    
+
 //     // 🛡️ Guard Clause: Show loading spinner until validation and data retrieval is complete
 //     if (isLoading) {
 //         return (
@@ -1390,7 +1373,7 @@
 //                                     {/* Your Logo (Mandaram Drapes) */}
 //                                     <img
 //                                         alt="Mandaram Drapes Logo"
-//                                         src="/logo123.png" 
+//                                         src="/logo123.png"
 //                                         className="h-10 w-auto"
 //                                     />
 //                                 </div>
@@ -1399,11 +1382,11 @@
 //                                         <li>
 //                                             <ul role="list" className="-mx-2 space-y-1">
 //                                                 {adminNavigation.map((item) => (
-//                                                     <NavLink 
-//                                                         key={item.name} 
-//                                                         item={item} 
-//                                                         openMenu={openMenu} 
-//                                                         toggleMenu={toggleMenu} 
+//                                                     <NavLink
+//                                                         key={item.name}
+//                                                         item={item}
+//                                                         openMenu={openMenu}
+//                                                         toggleMenu={toggleMenu}
 //                                                     />
 //                                                 ))}
 //                                             </ul>
@@ -1430,7 +1413,7 @@
 //                             {/* Your Logo (Mandaram Drapes) */}
 //                             <img
 //                                 alt="Mandaram Drapes Logo"
-//                                 src="/logo123.png" 
+//                                 src="/logo123.png"
 //                                 className="h-10 w-auto"
 //                             />
 //                         </div>
@@ -1439,11 +1422,11 @@
 //                                 <li>
 //                                     <ul role="list" className="-mx-2 space-y-1">
 //                                         {adminNavigation.map((item) => (
-//                                             <NavLink 
-//                                                 key={item.name} 
-//                                                 item={item} 
-//                                                 openMenu={openMenu} 
-//                                                 toggleMenu={toggleMenu} 
+//                                             <NavLink
+//                                                 key={item.name}
+//                                                 item={item}
+//                                                 openMenu={openMenu}
+//                                                 toggleMenu={toggleMenu}
 //                                             />
 //                                         ))}
 //                                     </ul>
@@ -1464,7 +1447,7 @@
 
 //                 {/* Main Content Area */}
 //                 <div className="lg:pl-72">
-                    
+
 //                     {/* Top Navbar (Integrated from Tailwind template, simplified) */}
 //                     <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
 //                         <button
@@ -1495,7 +1478,7 @@
 //                                         <span className="sr-only">Open user menu</span>
 //                                         {/* Using your FaUserCircle style here */}
 //                                         <FaUserCircle size={28} className="text-gray-700" />
-                                        
+
 //                                         <span className="hidden lg:flex lg:items-center">
 //                                             <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
 //                                                 {adminInfo?.name || "Administrator"}
@@ -1537,10 +1520,7 @@
 //     )
 // }
 
-
-
-
-'use client'
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
@@ -1560,7 +1540,7 @@ import {
   MenuItem,
   MenuItems,
   TransitionChild,
-} from '@headlessui/react'
+} from "@headlessui/react";
 
 import {
   Bars3Icon,
@@ -1571,43 +1551,56 @@ import {
   CubeTransparentIcon,
   ShoppingBagIcon,
   ChevronDownIcon,
-} from '@heroicons/react/24/outline'
-
-
+} from "@heroicons/react/24/outline";
+import { useAuth } from "../context/AuthContext";
 
 // ADMIN NAVIGATION (UI unchanged)
 const adminNavigation = [
-  { name: 'Dashboard', href: '/admindashboard', icon: HomeIcon },
+  { name: "Dashboard", href: "/admindashboard", icon: HomeIcon },
   {
-    name: 'User Management',
+    name: "User Management",
     icon: UsersIcon,
     subLinks: [
-      { name: 'Add User', href: '/admindashboard/manageuser/adduser' },
-      { name: 'List Users', href: '/admindashboard/manageuser/listusers' },
+      { name: "Add User", href: "/admindashboard/manageuser/adduser" },
+      { name: "List Users", href: "/admindashboard/manageuser/listusers" },
     ],
   },
   {
-    name: 'Category Management',
+    name: "Category Management",
     icon: TagIcon,
     subLinks: [
-      { name: 'Add Category', href: '/admindashboard/managecategories/addcategory' },
-      { name: 'List Categories', href: '/admindashboard/managecategories/listcategory' },
+      {
+        name: "Add Category",
+        href: "/admindashboard/managecategories/addcategory",
+      },
+      {
+        name: "List Categories",
+        href: "/admindashboard/managecategories/listcategory",
+      },
     ],
   },
   {
-    name: 'Product Management',
+    name: "Product Management",
     icon: CubeTransparentIcon,
     subLinks: [
-      { name: 'Add Products', href: '/admindashboard/manageproducts/addproducts' },
-      { name: 'List Products', href: '/admindashboard/manageproducts/listproducts' },
+      {
+        name: "Add Products",
+        href: "/admindashboard/manageproducts/addproducts",
+      },
+      {
+        name: "List Products",
+        href: "/admindashboard/manageproducts/listproducts",
+      },
     ],
   },
-  { name: 'Order Management', href: '/admindashboard/adminordermanagement', icon: ShoppingBagIcon },
+  {
+    name: "Order Management",
+    href: "/admindashboard/adminordermanagement",
+    icon: ShoppingBagIcon,
+  },
 ];
 
-const classNames = (...classes) => classes.filter(Boolean).join(' ');
-
-
+const classNames = (...classes) => classes.filter(Boolean).join(" ");
 
 const NavLink = ({ item, openMenu, toggleMenu }) => {
   const hasSubLinks = item.subLinks && item.subLinks.length > 0;
@@ -1615,9 +1608,9 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
   const isActiveParent = hasSubLinks && openMenu === item.name;
 
   const baseClasses =
-    'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer';
-  const activeClasses = 'bg-white/10 text-white';
-  const inactiveClasses = 'text-gray-300 hover:bg-white/10 hover:text-white';
+    "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer";
+  const activeClasses = "bg-white/10 text-white";
+  const inactiveClasses = "text-gray-300 hover:bg-white/10 hover:text-white";
 
   if (!hasSubLinks) {
     return (
@@ -1627,7 +1620,7 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
           className={classNames(
             isCurrent ? activeClasses : inactiveClasses,
             baseClasses,
-            'w-full'
+            "w-full"
           )}
         >
           <item.icon aria-hidden="true" className="size-6 shrink-0" />
@@ -1644,7 +1637,7 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
         className={classNames(
           isActiveParent ? activeClasses : inactiveClasses,
           baseClasses,
-          'w-full flex justify-between items-center'
+          "w-full flex justify-between items-center"
         )}
       >
         <div className="flex items-center gap-x-3">
@@ -1653,15 +1646,15 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
         </div>
         <ChevronDownIcon
           className={classNames(
-            'size-5 transition-transform duration-200',
-            isActiveParent ? 'rotate-180' : 'rotate-0'
+            "size-5 transition-transform duration-200",
+            isActiveParent ? "rotate-180" : "rotate-0"
           )}
         />
       </button>
 
       <motion.ul
         initial={{ height: 0 }}
-        animate={{ height: isActiveParent ? 'auto' : 0 }}
+        animate={{ height: isActiveParent ? "auto" : 0 }}
         transition={{ duration: 0.2 }}
         className="mt-1 space-y-1 overflow-hidden ml-4 p-1 rounded-md bg-black/20"
       >
@@ -1680,8 +1673,6 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
   );
 };
 
-
-
 // =========================
 // COOKIE-BASED ADMIN PANEL
 // =========================
@@ -1690,6 +1681,7 @@ export default function Admindashboard() {
   const [openMenu, setOpenMenu] = useState("");
   const [adminInfo, setAdminInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { user, checkAuthStatus, handleClientLogout } = useAuth();
 
   const navigate = useNavigate();
 
@@ -1697,21 +1689,35 @@ export default function Admindashboard() {
     setOpenMenu(openMenu === menuName ? "" : menuName);
   };
 
-
-
   // =========================
   // LOGOUT USING COOKIES
   // =========================
+  // Admindashboard.jsx
+
   const handleLogout = async () => {
+    // Remove role stored on frontend
+    // localStorage.removeItem("role");
+    setAdminInfo(null);
+
     try {
-      await api.post("/auth/logout"); // server clears cookie
-      navigate("/login");
-    } catch (err) {
-      navigate("/login");
+      //  MUST SEND COOKIES
+      const resp= await axios.post(
+        `${domainUrl}/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+
+      console.log('resp!@@',resp);
+      
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
+
+    handleClientLogout(); // Clear client-side state
+
+    // Redirect to login
+    navigate("/login", { replace: true });
   };
-
-
 
   // =========================
   // FETCH ADMIN PROFILE
@@ -1727,7 +1733,6 @@ export default function Admindashboard() {
         name: data.username || data.name || "Administrator",
         role: data.role || "Admin",
       });
-
     } catch (err) {
       console.error("Admin auth failed:", err);
       navigate("/login", { replace: true }); // cookie expired → go login
@@ -1736,18 +1741,10 @@ export default function Admindashboard() {
     }
   };
 
-
-
   // RUN ON MOUNT
   useEffect(() => {
     fetchAdminProfile();
   }, []);
-
-
-
-
-
-
 
   if (isLoading) {
     return (
@@ -1757,17 +1754,18 @@ export default function Admindashboard() {
     );
   }
 
-
-
   // =========================
   // RENDER (UI UNCHANGED)
   // =========================
   return (
     <>
       <div>
-
         {/* Mobile Sidebar */}
-        <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+        <Dialog
+          open={sidebarOpen}
+          onClose={setSidebarOpen}
+          className="relative z-50 lg:hidden"
+        >
           <DialogBackdrop
             transition
             className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-closed:opacity-0"
@@ -1780,17 +1778,27 @@ export default function Admindashboard() {
             >
               <TransitionChild>
                 <div className="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="-m-2.5 p-2.5"
+                  >
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="size-6 text-white" />
+                    <XMarkIcon
+                      aria-hidden="true"
+                      className="size-6 text-white"
+                    />
                   </button>
                 </div>
               </TransitionChild>
 
               <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
-
                 <div className="relative flex h-16 shrink-0 items-center">
-                  <img src="/logo123.png" alt="Mandaram Drapes Logo" className="h-10 w-auto" />
+                  <img
+                    src="/logo123.png"
+                    alt="Mandaram Drapes Logo"
+                    className="h-10 w-auto"
+                  />
                 </div>
 
                 <nav className="relative flex flex-1 flex-col">
@@ -1811,30 +1819,32 @@ export default function Admindashboard() {
                       onClick={handleLogout}
                       className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-white/10 hover:text-white mt-auto cursor-pointer"
                     >
-                      <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+                      <ShoppingBagIcon
+                        aria-hidden="true"
+                        className="size-6 shrink-0"
+                      />
                       Logout
                     </a>
                   </ul>
                 </nav>
-
               </div>
             </DialogPanel>
           </div>
         </Dialog>
 
-
-
         {/* Desktop Sidebar */}
         <div className="hidden bg-[#343e32] lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
-
             <div className="flex h-16 shrink-0 items-center">
-              <img src="/logo123.png" alt="Mandaram Drapes Logo" className="h-10 w-auto" />
+              <img
+                src="/logo123.png"
+                alt="Mandaram Drapes Logo"
+                className="h-10 w-auto"
+              />
             </div>
 
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
-
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
                     {adminNavigation.map((item) => (
@@ -1853,24 +1863,21 @@ export default function Admindashboard() {
                     onClick={handleLogout}
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
                   >
-                    <ShoppingBagIcon aria-hidden="true" className="size-6 shrink-0" />
+                    <ShoppingBagIcon
+                      aria-hidden="true"
+                      className="size-6 shrink-0"
+                    />
                     Logout
                   </a>
                 </li>
-
               </ul>
             </nav>
-
           </div>
         </div>
-
-
-
 
         {/* Top Navbar */}
         <div className="lg:pl-72">
           <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-xs sm:gap-x-6 sm:px-6 lg:px-8">
-
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
@@ -1879,12 +1886,17 @@ export default function Admindashboard() {
               <Bars3Icon aria-hidden="true" className="size-6" />
             </button>
 
-            <div aria-hidden="true" className="h-6 w-px bg-gray-900/10 lg:hidden" />
+            <div
+              aria-hidden="true"
+              className="h-6 w-px bg-gray-900/10 lg:hidden"
+            />
 
             <div className="flex flex-1 justify-end self-stretch">
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-
-                <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
+                <div
+                  aria-hidden="true"
+                  className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10"
+                />
 
                 <Menu as="div" className="relative">
                   <MenuButton className="relative flex items-center">
@@ -1894,10 +1906,16 @@ export default function Admindashboard() {
                     <FaUserCircle size={28} className="text-gray-700" />
 
                     <span className="hidden lg:flex lg:items-center">
-                      <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
+                      <span
+                        aria-hidden="true"
+                        className="ml-4 text-sm/6 font-semibold text-gray-900"
+                      >
                         {adminInfo?.name || "Administrator"}
                       </span>
-                      <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
+                      <ChevronDownIcon
+                        aria-hidden="true"
+                        className="ml-2 size-5 text-gray-400"
+                      />
                     </span>
                   </MenuButton>
 
@@ -1907,7 +1925,9 @@ export default function Admindashboard() {
                   >
                     <div className="px-3 py-1 text-sm text-gray-600 border-b mb-1">
                       <p className="font-semibold">{adminInfo?.name}</p>
-                      <p className="text-xs text-gray-500">Role: {adminInfo?.role}</p>
+                      <p className="text-xs text-gray-500">
+                        Role: {adminInfo?.role}
+                      </p>
                     </div>
 
                     <MenuItem>
@@ -1920,13 +1940,9 @@ export default function Admindashboard() {
                     </MenuItem>
                   </MenuItems>
                 </Menu>
-
               </div>
             </div>
           </div>
-
-
-
 
           {/* Main Content */}
           <main>
@@ -1934,31 +1950,8 @@ export default function Admindashboard() {
               <Outlet />
             </div>
           </main>
-
         </div>
       </div>
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

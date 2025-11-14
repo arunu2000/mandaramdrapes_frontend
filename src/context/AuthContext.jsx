@@ -1,63 +1,66 @@
-// import React, { createContext, useContext, useState, useEffect } from 'react';
-// import axios from 'axios';
-// import { domainUrl } from '../utils/constant'; // Assuming domainUrl is accessible
+// src/context/AuthContext.jsx (NEW FILE)
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import api from "../utils/api"
 
-// const AuthContext = createContext();
+const AuthContext = createContext();
 
-// export const useAuth = () => {
-//     return useContext(AuthContext);
-// };
+export const useAuth = () => useContext(AuthContext);
 
-// export const AuthProvider = ({ children }) => {
-//     // State to hold user info fetched from the server via cookie validation
-//     const [user, setUser] = useState({ 
-//         role: null, 
-//         isAuthenticated: false,
-//         isLoading: true // Assume loading initially
-//     });
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState({ 
+        role: null, 
+        isAuthenticated: false,
+        isInitialLoad: true // Tracks initial check
+    });
 
-//     const checkAuthStatus = async () => {
-//         // Assume failure initially
-//         let newRole = null;
-//         let isAuthenticated = false;
+    // Configure axios to send cookies globally
+    axios.defaults.withCredentials = true;
 
-//         try {
-//             // Hit a theoretical endpoint to check for a valid cookie and return role
-//             // NOTE: This endpoint must be implemented on your backend!
-//             const res = await axios.get(`${domainUrl}/auth/status`, { withCredentials: true }); 
+    // Core logic to check cookie status on the server
+    const checkAuthStatus = async () => {
+        try {
+            const res = await api.get(`/auth/status`); 
+            console.log('!!!!!!!!!!!!!!!!!!!',res.data)
             
-//             if (res.data.isLoggedIn && res.data.role) {
-//                 newRole = res.data.role;
-//                 isAuthenticated = true;
-//             }
-//         } catch (error) {
-//             // If the cookie is expired or invalid, the request usually returns 401/403
-//             // We ensure local storage is clean in this case
-//             localStorage.removeItem('role'); 
-//         }
+            if (res.data.isLoggedIn) {
+                // Update non-sensitive role in localStorage for future quick checks
+                localStorage.setItem('role', res.data.role); 
+                
+                setUser({
+                    role: res.data.role,
+                    isAuthenticated: true,  
+                    isInitialLoad: false
+                });
+            } else {
+                // Server confirmed no valid cookie/session
+                localStorage.removeItem('role');
+                setUser({ role: null, isAuthenticated: false, isInitialLoad: false });
+            }
+        } catch (error) {
+            // General failure (network/server down)
+            localStorage.removeItem('role');
+            setUser({ role: null, isAuthenticated: false, isInitialLoad: false });
+        }
+    };
 
-//         // Update the global state
-//         setUser({
-//             role: newRole,
-//             isAuthenticated: isAuthenticated,
-//             isLoading: false
-//         });
-        
-//         // Return the role for immediate use in redirecting inside App.jsx
-//         return newRole; 
-//     };
+    // Run once on mount to check cookie validity
+    useEffect(() => {
+        checkAuthStatus();
+    }, []);
 
-//     // Run once on mount to check cookie validity
-//     useEffect(() => {
-//         checkAuthStatus();
-//     }, []);
+    // Function to manually clear state (used in logout)
+    const handleClientLogout = () => {
+        localStorage.removeItem('role');
+        setUser({ role: null, isAuthenticated: false, isInitialLoad: false });
+    };
 
-//     // Provider Value
-//     const value = {
-//         user,
-//         setUser, // Function to update user state after login/logout
-//         checkAuthStatus, // Function to manually re-validate cookie (e.g., on logout)
-//     };
+    const value = {
+        user,
+        setUser,
+        checkAuthStatus,
+        handleClientLogout,
+    };
 
-//     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-// };
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

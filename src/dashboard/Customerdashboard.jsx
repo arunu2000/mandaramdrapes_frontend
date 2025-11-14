@@ -4603,6 +4603,7 @@ import { domainUrl } from "../utils/constant";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import FeaturedProducts from "../components/FeaturedProducts";
+import { useAuth } from "../context/AuthContext";
 
 import FooterSection from "../components/FooterSection";
 import HeroCarousel from "../components/HeroCarousel";
@@ -4613,6 +4614,8 @@ import CustomerLayout from "../layouts/CustomerLayout";
 import { useCart } from "../context/CartContext";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import api from "../utils/api";
+
 
 // --- SIMPLIFIED NAVIGATION DATA ---
 const simpleNavigation = {
@@ -4644,7 +4647,24 @@ const Customerdashboard = () => {
   const [productsError, setProductsError] = useState(null); // State for "Add to Bag" button loading
   const [isAdding, setIsAdding] = useState(null); // --- CART CONTEXT ---
 
-  const { cartItems, fetchCart, notifyAuthChange } = useCart(); // --- ROLE REDIRECTION AND PROFILE FETCH ---
+  const { cartItems, fetchCart, notifyAuthChange } = useCart()
+  
+  const { user, checkAuthStatus, handleClientLogout } = useAuth();
+   
+
+    // 🚨 NEW: Protection Guard and Redirection
+    useEffect(() => {
+        if (user.isInitialLoad) return;
+        
+        // 1. If not authenticated, force to login
+        // if (!user.isAuthenticated) {
+        //     navigate("/login", { replace: true });
+        //     return;
+        // }
+        if (user.role === 'admin') {
+            navigate("/admindashboard", { replace: true });
+        }
+    }, [user.isInitialLoad, user.isAuthenticated, user.role, navigate]);; // --- ROLE REDIRECTION AND PROFILE FETCH ---
 
   useEffect(() => {
     const checkAuthAndFetchProfile = async () => {
@@ -4719,7 +4739,9 @@ const Customerdashboard = () => {
   const handleLogout = async () => {
     try {
       // 1. Invalidate session cookie on the server (best practice)
-      await axios.post(`${domainUrl}/user/logout`);
+      await api.post(`${domainUrl}/auth/logout`); 
+        handleClientLogout(); // Clear client-side state
+        navigate("/login", { replace: true });
     } catch (error) {
       console.error("Logout API failed (cookie may still be cleared by browser soon):", error);
     }
@@ -4750,6 +4772,12 @@ const Customerdashboard = () => {
       navigate(path);
     }
   };
+  // if (user.isInitialLoad || !user.isAuthenticated) {
+  //       return <Loader message="Checking access..." />;
+  //   }
+  if (user.isInitialLoad ) {
+        return <Loader message="Checking access..." />;
+    }
 
   // Horizontal scroll handler (kept unchanged as it's UI logic)
   const scroll = (direction) => {

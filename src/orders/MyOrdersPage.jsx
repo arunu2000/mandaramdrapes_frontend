@@ -565,79 +565,286 @@
 
 
 
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import {domainUrl} from '../utils/constant'
-// FIX: The original path to '../utils/constant' could not be resolved.
-// We are defining a placeholder domainUrl here to ensure the code compiles and runs.
+// import React, { useState, useEffect, useCallback } from 'react';
+// import axios from 'axios';
+// import {domainUrl} from '../utils/constant'
+// // FIX: The original path to '../utils/constant' could not be resolved.
+// // We are defining a placeholder domainUrl here to ensure the code compiles and runs.
  
-import { ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
-import { Navigate } from 'react-router-dom';
+// import { ClockIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/20/solid';
+// import { Navigate } from 'react-router-dom';
 
-// Helper function to get the status icon (already handles 'Cancelled')
+// // Helper function to get the status icon (already handles 'Cancelled')
+// const getStatusIcon = (status) => {
+//   switch (status) {
+//     case 'Processing':
+//       return <ClockIcon className="size-5 text-yellow-500" aria-hidden="true" />;
+//     case 'Shipped':
+//       return <ClockIcon className="size-5 text-blue-500" aria-hidden="true" />;
+//     case 'Delivered':
+//       return <CheckCircleIcon className="size-5 text-green-500" aria-hidden="true" />;
+//     case 'Cancelled':
+//       return <XCircleIcon className="size-5 text-red-500" aria-hidden="true" />;
+//     default:
+//       return <ClockIcon className="size-5 text-gray-500" aria-hidden="true" />;
+//   }
+// };
+
+// export default function MyOrdersPage() {
+//   const [orders, setOrders] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   // Function to retrieve the authentication token
+//   const getToken = () => localStorage.getItem("token");
+
+//   const fetchOrders = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+//     try {
+//       const token = getToken();
+//       if (!token) {
+//         setError("Please Login To See Your Order History");
+//         setLoading(false);
+//         return;
+//       }
+
+//       const res = await axios.get(`${domainUrl}/order/myOrders`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
+
+//       // The backend returns { order: orders_array }
+//       setOrders(res.data.order || []); 
+//     } catch (err) {
+//       console.error("Error fetching orders:", err);
+//       setError("Oops! Something went wrong while fetching orders.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     fetchOrders();
+//   }, [fetchOrders]);
+
+//   if (loading) return <div className="text-center py-20 text-xl font-medium text-indigo-600">Loading order history...</div>;
+//   if (error) return <div className="text-center py-20 text-xl font-semibold   p-4 rounded-lg text-red-500">{error}</div>;
+//   if (orders.length === 0) return <div className="text-center py-20 text-lg text-gray-500">No orders placed yet. Start shopping!</div>;
+
+//   return (
+//     <div className="bg-white min-h-screen">
+//       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pb-24">
+
+//         {/* Page Header */}
+//         <div className="max-w-xl">
+//           <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 border-b pb-2">Your Order History</h1>
+//           <p className="mt-2 text-md text-gray-600">
+//             Check the status of your recent purchases.
+//           </p>
+//         </div>
+
+//         <div className="mt-12 space-y-16">
+//           {orders.map((order) => (
+//             <div key={order._id} className="shadow-lg rounded-xl overflow-hidden border border-gray-100">
+
+//               {/* Order Summary Block */}
+//               <div className="bg-indigo-50 px-4 py-6 sm:flex sm:items-center sm:justify-between sm:space-x-6 sm:px-6 lg:space-x-8">
+                
+//                 <dl className="flex-auto divide-y divide-indigo-200 text-sm text-gray-700 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:divide-y-0 lg:w-1/2 lg:flex-none lg:gap-x-8">
+//                   <div>
+//                     <dt className="font-semibold text-indigo-900">Date Placed</dt>
+//                     <dd className="sm:mt-1">
+//                       {new Date(order.createdAt).toLocaleDateString()}
+//                     </dd>
+//                   </div>
+//                   <div>
+//                     <dt className="font-semibold text-indigo-900">Order ID</dt>
+//                     <dd className="sm:mt-1 font-mono text-xs text-indigo-800 bg-indigo-200 inline-block px-2 py-0.5 rounded-full">#{order._id}</dd>
+//                   </div>
+//                   <div>
+//                     <dt className="font-semibold text-indigo-900">Total Amount</dt>
+//                     <dd className="font-extrabold text-indigo-900 sm:mt-1">₹{order.totalAmount ? order.totalAmount.toFixed(2) : 'N/A'}</dd>
+//                   </div>
+//                 </dl>
+
+//                 {/* Status Label */}
+//                 <div className="mt-4 sm:mt-0 sm:text-right flex items-center justify-end">
+//                   {getStatusIcon(order.orderStatus)}
+//                   <span className={`ml-2 font-bold ${order.orderStatus === 'Cancelled' ? 'text-red-600' : order.orderStatus === 'Delivered' ? 'text-green-600' : 'text-indigo-600'}`}>{order.orderStatus}</span>
+//                 </div>
+//               </div>
+
+//               {/* Product List */}
+//               <div className="p-4 sm:p-6">
+//                 <h3 className="text-lg font-semibold mb-4 text-gray-800">Order Items</h3>
+//                 <div className="flow-root">
+//                   <ul role="list" className="-my-6 divide-y divide-gray-200">
+//                     {order.items?.map((item, index) => {
+//                       // **CRITICAL LOGIC:** Check if product population failed (meaning the product was deleted).
+//                       // If the product was deleted, Mongoose populate returns 'null'.
+//                       const isProductUnavailable = item.product === null;
+
+//                       return (
+//                         <li key={index} className="flex py-6">
+//                           <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+//                             {isProductUnavailable ? (
+//                                 <div className="flex h-full w-full items-center justify-center bg-red-100 text-red-500 text-xs text-center font-bold p-1">
+//                                     <XCircleIcon className="size-5 mr-1" /> UNAVAILABLE
+//                                 </div>
+//                             ) : (
+//                               <img
+//                                 src={item.product.image || 'https://placehold.co/80x80/cccccc/333333?text=N/A'}
+//                                 alt={item.product.name}
+//                                 className="h-full w-full object-cover object-center"
+//                               />
+//                             )}
+//                           </div>
+
+//                           <div className="ml-4 flex flex-1 flex-col">
+//                             <div>
+//                               <div className="flex justify-between text-base font-medium text-gray-900">
+//                                 <h3>
+//                                   {isProductUnavailable ? (
+//                                     <span className="text-red-600 font-bold">Product Unavailable</span>
+//                                   ) : (
+//                                     <span className="text-gray-900">{item.product.name}</span>
+//                                   )}
+//                                 </h3>
+//                                 {/* The 'item.price' is the price captured at the time of order, not the current product price */}
+//                                 <p className="ml-4">₹{(item.price * item.quantity).toFixed(2)}</p>
+//                               </div>
+//                               <p className="mt-1 text-sm text-gray-500">
+//                                 {!isProductUnavailable && `Unit Price: ₹${item.price.toFixed(2)}`}
+//                               </p>
+//                             </div>
+//                             <div className="flex flex-1 items-end justify-between text-sm">
+//                               <p className="text-gray-500">Qty: {item.quantity}</p>
+                              
+//                               {/* Display specific cancellation reason if applicable */}
+//                               {order.orderStatus === 'Cancelled' && isProductUnavailable && (
+//                                 <div className="text-sm font-semibold text-red-500 flex items-center">
+//                                     <XCircleIcon className="size-4 mr-1" />
+//                                     <span className="bg-red-100 px-2 py-0.5 rounded-full">Reason: Product Deleted</span>
+//                                 </div>
+//                               )}
+
+//                             </div>
+//                           </div>
+//                         </li>
+//                       );
+//                     })}
+//                   </ul>
+//                 </div>
+//               </div>
+
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+import React, { useState, useEffect, useCallback } from "react";
+import api from "../utils/api"; // 🔥 axios instance with withCredentials:true
+import { domainUrl } from "../utils/constant";
+
+import {
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+} from "@heroicons/react/20/solid";
+import { useNavigate } from "react-router-dom";
+
+// STATUS ICONS
 const getStatusIcon = (status) => {
   switch (status) {
-    case 'Processing':
-      return <ClockIcon className="size-5 text-yellow-500" aria-hidden="true" />;
-    case 'Shipped':
-      return <ClockIcon className="size-5 text-blue-500" aria-hidden="true" />;
-    case 'Delivered':
-      return <CheckCircleIcon className="size-5 text-green-500" aria-hidden="true" />;
-    case 'Cancelled':
-      return <XCircleIcon className="size-5 text-red-500" aria-hidden="true" />;
+    case "Processing":
+      return <ClockIcon className="size-5 text-yellow-500" />;
+    case "Shipped":
+      return <ClockIcon className="size-5 text-blue-500" />;
+    case "Delivered":
+      return <CheckCircleIcon className="size-5 text-green-500" />;
+    case "Cancelled":
+      return <XCircleIcon className="size-5 text-red-500" />;
     default:
-      return <ClockIcon className="size-5 text-gray-500" aria-hidden="true" />;
+      return <ClockIcon className="size-5 text-gray-500" />;
   }
 };
 
 export default function MyOrdersPage() {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Function to retrieve the authentication token
-  const getToken = () => localStorage.getItem("token");
-
+  // FETCH ORDERS (with cookie auth)
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
+
     try {
-      const token = getToken();
-      if (!token) {
+      // 🔥 Cookie is automatically sent by api
+      const res = await api.get(`/order/myOrders`);
+
+      setOrders(res.data.order || []);
+    } catch (err) {
+      const status = err.response?.status;
+
+      if (status === 401) {
+        // 🔥 Not logged in
         setError("Please Login To See Your Order History");
         setLoading(false);
+
+        setTimeout(() => navigate("/login", { replace: true }), 1500);
         return;
       }
 
-      const res = await axios.get(`${domainUrl}/order/myOrders`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      // The backend returns { order: orders_array }
-      setOrders(res.data.order || []); 
-    } catch (err) {
-      console.error("Error fetching orders:", err);
+      console.error("Order fetch error:", err);
       setError("Oops! Something went wrong while fetching orders.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
-  if (loading) return <div className="text-center py-20 text-xl font-medium text-indigo-600">Loading order history...</div>;
-  if (error) return <div className="text-center py-20 text-xl font-semibold   p-4 rounded-lg text-red-500">{error}</div>;
-  if (orders.length === 0) return <div className="text-center py-20 text-lg text-gray-500">No orders placed yet. Start shopping!</div>;
+  // UI STATES
+  if (loading)
+    return (
+      <div className="text-center py-20 text-xl font-medium text-indigo-600">
+        Loading order history...
+      </div>
+    );
 
+  if (error)
+    return (
+      <div className="text-center py-20 text-xl font-semibold p-4 rounded-lg text-red-500">
+        {error}
+      </div>
+    );
+
+  if (orders.length === 0)
+    return (
+      <div className="text-center py-20 text-lg text-gray-500">
+        No orders placed yet. Start shopping!
+      </div>
+    );
+
+  // MAIN UI
   return (
     <div className="bg-white min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:pb-24">
-
-        {/* Page Header */}
         <div className="max-w-xl">
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 border-b pb-2">Your Order History</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 border-b pb-2">
+            Your Order History
+          </h1>
           <p className="mt-2 text-md text-gray-600">
             Check the status of your recent purchases.
           </p>
@@ -645,98 +852,137 @@ export default function MyOrdersPage() {
 
         <div className="mt-12 space-y-16">
           {orders.map((order) => (
-            <div key={order._id} className="shadow-lg rounded-xl overflow-hidden border border-gray-100">
-
-              {/* Order Summary Block */}
-              <div className="bg-indigo-50 px-4 py-6 sm:flex sm:items-center sm:justify-between sm:space-x-6 sm:px-6 lg:space-x-8">
-                
-                <dl className="flex-auto divide-y divide-indigo-200 text-sm text-gray-700 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:divide-y-0 lg:w-1/2 lg:flex-none lg:gap-x-8">
+            <div
+              key={order._id}
+              className="shadow-lg rounded-xl overflow-hidden border border-gray-100"
+            >
+              {/* ORDER SUMMARY */}
+              <div className="bg-indigo-50 px-4 py-6 sm:flex sm:items-center sm:justify-between sm:px-6">
+                <dl className="flex-auto divide-y divide-indigo-200 text-sm text-gray-700 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:divide-y-0">
                   <div>
-                    <dt className="font-semibold text-indigo-900">Date Placed</dt>
+                    <dt className="font-semibold text-indigo-900">
+                      Date Placed
+                    </dt>
                     <dd className="sm:mt-1">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </dd>
                   </div>
+
                   <div>
-                    <dt className="font-semibold text-indigo-900">Order ID</dt>
-                    <dd className="sm:mt-1 font-mono text-xs text-indigo-800 bg-indigo-200 inline-block px-2 py-0.5 rounded-full">#{order._id}</dd>
+                    <dt className="font-semibold text-indigo-900">
+                      Order ID
+                    </dt>
+                    <dd className="sm:mt-1 font-mono text-xs text-indigo-800 bg-indigo-200 inline-block px-2 py-0.5 rounded-full">
+                      #{order._id}
+                    </dd>
                   </div>
+
                   <div>
-                    <dt className="font-semibold text-indigo-900">Total Amount</dt>
-                    <dd className="font-extrabold text-indigo-900 sm:mt-1">₹{order.totalAmount ? order.totalAmount.toFixed(2) : 'N/A'}</dd>
+                    <dt className="font-semibold text-indigo-900">
+                      Total Amount
+                    </dt>
+                    <dd className="font-extrabold text-indigo-900 sm:mt-1">
+                      ₹
+                      {order.totalAmount
+                        ? order.totalAmount.toFixed(2)
+                        : "N/A"}
+                    </dd>
                   </div>
                 </dl>
 
-                {/* Status Label */}
+                {/* STATUS */}
                 <div className="mt-4 sm:mt-0 sm:text-right flex items-center justify-end">
                   {getStatusIcon(order.orderStatus)}
-                  <span className={`ml-2 font-bold ${order.orderStatus === 'Cancelled' ? 'text-red-600' : order.orderStatus === 'Delivered' ? 'text-green-600' : 'text-indigo-600'}`}>{order.orderStatus}</span>
+                  <span
+                    className={`ml-2 font-bold ${
+                      order.orderStatus === "Cancelled"
+                        ? "text-red-600"
+                        : order.orderStatus === "Delivered"
+                        ? "text-green-600"
+                        : "text-indigo-600"
+                    }`}
+                  >
+                    {order.orderStatus}
+                  </span>
                 </div>
               </div>
 
-              {/* Product List */}
+              {/* ORDER ITEMS */}
               <div className="p-4 sm:p-6">
-                <h3 className="text-lg font-semibold mb-4 text-gray-800">Order Items</h3>
-                <div className="flow-root">
-                  <ul role="list" className="-my-6 divide-y divide-gray-200">
-                    {order.items?.map((item, index) => {
-                      // **CRITICAL LOGIC:** Check if product population failed (meaning the product was deleted).
-                      // If the product was deleted, Mongoose populate returns 'null'.
-                      const isProductUnavailable = item.product === null;
+                <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                  Order Items
+                </h3>
 
-                      return (
-                        <li key={index} className="flex py-6">
-                          <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                            {isProductUnavailable ? (
-                                <div className="flex h-full w-full items-center justify-center bg-red-100 text-red-500 text-xs text-center font-bold p-1">
-                                    <XCircleIcon className="size-5 mr-1" /> UNAVAILABLE
-                                </div>
-                            ) : (
-                              <img
-                                src={item.product.image || 'https://placehold.co/80x80/cccccc/333333?text=N/A'}
-                                alt={item.product.name}
-                                className="h-full w-full object-cover object-center"
-                              />
+                <ul className="-my-6 divide-y divide-gray-200">
+                  {order.items?.map((item, index) => {
+                    const deletedProduct = item.product === null;
+
+                    return (
+                      <li key={index} className="flex py-6">
+                        {/* IMAGE */}
+                        <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                          {deletedProduct ? (
+                            <div className="flex h-full w-full items-center justify-center bg-red-100 text-red-500 text-xs text-center font-bold">
+                              <XCircleIcon className="size-5 mr-1" />
+                              UNAVAILABLE
+                            </div>
+                          ) : (
+                            <img
+                              src={
+                                item.product.image ||
+                                "https://placehold.co/80x80?text=N/A"
+                              }
+                              alt={item.product.name}
+                              className="h-full w-full object-cover object-center"
+                            />
+                          )}
+                        </div>
+
+                        {/* INFO */}
+                        <div className="ml-4 flex flex-1 flex-col">
+                          <div>
+                            <div className="flex justify-between text-base font-medium text-gray-900">
+                              <h3>
+                                {deletedProduct ? (
+                                  <span className="text-red-600 font-bold">
+                                    Product Unavailable
+                                  </span>
+                                ) : (
+                                  <span>{item.product.name}</span>
+                                )}
+                              </h3>
+
+                              <p className="ml-4">
+                                ₹{(item.price * item.quantity).toFixed(2)}
+                              </p>
+                            </div>
+
+                            {!deletedProduct && (
+                              <p className="mt-1 text-sm text-gray-500">
+                                Unit Price: ₹{item.price.toFixed(2)}
+                              </p>
                             )}
                           </div>
 
-                          <div className="ml-4 flex flex-1 flex-col">
-                            <div>
-                              <div className="flex justify-between text-base font-medium text-gray-900">
-                                <h3>
-                                  {isProductUnavailable ? (
-                                    <span className="text-red-600 font-bold">Product Unavailable</span>
-                                  ) : (
-                                    <span className="text-gray-900">{item.product.name}</span>
-                                  )}
-                                </h3>
-                                {/* The 'item.price' is the price captured at the time of order, not the current product price */}
-                                <p className="ml-4">₹{(item.price * item.quantity).toFixed(2)}</p>
-                              </div>
-                              <p className="mt-1 text-sm text-gray-500">
-                                {!isProductUnavailable && `Unit Price: ₹${item.price.toFixed(2)}`}
-                              </p>
-                            </div>
-                            <div className="flex flex-1 items-end justify-between text-sm">
-                              <p className="text-gray-500">Qty: {item.quantity}</p>
-                              
-                              {/* Display specific cancellation reason if applicable */}
-                              {order.orderStatus === 'Cancelled' && isProductUnavailable && (
+                          <div className="flex items-end justify-between text-sm">
+                            <p className="text-gray-500">Qty: {item.quantity}</p>
+
+                            {order.orderStatus === "Cancelled" &&
+                              deletedProduct && (
                                 <div className="text-sm font-semibold text-red-500 flex items-center">
-                                    <XCircleIcon className="size-4 mr-1" />
-                                    <span className="bg-red-100 px-2 py-0.5 rounded-full">Reason: Product Deleted</span>
+                                  <XCircleIcon className="size-4 mr-1" />
+                                  <span className="bg-red-100 px-2 py-0.5 rounded-full">
+                                    Reason: Product Deleted
+                                  </span>
                                 </div>
                               )}
-
-                            </div>
                           </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
-
             </div>
           ))}
         </div>
@@ -744,3 +990,4 @@ export default function MyOrdersPage() {
     </div>
   );
 }
+

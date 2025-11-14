@@ -597,7 +597,7 @@
 
 "use client";
 
-import React, { useState } from "react"; // Removed useEffect as it was unused
+import React, { useState,useEffect } from "react"; // Removed useEffect as it was unused
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
@@ -605,6 +605,8 @@ import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { motion } from "framer-motion";
 import api from "../utils/api"; // import axios instance
+import { useAuth } from "../context/AuthContext";
+
 
 const DEEP_GREEN = "#34433d";
 const ACCENT_GREEN = "#dbe7cf";
@@ -612,9 +614,16 @@ const HOVER_GREEN = "#4a5c53";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { user, checkAuthStatus } = useAuth()
   const [formData, setFormData] = useState({ emailOrPhone: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+        if (!user.isInitialLoad && user.isAuthenticated) {
+            navigate(user.role === "admin" ? "/admindashboard" : "/", { replace: true });
+        }
+    }, [user.isInitialLoad, user.isAuthenticated, user.role, navigate]);
 
   // ---------------- HANDLERS ----------------
   const handleChange = (e) => {
@@ -671,6 +680,7 @@ const Login = () => {
       // ------------------------------------------------------------------
       // *** MODIFICATION HERE: Set the role in localStorage ***
       localStorage.setItem("role", role);
+      await checkAuthStatus();
       // ------------------------------------------------------------------
 
       toast.success(message || "Login successful!", {
@@ -694,6 +704,9 @@ const Login = () => {
       setLoading(false);
     }
   };
+  if (user.isInitialLoad) { // Guard against rendering the form while checking auth status
+        return <ClipLoader color="white" size={35} />;
+    }
 
   return (
     <>
