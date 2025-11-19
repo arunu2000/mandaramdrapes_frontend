@@ -954,14 +954,20 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const placeOrder = async () => {
-    try {
-      const res = await axios.post(`${domainUrl}/order/place`);
-      return res.data;
-    } catch (err) {
-      throw err.response?.data || err;
-    }
-  };
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
+const placeOrder = async () => {
+  try {
+    const res = await axios.post(`${domainUrl}/order/place`);
+    await wait(3000);
+    return res.data;
+  } catch (err) {
+    await wait(600);
+    throw err.response?.data || err;
+  }
+};
+
 
   const clearCart = () => {
     setCartItems([]);

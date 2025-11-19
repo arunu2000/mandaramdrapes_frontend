@@ -286,6 +286,8 @@ const Navbar = ({
       { name: "Home", href: "/", protected: false },
       { name: "Cart", href: "/cart", protected: true },
       { name: "My Orders", href: "/myorders", protected: true },
+      { name: "Products", href: "/products", protected: false },
+
     ],
   };
 

@@ -1132,6 +1132,7 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 export default function Cartpage() {
     const navigate = useNavigate();
     const {
@@ -1176,46 +1177,41 @@ export default function Cartpage() {
         e.preventDefault();
         if (cartItems.length === 0) return;
 
-        toast.promise(
-            placeOrder(),
-            {
-                pending: "Processing your order...",
-                success: {
-                    render: ({ data }) => {
-                        return (
-                            <div className="text-left">
-                                <p className="font-bold text-lg">Order Success!</p>
-                                <p className="text-sm">
-                                    Your order totaling <span className="font-semibold">₹{cartTotal}</span> has been confirmed.
-                                </p>
-                                <p className="text-xs mt-1 opacity-80">
-                                    You will be redirected to your orders page.
-                                </p>
-                            </div>
-                        );
-                    },
-                    onClose: () => {
-                        clearCart(); // <--- FIX: Clear local state before navigation
-                        navigate("/myorders");
-                    },
-                },
-                error: ({ data }) => {
-                    const errorMessage = data?.message || "Failed to place order. Please try again.";
-                    return (
-                        <div className="text-left">
-                            <p className="font-bold text-lg">Order Failed</p>
-                            <p className="text-sm">{errorMessage}</p>
-                        </div>
-                    );
-                },
-            },
-            {
-                position: "top-center",
-                autoClose: 3500, 
-                transition: Slide,
-                theme: "colored",
-            }
+       toast.promise(
+  placeOrder(),
+  {
+    pending: "Processing your order...",
+    success: {
+      render: ({ data }) => {
+        return (
+          <div className="text-left">
+            <p className="font-bold text-lg">Order Success!</p>
+            <p className="text-sm">
+              Your order totaling <span className="font-semibold">₹{cartTotal}</span> has been confirmed.
+            </p>
+            <p className="text-xs mt-1 opacity-80">
+              You will be redirected to your orders page.
+            </p>
+          </div>
         );
+      },
+      onClose: () => {
+        clearCart();
+        navigate("/myorders");
+      },
+    },
+    error: ({ data }) => {
+      const errorMessage = data?.message || "Failed to place order. Please try again.";
+      return (
+        <div className="text-left">
+          <p className="font-bold text-lg">Order Failed</p>
+          <p className="text-sm">{errorMessage}</p>
+        </div>
+      );
+    },
+  }
+);
+
     };
 
     // 🖼️ Handle image

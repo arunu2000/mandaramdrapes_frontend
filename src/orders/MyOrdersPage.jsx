@@ -749,7 +749,7 @@
 
 
 import React, { useState, useEffect, useCallback } from "react";
-import api from "../utils/api"; // 🔥 axios instance with withCredentials:true
+import api from "../utils/api"; //  axios instance with withCredentials:true
 import { domainUrl } from "../utils/constant";
 
 import {

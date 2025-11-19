@@ -568,7 +568,7 @@ const HOVER_GREEN = "#4a5c53";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { notifyAuthChange } = useCart(); // ---------------- STATE ----------------
+  // const { notifyAuthChange } = useCart(); // ---------------- STATE ----------------
 
   const [formData, setFormData] = useState({
     username: "",
@@ -645,10 +645,12 @@ const Signup = () => {
       // Your backend login/signup flow is unique: it attempts to set the cookie
       // AND returns the new user data. We must infer the role from the response.
       const user = res.data.AdminUser || res.data.user;
+      console.log("signupdata",user);
+      
       const role = user?.role || "user"; // 🚨 ACTION: Store the non-sensitive role for client-side routing
 
       localStorage.setItem("role", role);
-      notifyAuthChange(); // Refresh cart/header state
+      // notifyAuthChange(); // Refresh cart/header state //commented
 
       toast.success(
         res.data.message || "Account created and logged in successfully!",

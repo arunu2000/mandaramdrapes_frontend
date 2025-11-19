@@ -4615,6 +4615,15 @@ import { useCart } from "../context/CartContext";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../utils/api";
+import SocialFooter from "../components/SocialFooter"
+
+import SearchBar from "../components/SearchBar";
+import FilterPanel from "../components/FilterPanel";
+import SortDropdown from "../components/SortDropdown";
+import ProductGrid from "../components/ProductGrid";
+import { searchProducts } from "../api/productSearch";
+
+
 
 
 // --- SIMPLIFIED NAVIGATION DATA ---
@@ -4650,9 +4659,10 @@ const Customerdashboard = () => {
   const { cartItems, fetchCart, notifyAuthChange } = useCart()
   
   const { user, checkAuthStatus, handleClientLogout } = useAuth();
+
    
 
-    // 🚨 NEW: Protection Guard and Redirection
+    // NEW: Protection Guard and Redirection
     useEffect(() => {
         if (user.isInitialLoad) return;
         
@@ -5030,6 +5040,7 @@ const Customerdashboard = () => {
       <HeroCarousel />
       {/* Category Section */}
       <CategorySection />
+      
       {/* --- UPDATED Product Section (Horizontal Scroll) --- */}
       <FeaturedProducts
         featuredProducts={featuredProducts}
@@ -5040,6 +5051,7 @@ const Customerdashboard = () => {
       />
       {/* About Us Footer Section */}
       <FooterSection />
+      <SocialFooter/>
       {/* Toast Container for notifications */}
       <ToastContainer
         position="top-center"
