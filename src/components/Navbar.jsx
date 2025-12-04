@@ -122,7 +122,7 @@
 //                         <span className="sr-only">items in cart, view bag</span>
 //                       </Link> */}
 //                     {/* </div> */}
-//                   {/* </div> */} 
+//                   {/* </div> */}
 
 //                   {/* Icons (Account, Favourites, Cart) */}
 // <div className="flex flex-1 items-center justify-end">
@@ -256,6 +256,8 @@
 // export default Navbar;
 
 
+//worlinggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
@@ -266,7 +268,10 @@ import {
   XMarkIcon,
   HeartIcon,
 } from "@heroicons/react/24/outline";
-import logo123 from "../assets/logo123.png";
+import logo123 from "../assets/logo.png";
+import { useWishlist } from "../context/WishlistContext";
+import { HeartIcon as HeartOutline } from "@heroicons/react/24/outline";
+import WishlistPage from "../pages/WishlistPage";
 
 const Navbar = ({
   isAuthenticated,
@@ -278,16 +283,32 @@ const Navbar = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { wishlistCount } = useWishlist();
 
 
-  console.log('isAuthenticated', isAuthenticated)
+    // Fallback handler if parent doesn't pass handleGatedNavigation yet
+  const safeHandleGatedNavigation =
+    handleGatedNavigation ||
+    ((e, path, isProtected) => {
+      if (isProtected && !isAuthenticated) {
+        e.preventDefault();
+        navigate("/login");
+      } else if (isProtected && role === "admin") {
+        e.preventDefault();
+        navigate("/admindashboard");
+      } else {
+        navigate(path);
+      }
+    });
+
+
+  console.log("isAuthenticated", isAuthenticated);
   const simpleNavigation = {
     pages: [
       { name: "Home", href: "/", protected: false },
       { name: "Cart", href: "/cart", protected: true },
       { name: "My Orders", href: "/myorders", protected: true },
       { name: "Products", href: "/products", protected: false },
-
     ],
   };
 
@@ -392,7 +413,7 @@ const Navbar = ({
                     </button>
 
                     {/* Favourites Icon */}
-                    <button
+                    {/* <button
                       onClick={(e) =>
                         handleGatedNavigation(e, "/favourites", true)
                       }
@@ -400,6 +421,21 @@ const Navbar = ({
                     >
                       <span className="sr-only">Favourites</span>
                       <HeartIcon aria-hidden="true" className="h-6 w-6" />
+                    </button> */}
+
+                    <button
+                      onClick={(e) =>
+                        handleGatedNavigation(e, "/WishlistPage", true)
+                      }
+                      className="p-2 text-gray-500 hover:text-red-500 focus:outline-none relative"
+                    >
+                      <span className="sr-only">Favourites</span>
+                      <HeartOutline aria-hidden="true" className="h-6 w-6" />
+                      {wishlistCount > 0 && (
+                        <span className="absolute top-0 right-0 -mr-1 -mt-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                          {wishlistCount}
+                        </span>
+                      )}
                     </button>
 
                     {/* Cart Icon */}
@@ -463,7 +499,7 @@ const Navbar = ({
               {/* Favourites (Mobile Link) */}
               <div className="flow-root">
                 <a
-                  href="/favourites"
+                  href="/WishlistContext"
                   onClick={(e) => {
                     handleGatedNavigation(e, "/favourites", true);
                     setMobileMenuOpen(false);
@@ -520,4 +556,6 @@ const Navbar = ({
 };
 
 export default Navbar;
+
+
 

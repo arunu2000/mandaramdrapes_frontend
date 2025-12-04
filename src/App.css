@@ -3,3 +3,9 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+
+.Toastify__toast-container {
+    z-index: 999999999 !important;
+}
+

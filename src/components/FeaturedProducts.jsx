@@ -141,7 +141,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { domainUrl } from "../utils/constant";
-import Loader, { SmallLoader } from "./Loader";
+import Loader  from "./Loader";
 
 
 const ChevronLeftIcon = (props) => (
@@ -301,7 +301,7 @@ const FeaturedProducts = ({
                     >
                       {isAdding === product._id ? (
                         <span className="flex items-center gap-2">
-                          <SmallLoader /> Adding...
+                          <Loader /> Adding...
                         </span>
                       ) : (
                         "Add to bag"

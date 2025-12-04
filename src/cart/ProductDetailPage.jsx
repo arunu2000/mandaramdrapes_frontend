@@ -1958,6 +1958,14 @@
 //   );
 // }
 
+
+
+//working proper codeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { StarIcon, CheckIcon } from "@heroicons/react/20/solid";
@@ -1968,6 +1976,7 @@ import { useCart } from "../context/CartContext";
 import { ToastContainer, toast, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../context/AuthContext";
+import { BeatLoader } from "react-spinners";
 
 const DUMMY_REVIEWS = { average: 4, totalCount: 1624 };
 const deliveryInfo =
@@ -2142,9 +2151,14 @@ export default function ProductDetailPage() {
   // -------------------------------------------
   if (loading)
     return (
-      <div className="text-center py-20 text-xl text-gray-700 font-semibold">
+
+       <div className="w-full h-[60vh] flex justify-center items-center">
+       <BeatLoader color="#4f8a4c" size={15}/>
+       {/* <div className=" text-xl text-gray-700 font-semibold">
         Loading Product Details...
-      </div>
+      </div> */}
+    </div>
+     
     );
 
   if (error)
@@ -2324,3 +2338,373 @@ export default function ProductDetailPage() {
     </div>
   );
 }
+
+
+
+
+
+//wishlight
+
+// import React, { useEffect, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import { StarIcon, CheckIcon } from "@heroicons/react/20/solid";
+// import { 
+//     ShieldCheckIcon, 
+//     TruckIcon, 
+//     HeartIcon as HeartOutline 
+// } from "@heroicons/react/24/outline";
+// import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid"; // Import Solid Heart
+// import api from "../utils/api";
+// import { useCart } from "../context/CartContext";
+// import { useAuth } from "../context/AuthContext";
+// import { useWishlist } from "../context/WishlistContext"; // Import Wishlist Context
+// import { ToastContainer, toast, Slide } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// const DUMMY_REVIEWS = { average: 4, totalCount: 1624 };
+// const deliveryInfo = "Standard delivery (5-7 days) | Free shipping on orders over ₹100";
+
+// function classNames(...classes) {
+//   return classes.filter(Boolean).join(" ");
+// }
+
+// export default function ProductDetailPage() {
+//   const { productId } = useParams();
+//   const navigate = useNavigate();
+//   const [product, setProduct] = useState(null);
+//   const [selectedSize, setSelectedSize] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [isAdding, setIsAdding] = useState(false);
+//   const [isAlreadyAdded, setIsAlreadyAdded] = useState(false);
+
+//   const { cartItems, fetchCart } = useCart();
+//   const { user } = useAuth();
+  
+//   // Wishlist Hook
+//   const { isInWishlist, toggleWishlist } = useWishlist();
+
+//   // -------------------------------------------
+//   // FIX FOR FORWARD/BACK BUTTON CACHE ISSUE
+//   // -------------------------------------------
+//   useEffect(() => {
+//     if (!user.isAuthenticated && !user.isInitialLoad) {
+//       window.history.pushState(null, "", window.location.href);
+//       const handlePopState = () => {
+//         navigate(0);
+//       };
+//       window.addEventListener("popstate", handlePopState);
+//       return () => {
+//         window.removeEventListener("popstate", handlePopState);
+//       };
+//     }
+//   }, [user.isAuthenticated, user.isInitialLoad, navigate]);
+
+//   useEffect(() => {
+//     window.addEventListener("pageshow", (event) => {
+//       if (event.persisted) {
+//         navigate(0);
+//       }
+//     });
+//   }, [navigate]);
+
+//   // -------------------------------------------
+//   // PROTECT PAGE WHEN USER LOGGED OUT
+//   // -------------------------------------------
+//   useEffect(() => {
+//     if (!user.isInitialLoad && !user.isAuthenticated) {
+//       navigate("/login", { replace: true });
+//     }
+//   }, [user.isInitialLoad, user.isAuthenticated, navigate]);
+
+//   // -------------------------------------------
+//   // Fetch Product
+//   // -------------------------------------------
+//   useEffect(() => {
+//     const fetchProduct = async () => {
+//       try {
+//         setLoading(true);
+//         const res = await api.get(`/user/shop/product/${productId}`);
+//         const fetchedProduct = res.data.product;
+
+//         setProduct(fetchedProduct);
+
+//         if (fetchedProduct.sizes?.length > 0) {
+//           setSelectedSize(fetchedProduct.sizes[0].name);
+//         }
+//       } catch (err) {
+//         const status = err.response?.status;
+//         let msg = `Error loading product: ${status || "Network Error"}`;
+//         if (status === 404) msg = `Product not found for ID: "${productId}". (Status 404)`;
+//         setError(msg);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     if (productId) fetchProduct();
+//   }, [productId]);
+
+//   // -------------------------------------------
+//   // Check if in cart already
+//   // -------------------------------------------
+//   useEffect(() => {
+//     if (cartItems) {
+//       const exists = cartItems.some((item) => item.productId === productId);
+//       setIsAlreadyAdded(exists);
+//     } else {
+//       setIsAlreadyAdded(false);
+//     }
+//   }, [cartItems, productId]);
+
+//   // -------------------------------------------
+//   // Add to Cart Handler
+//   // -------------------------------------------
+//   const handleAddToCart = async (e) => {
+//     e.preventDefault();
+
+//     if (!product || isAdding) return;
+
+//     if (product.sizes?.length > 0 && !selectedSize) {
+//       toast.warn("Please select a size.", { autoClose: 1500 });
+//       return;
+//     }
+
+//     if (isAlreadyAdded) {
+//       toast.info("Product is already in your cart. Redirecting...", {
+//         position: "top-center",
+//         autoClose: 1500,
+//         icon: "🛒",
+//         onClose: () => navigate("/cart"),
+//       });
+//       return;
+//     }
+
+//     setIsAdding(true);
+
+//     try {
+//       const cartData = {
+//         productId: product._id,
+//         quantity: 1,
+//         ...(product.sizes && { selectedSize }),
+//       };
+
+//       await api.post(`/cart/add`, cartData);
+
+//       toast.success(`${product.name} added to cart!`, {
+//         position: "top-center",
+//         autoClose: 1500,
+//         icon: "🛍️",
+//         onClose: () => {
+//           fetchCart();
+//           navigate("/cart");
+//         },
+//       });
+//     } catch (err) {
+//       const status = err.response?.status;
+//       if (status === 401) {
+//         navigate("/login");
+//         return;
+//       }
+//       toast.error(err.response?.data?.message || "Failed to add product to cart.");
+//     } finally {
+//       setIsAdding(false);
+//     }
+//   };
+
+//   // -------------------------------------------
+//   // Wishlist Handler
+//   // -------------------------------------------
+//   const handleWishlistToggle = () => {
+//     if(product) {
+//         toggleWishlist(product);
+//     }
+//   }
+
+//   // Check if product is in wishlist (safely)
+//   const isWishlisted = product ? isInWishlist(product._id) : false;
+
+//   // -------------------------------------------
+//   // Render UI
+//   // -------------------------------------------
+//   if (loading)
+//     return (
+//       <div className="text-center py-20 text-xl text-gray-700 font-semibold">
+//         Loading Product Details...
+//       </div>
+//     );
+
+//   if (error)
+//     return (
+//       <div className="text-center py-20 text-xl text-red-600 font-semibold">
+//         {error}
+//       </div>
+//     );
+
+//   if (!product) return null;
+
+//   const productImageSrc = product.image || "https://via.placeholder.com/600x800";
+//   const productPrice = product.price ? `₹${product.price.toFixed(2)}` : "Price Unavailable";
+
+//   return (
+//     <div className="bg-white">
+//       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+//         <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+          
+//           {/* LEFT IMAGE */}
+//           <div className="lg:sticky lg:top-20">
+//             <div className="flex flex-col items-center">
+//               <div className="w-full h-[550px] lg:h-[700px] overflow-hidden rounded-xl shadow-lg border border-gray-100">
+//                 <img
+//                   src={productImageSrc}
+//                   alt={product.name}
+//                   className="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+//                 />
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* RIGHT DETAILS */}
+//           <div className="mt-10 lg:mt-0">
+//             <div>
+//               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+//                 {product.name}
+//               </h1>
+
+//               <div className="mt-4 flex items-center justify-between">
+//                 <p className="text-3xl font-semibold text-gray-900">
+//                   {productPrice}
+//                 </p>
+//                 <div className="flex items-center space-x-2">
+//                   <div className="flex items-center text-yellow-500">
+//                     {[...Array(5)].map((_, i) => (
+//                       <StarIcon
+//                         key={i}
+//                         className={classNames(
+//                           i < DUMMY_REVIEWS.average ? "text-yellow-500" : "text-gray-300",
+//                           "w-5 h-5 flex-shrink-0"
+//                         )}
+//                       />
+//                     ))}
+//                   </div>
+//                   <p className="text-sm text-gray-500">({DUMMY_REVIEWS.totalCount} reviews)</p>
+//                 </div>
+//               </div>
+
+//               <div className="mt-4">
+//                 <p className="flex items-center text-md text-green-600 font-medium">
+//                   <CheckIcon className="h-5 w-5 mr-1" />
+//                   In stock (99+)
+//                 </p>
+//               </div>
+
+//               <div className="mt-6 border-t border-b border-gray-200 py-6">
+//                 <p className="flex items-center text-sm text-gray-600">
+//                   <TruckIcon className="h-5 w-5 mr-2 text-gray-400" />
+//                   {deliveryInfo}
+//                 </p>
+//               </div>
+//             </div>
+
+//             {/* FORM */}
+//             <form onSubmit={handleAddToCart} className="mt-10">
+//               {product.sizes?.length > 0 && (
+//                 <div className="mb-8">
+//                   <legend className="text-lg font-medium text-gray-700 border-b border-gray-100 pb-2 mb-4">
+//                     Choose Size
+//                   </legend>
+//                   <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+//                     {product.sizes.map((size) => (
+//                       <label
+//                         key={size.name}
+//                         onClick={() => setSelectedSize(size.name)}
+//                         className={classNames(
+//                           selectedSize === size.name
+//                             ? "border-indigo-600 ring-2 ring-indigo-600 bg-indigo-50 text-indigo-800"
+//                             : "border-gray-300 hover:border-gray-500 text-gray-900",
+//                           "border rounded-lg p-3 text-center text-sm font-medium cursor-pointer transition duration-150 ease-in-out"
+//                         )}
+//                       >
+//                         <input
+//                           type="radio"
+//                           className="sr-only"
+//                           readOnly
+//                           checked={selectedSize === size.name}
+//                         />
+//                         {size.name}
+//                       </label>
+//                     ))}
+//                   </div>
+//                 </div>
+//               )}
+
+//               {/* Action Buttons Container */}
+//               <div className="flex gap-4">
+//                 {/* Add to Cart Button */}
+//                 <button
+//                   type="submit"
+//                   disabled={isAdding || (product.sizes?.length > 0 && !selectedSize)}
+//                   className={classNames(
+//                     "bg-indigo-600 hover:bg-indigo-700 flex-1",
+//                     "rounded-md px-8 py-4 text-xl font-semibold text-white uppercase tracking-wider transition duration-150 ease-in-out shadow-lg disabled:opacity-60"
+//                   )}
+//                 >
+//                   {isAdding ? "Processing..." : isAlreadyAdded ? "Go to Cart" : "Add to Bag"}
+//                 </button>
+
+//                 {/* Wishlist Button */}
+//                 <button
+//                     type="button"
+//                     onClick={handleWishlistToggle}
+//                     className={classNames(
+//                         "rounded-md px-4 py-3 flex items-center justify-center border transition duration-150 ease-in-out shadow-sm",
+//                         isWishlisted 
+//                             ? "border-red-200 bg-red-50 text-red-600 hover:bg-red-100" 
+//                             : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+//                     )}
+//                     aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+//                 >
+//                     {isWishlisted ? (
+//                          <HeartSolid className="h-8 w-8" />
+//                     ) : (
+//                          <HeartOutline className="h-8 w-8" />
+//                     )}
+//                 </button>
+//               </div>
+
+//               <div className="mt-4 text-center text-sm text-gray-600 flex items-center justify-center">
+//                 <ShieldCheckIcon className="h-5 w-5 mr-1 text-gray-400" />
+//                 <span className="font-medium">Secure Checkout</span> • Lifetime Guarantee
+//               </div>
+//             </form>
+
+//             <div className="mt-12 border-t border-gray-200 pt-8">
+//               <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Details</h2>
+//               <p className="text-base text-gray-700 leading-relaxed">
+//                 {product.description || "No detailed description is available."}
+//               </p>
+//             </div>
+
+//             <div className="mt-8">
+//               <h3 className="text-lg font-medium text-gray-900">Fabric & Care</h3>
+//               <ul className="mt-4 space-y-2 text-sm text-gray-600 list-disc ml-5">
+//                 <li>Material: 100% Pure Handloom Cotton/Silk (Placeholder)</li>
+//                 <li>Care: Dry clean only or gentle hand wash.</li>
+//                 <li>Origin: Sourced from local artisans in India.</li>
+//               </ul>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       <ToastContainer
+//         position="top-center"
+//         autoClose={2000}
+//         hideProgressBar={false}
+//         pauseOnHover
+//         theme="colored"
+//         transition={Slide}
+//       />
+//     </div>
+//   );
+// }

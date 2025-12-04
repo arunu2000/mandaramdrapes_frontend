@@ -850,6 +850,161 @@
 //     );
 // };
 
+//workinggggggggggggggggggggggggggkjkjkjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+
+
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+// } from "react";
+// import axios from "axios";
+// import { domainUrl } from "../utils/constant";
+
+// axios.defaults.withCredentials = true; // IMPORTANT
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [cartTotal, setCartTotal] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const fetchCart = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const res = await axios.get(`${domainUrl}/cart/list`);
+
+//       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//       const newCartItems =
+//         backendCart?.items
+//           ?.map((item) => ({
+//             _id: item._id,
+//             productId: item.product?._id,
+//             name: item.product?.name,
+//             price: item.product?.price,
+//             image: item.product?.image,
+//             quantity: item.quantity,
+//             selectedSize: item.selectedSize || null,
+//           }))
+//           .filter((item) => item.productId) || [];
+
+//       setCartItems(newCartItems);
+//       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+//     } catch (err) {
+//       console.log("Cart fetch error: ", err.response?.status);
+      
+//       // ❗ If cookie expired → user must login
+//       if (err.response?.status === 401) {
+//         setCartItems([]);
+//         setCartTotal(0);
+//       }
+
+//       setError("Could not load cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // Load cart on mount
+//   useEffect(() => {
+//     fetchCart();
+//   }, [fetchCart]);
+
+//   // -------- CART ACTIONS -----------
+
+//   const removeFromCart = async (productId) => {
+//     setLoading(true);
+//     try {
+//       await axios.delete(`${domainUrl}/cart/remove/${productId}`);
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Remove error:", err.response?.data);
+//       setLoading(false);
+//     }
+//   };
+
+//   const updateQuantity = async (productId, newQuantity) => {
+//     if (newQuantity <= 0) return;
+
+//     // Optimistic update
+//     setCartItems((prev) =>
+//       prev.map((item) =>
+//         item.productId === productId ? { ...item, quantity: newQuantity } : item
+//       )
+//     );
+
+//     try {
+//       await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, {
+//         quantity: newQuantity,
+//       });
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Update qty error:", err.response);
+//       fetchCart();
+//     }
+//   };
+
+//   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+
+// const placeOrder = async () => {
+//   try {
+//     const res = await axios.post(`${domainUrl}/order/place`);
+//     await wait(3000);
+//     return res.data;
+//   } catch (err) {
+//     await wait(600);
+//     throw err.response?.data || err;
+//   }
+// };
+
+
+//   const clearCart = () => {
+//     setCartItems([]);
+//     setCartTotal(0);
+//   };
+
+//   const contextValue = useMemo(
+//     () => ({
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//       clearCart,
+//     }),
+//     [
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//     ]
+//   );
+
+//   return (
+//     <CartContext.Provider value={contextValue}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
 
 
 
@@ -863,6 +1018,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import { domainUrl } from "../utils/constant";
+import { toast } from "react-toastify";
 
 axios.defaults.withCredentials = true; // IMPORTANT
 
@@ -902,7 +1058,7 @@ export const CartProvider = ({ children }) => {
       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
     } catch (err) {
       console.log("Cart fetch error: ", err.response?.status);
-      
+
       // ❗ If cookie expired → user must login
       if (err.response?.status === 401) {
         setCartItems([]);
@@ -920,7 +1076,36 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  // -------- CART ACTIONS -----------
+  // -------- NEW: addToCart -----------
+  const addToCart = async (productId, options = {}) => {
+    // options can include quantity, selectedSize, etc.
+    const { quantity = 1, selectedSize = null } = options;
+
+    setLoading(true);
+    try {
+      const resp= await axios.post(`${domainUrl}/cart/add`, {
+        productId,
+        quantity,
+        selectedSize,
+      });
+
+      if(resp.data){
+        toast.success("Added to cart 🛒", {
+              autoClose: 1500,
+              position: "top-center",
+            });
+      }
+      // Refresh the cart after adding
+      await fetchCart();
+      return resp
+    } catch (err) {
+      console.error("Add to cart error:", err.response?.data || err);
+      // You might want to set an error state or return the error here
+    } finally {
+      setLoading(false);
+    }
+  };
+  // -------- END addToCart -----------
 
   const removeFromCart = async (productId) => {
     setLoading(true);
@@ -956,18 +1141,16 @@ export const CartProvider = ({ children }) => {
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-
-const placeOrder = async () => {
-  try {
-    const res = await axios.post(`${domainUrl}/order/place`);
-    await wait(3000);
-    return res.data;
-  } catch (err) {
-    await wait(600);
-    throw err.response?.data || err;
-  }
-};
-
+  const placeOrder = async () => {
+    try {
+      const res = await axios.post(`${domainUrl}/order/place`);
+      await wait(3000);
+      return res.data;
+    } catch (err) {
+      await wait(600);
+      throw err.response?.data || err;
+    }
+  };
 
   const clearCart = () => {
     setCartItems([]);
@@ -981,6 +1164,7 @@ const placeOrder = async () => {
       loading,
       error,
       fetchCart,
+      addToCart,      // <-- added here
       removeFromCart,
       updateQuantity,
       placeOrder,
@@ -992,6 +1176,7 @@ const placeOrder = async () => {
       loading,
       error,
       fetchCart,
+      addToCart,      // <-- added to dependency list
       removeFromCart,
       updateQuantity,
       placeOrder,
@@ -1004,5 +1189,3 @@ const placeOrder = async () => {
     </CartContext.Provider>
   );
 };
-
-

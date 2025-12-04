@@ -1530,6 +1530,8 @@ import { ClipLoader } from "react-spinners";
 import { FaUserCircle } from "react-icons/fa";
 import api from "../utils/api";
 import { domainUrl } from "../utils/constant";
+import logo123 from "../assets/logo.png";
+
 
 import {
   Dialog,
@@ -1793,11 +1795,11 @@ export default function Admindashboard() {
               </TransitionChild>
 
               <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
-                <div className="relative flex h-16 shrink-0 items-center">
+                <div className="relative flex h-16 shrink-0 items-center ">
                   <img
-                    src="/logo123.png"
+                    src='logo.png'
                     alt="Mandaram Drapes Logo"
-                    className="h-10 w-auto"
+                    className="h-25 "
                   />
                 </div>
 
@@ -1837,7 +1839,7 @@ export default function Admindashboard() {
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
-                src="/logo123.png"
+                src={logo123}
                 alt="Mandaram Drapes Logo"
                 className="h-10 w-auto"
               />

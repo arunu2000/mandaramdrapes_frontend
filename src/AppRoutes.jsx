@@ -1,6 +1,6 @@
 // import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import Signup from './login/Signup';
-// import Login from './login/Login';
+// import Signup from "./login/Signup";
+// import Login from "./login/Login";
 // import Admindashboard from "./dashboard/Admindashboard";
 // import Customerdashboard from "./dashboard/Customerdashboard";
 // import Home from "./home/Home";
@@ -19,33 +19,106 @@
 // import MyOrdersPage from "./orders/MyOrdersPage";
 // import AdminOrderManagement from "./dashboard/AdminOrderManagement";
 // import NotFound from "./pages/NotFound";
+// import ProductsPage from "./components/AllProducts";
+
+
+// import ProtectedRoute from "./login/ProtectedRoute"; // 👈 ADD THIS
 
 // const AppRoutes = () => {
 //   return (
 //     <Router>
 //       <Routes>
-//         {/* Admin Layout */}
-//         <Route path="/admindashboard" element={<Admindashboard />}>
+//         {/* ADMIN PROTECTED ROUTES */}
+//         <Route
+//           path="/admindashboard"
+//           element={
+//             <ProtectedRoute>
+//               <Admindashboard />
+//             </ProtectedRoute>
+//           }
+//         >
 //           <Route index element={<Home />} />
 //           <Route path="manageuser" element={<ManageUsers />} />
 //           <Route path="manageuser/adduser" element={<Adduser />} />
 //           <Route path="manageuser/listusers" element={<Listusers />} />
 //           <Route path="managecategories" element={<Managecategories />} />
-//           <Route path="managecategories/addcategory" element={<Addcategory />} />
-//           <Route path="managecategories/listcategory" element={<Listcategory />} />
+//           <Route
+//             path="managecategories/addcategory"
+//             element={<Addcategory />}
+//           />
+//           <Route
+//             path="managecategories/listcategory"
+//             element={<Listcategory />}
+//           />
 //           <Route path="manageproducts" element={<Manageproducts />} />
 //           <Route path="manageproducts/addproducts" element={<Addproducts />} />
-//           <Route path="manageproducts/Listproducts" element={<Listproducts />} />
-//           <Route path="adminordermanagement" element={<AdminOrderManagement />} />
+//           <Route
+//             path="manageproducts/Listproducts"
+//             element={<Listproducts />}
+//           />
+//           <Route
+//             path="adminordermanagement"
+//             element={<AdminOrderManagement />}
+//           />
 //         </Route>
 
-//         <Route path="/" element={<Customerdashboard />} />
-//         <Route path="/cart" element={<Cartpage />} />
-//         <Route path="/categories/:slug" element={<CategoryProductPage />} />
-//         <Route path="/products/:productId" element={<ProductDetailPage />} />
-//         <Route path="/myorders" element={<MyOrdersPage />} />
+//         {/* CUSTOMER PROTECTED ROUTES */}
 
-//         {/* Authentication */}
+//         <Route
+//           path="/"
+//           element={
+//             <ProtectedRoute>
+//               <Customerdashboard />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         <Route
+//           path="/products"
+//           element={
+//             <ProtectedRoute>
+//               <ProductsPage />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         <Route
+//           path="/cart"
+//           element={
+//             <ProtectedRoute>
+//               <Cartpage />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         <Route
+//           path="/categories/:slug"
+//           element={
+//             <ProtectedRoute>
+//               <CategoryProductPage />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         <Route
+//           path="/products/:productId"
+//           element={
+//             <ProtectedRoute>
+//               <ProductDetailPage />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         <Route
+//           path="/myorders"
+//           element={
+//             <ProtectedRoute>
+//               <MyOrdersPage />
+//             </ProtectedRoute>
+//           }
+//         />
+
+//         {/* PUBLIC ROUTES */}
 //         <Route path="/signup" element={<Signup />} />
 //         <Route path="/login" element={<Login />} />
 //         <Route path="*" element={<NotFound />} />
@@ -55,6 +128,10 @@
 // };
 
 // export default AppRoutes;
+
+/////////////////////////////working codeeee
+
+
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./login/Signup";
@@ -77,9 +154,11 @@ import ProductDetailPage from "./cart/ProductDetailPage";
 import MyOrdersPage from "./orders/MyOrdersPage";
 import AdminOrderManagement from "./dashboard/AdminOrderManagement";
 import NotFound from "./pages/NotFound";
+import WhishlistPage from "./pages/WishlistPage";
 import ProductsPage from "./components/AllProducts";
+import ProtectedRoute from "./login/ProtectedRoute";
 
-import ProtectedRoute from "./login/ProtectedRoute"; // 👈 ADD THIS
+
 
 const AppRoutes = () => {
   return (
@@ -120,6 +199,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* CUSTOMER PROTECTED ROUTES */}
+
         <Route
           path="/"
           element={
@@ -130,7 +210,7 @@ const AppRoutes = () => {
         />
 
 
-        
+
         <Route
           path="/products"
           element={
@@ -141,6 +221,14 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="/WishlistPage"
+          element={
+            <ProtectedRoute>
+              <WhishlistPage/>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/cart"
           element={
             <ProtectedRoute>
@@ -148,6 +236,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+
 
         <Route
           path="/categories/:slug"
@@ -175,7 +264,6 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-
 
         {/* PUBLIC ROUTES */}
         <Route path="/signup" element={<Signup />} />

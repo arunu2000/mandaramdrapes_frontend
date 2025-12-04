@@ -4660,6 +4660,9 @@ const Customerdashboard = () => {
   
   const { user, checkAuthStatus, handleClientLogout } = useAuth();
 
+  // SAFE fallback if parent has not passed the function yet
+
+
    
 
     // NEW: Protection Guard and Redirection
