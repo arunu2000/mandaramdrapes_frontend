@@ -4608,7 +4608,7 @@ import { useAuth } from "../context/AuthContext";
 import FooterSection from "../components/FooterSection";
 import HeroCarousel from "../components/HeroCarousel";
 import Loader from "../components/Loader";
-import CustomerLayout from "../layouts/CustomerLayout";
+
 
 // --- HOOKS & CONTEXT ---
 import { useCart } from "../context/CartContext";
@@ -4636,7 +4636,7 @@ const simpleNavigation = {
 };
 
 // Configure axios to send cookies (for session/JWT cookie)
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 const Customerdashboard = () => {
   const scrollContainerRef = useRef(null);
@@ -4647,8 +4647,7 @@ const Customerdashboard = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   // Set isAuthenticated based on API response, not just local storage
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // State for Featured Products
 
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -4658,7 +4657,10 @@ const Customerdashboard = () => {
 
   const { cartItems, fetchCart, notifyAuthChange } = useCart()
   
-  const { user, checkAuthStatus, handleClientLogout } = useAuth();
+  const { user, checkAuthStatus, logout } = useAuth();
+  const isAuthenticated = user.isAuthenticated;
+
+
 
   // SAFE fallback if parent has not passed the function yet
 
@@ -4680,47 +4682,36 @@ const Customerdashboard = () => {
     }, [user.isInitialLoad, user.isAuthenticated, user.role, navigate]);; // --- ROLE REDIRECTION AND PROFILE FETCH ---
 
   useEffect(() => {
-    const checkAuthAndFetchProfile = async () => {
-      setIsProfileLoading(true);
+  const checkAuthAndFetchProfile = async () => {
+    //  Skip profile fetch if logged out
+    if (!isAuthenticated) {
+      setIsProfileLoading(false);
+      return;
+    }
 
-      // 1. Check for local admin redirection first (role is still in localStorage)
-      if (role === "admin") {
-        console.log("Admin detected locally. Redirecting...");
+    setIsProfileLoading(true);
+
+    try {
+      const res = await api.get("/user/profile");
+
+      setUserProfile(res.data.users);
+
+      if (res.data.users?.role === "admin") {
+        localStorage.setItem("role", "admin");
         navigate("/admindashboard", { replace: true });
         return;
       }
+    } catch (err) {
+      //  REMOVE console.error (this is normal)
+      setUserProfile(null);
+    } finally {
+      setIsProfileLoading(false);
+    }
+  };
 
-      // 2. Attempt to fetch profile. Success implies authentication via cookie.
-      try {
-        // API call to check profile. Cookie is sent automatically by the browser.
-        const res = await axios.get(`${domainUrl}/user/profile`);
+  checkAuthAndFetchProfile();
+}, [isAuthenticated, navigate]);
 
-        // If successful, set authenticated state and user profile
-        setIsAuthenticated(true);
-
-        // FINAL SAFETY CHECK: If API returns admin role, redirect
-        if (res.data.users?.role === "admin") {
-          localStorage.setItem("role", "admin"); // Update local storage
-          navigate("/admindashboard", { replace: true });
-          return;
-        }
-
-        // Standard user/customer flow
-        setUserProfile(res.data.users);
-        localStorage.setItem("role", res.data.users?.role || "user"); // Ensure role is 'user' in storage if successful
-      } catch (err) {
-        // An error (e.g., 401 Unauthorized) means no valid session cookie/token
-        console.error("Error fetching profile, assuming not logged in:", err.response?.status);
-        setIsAuthenticated(false);
-        setUserProfile(null);
-        // localStorage.removeItem("role"); // OPTIONAL: You might clear the role here too
-      } finally {
-        setIsProfileLoading(false);
-      }
-    };
-
-    checkAuthAndFetchProfile();
-  }, [role, navigate]); // Removed 'token' from dependency array
 
   // --- DATA FETCHING --- // Fetch Featured Products
   useEffect(() => {
@@ -4729,7 +4720,7 @@ const Customerdashboard = () => {
       setProductsError(null);
       try {
         // No header needed, this is public data
-        const res = await axios.get(`${domainUrl}/user/shop/products`);
+        const res = await api.get('/user/shop/products');
         if (res.data && res.data.products) {
           setFeaturedProducts(res.data.products);
         } else {
@@ -4749,24 +4740,19 @@ const Customerdashboard = () => {
 
 
 
-  const handleLogout = async () => {
-    try {
-      // 1. Invalidate session cookie on the server (best practice)
-      await api.post(`${domainUrl}/auth/logout`); 
-        handleClientLogout(); // Clear client-side state
-        navigate("/login", { replace: true });
-    } catch (error) {
-      console.error("Logout API failed (cookie may still be cleared by browser soon):", error);
-    }
+  
+const handleLogoutClick = async () => {
+  try {
+    await api.post("/auth/logout");
+  } catch (e) {}
 
-    // 2. Clear local storage and state on the client
-    // localStorage.removeItem("token"); // *** REMOVED ***
-    localStorage.removeItem("role"); // Keep role clear as requested
-    notifyAuthChange();
-    setUserProfile(null);
-    setIsAuthenticated(false);
-    navigate("/login");
-  };
+  logout(); // AuthContext
+  navigate("/", { replace: true });
+};
+
+
+
+
 
   // Gated Navigation Handler for main navbar links
   const handleGatedNavigation = (e, path, isProtected) => {
@@ -4835,7 +4821,7 @@ const Customerdashboard = () => {
       // API call to add to cart - Cookie is sent automatically
       const cartData = { productId: product._id, quantity: 1 };
       // *** REMOVED `headers: { Authorization: ... }` from here and next function call ***
-      await axios.post(`${domainUrl}/cart/add`, cartData);
+      await api.post('/cart/add', cartData);
 
       // Show success toast and redirect
       toast.success(`${product.name} added! Redirecting...`, {
@@ -4871,13 +4857,16 @@ const Customerdashboard = () => {
 
   // --- PROFILE ICON HANDLER ---
   const handleUserIconClick = () => {
-    // Check for authentication state, not local token
+    // If not logged in → login page
     if (!isAuthenticated || role !== "user") {
       navigate("/login");
-    } else {
-      setShowModal(true);
+      return;
     }
-  }; 
+
+    // Logged-in customer → Profile page
+    navigate("/profile");
+  };
+
 
   // --- RENDER ---
 
@@ -4899,145 +4888,17 @@ const Customerdashboard = () => {
 
   return (
     <div className="bg-white">
-      {/* --- MOBILE MENU --- */}      
-      <Dialog
-        open={mobileMenuOpen}
-        onClose={setMobileMenuOpen}
-        className="relative z-40 lg:hidden"
-      >
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
-        />
-        <div className="fixed inset-0 z-40 flex">
-          <DialogPanel
-            transition
-            className="relative flex w-full max-w-xs transform flex-col overflow-y-auto bg-white pb-12 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
-          >
-            <div className="flex px-4 pt-5 pb-2">
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-              >
-                <span className="absolute -inset-0.5" />
-                <span className="sr-only">Close menu</span>
-                <XMarkIcon aria-hidden="true" className="size-6" />
-              </button>
-            </div>
-            {/* Mobile Navigation Links */}
-            <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-              {simpleNavigation.pages.map((page) => (
-                <div key={page.name} className="flow-root">
-                  {/* Use handler for protected pages */}
-                  <a
-                    href={page.href}
-                    className="-m-2 block p-2 font-medium text-gray-900"
-                    onClick={(e) => {
-                      handleGatedNavigation(e, page.href, page.protected);
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    {page.name}
-                  </a>
-                </div>
-              ))}
-            </div>
-            {/* Auth Links */}
-            <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-              {!isAuthenticated ? ( // *** CHANGED: Check isAuthenticated state ***
-                <>
-                  <div className="flow-root">
-                    <Link
-                      to="/login"
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Sign in
-                    </Link>
-                  </div>
-                  <div className="flow-root">
-                    <Link
-                      to="/register"
-                      className="-m-2 block p-2 font-medium text-gray-900"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Create an account
-                    </Link>
-                  </div>
-                </>
-              ) : (
-                <div className="flow-root">
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="-m-2 block p-2 font-medium text-gray-900"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </DialogPanel>
-        </div>
-      </Dialog>
       {/* --- FIXED NAVBAR --- */}
       <Navbar
         isAuthenticated={isAuthenticated} // *** CHANGED: Passing isAuthenticated prop instead of token ***
         role={role}
-        cartItemCount={cartItems.length}
-        handleLogout={handleLogout}
+        cartItemCount={user.isAuthenticated ? cartItems.length : 0}
+        handleLogout={handleLogoutClick}
         handleUserIconClick={handleUserIconClick}
         handleGatedNavigation={handleGatedNavigation}
       />
       {/* --- PROFILE MODAL (Your existing code) --- */}
-      <Dialog
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        className="relative z-50"
-      >
-        <div
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm"
-          aria-hidden="true"
-        />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <DialogPanel className="mx-auto w-full max-w-sm rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 p-6 shadow-2xl">
-            <Dialog.Title className="text-lg font-semibold text-white mb-4 text-center">
-              Profile Details
-            </Dialog.Title>
-            
-            {isProfileLoading ? (
-              <p className="text-gray-200 text-sm text-center">Loading...</p>
-            ) : userProfile ? (
-              <div className="space-y-3 text-white">
-                <div>
-                  <p className="text-sm font-medium text-gray-300">Name:</p>
-                  <p className="font-semibold">{userProfile.username}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-300">Email:</p>
-                  <p className="font-semibold">{userProfile.email}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setShowModal(false);
-                  }}
-                  className="mt-4 w-full rounded-md bg-red-500 text-white py-2 hover:bg-red-600 transition"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <p className="text-gray-200 text-sm text-center">
-                Failed to load profile
-              </p>
-            )}
-          </DialogPanel>
-        </div>
-      </Dialog>
+
       {/* --- END PROFILE MODAL --- */}
       {/* Hero Section Carousel */}
       <HeroCarousel />
@@ -5054,7 +4915,7 @@ const Customerdashboard = () => {
       />
       {/* About Us Footer Section */}
       <FooterSection />
-      <SocialFooter/>
+      {/* <SocialFooter/> */}
       {/* Toast Container for notifications */}
       <ToastContainer
         position="top-center"

@@ -605,9 +605,360 @@
 
 
 
-import React from "react";
-// Assuming OrdersBarChart is a component that renders the bar chart
+// import React from "react";
+// // Assuming OrdersBarChart is a component that renders the bar chart
+// import OrdersBarChart from "./OrdersBarChart";
+// import {
+//   UsersIcon,
+//   CurrencyDollarIcon,
+//   ArchiveBoxIcon,
+//   ShoppingCartIcon,
+//   ChartBarIcon,
+//   ChartPieIcon,
+//   ArrowTrendingDownIcon,
+//   StarIcon,
+// } from "@heroicons/react/24/outline";
+
+// const statCards = [
+//   {
+//     label: "Total Users",
+//     value: "1,245",
+//     change: "+5.2%",
+//     trend: "up",
+//     helper: "vs last month",
+//     icon: UsersIcon,
+//   },
+//   {
+//     label: "Net Revenue",
+//     value: "₹ 3.2L",
+//     change: "+12.1%",
+//     trend: "up",
+//     helper: "after discounts",
+//     icon: CurrencyDollarIcon,
+//   },
+//   {
+//     label: "Active Products",
+//     value: "1,500",
+//     change: "+2.0%",
+//     trend: "up",
+//     helper: "live on store",
+//     icon: ArchiveBoxIcon,
+//   },
+//   {
+//     label: "Orders (This Month)",
+//     value: "2,300",
+//     change: "+8.4%",
+//     trend: "up",
+//     helper: "completed orders",
+//     icon: ShoppingCartIcon,
+//   },
+// ];
+
+// const quickInsights = [
+//   { label: "Conversion Rate", value: "3.8%", helper: "Storewide" },
+//   { label: "Average Order Value", value: "₹ 1,420", helper: "Last 30 days" },
+//   { label: "Repeat Customers", value: "41%", helper: "Returning buyers" },
+// ];
+
+// // Data moved out of the render function for cleanliness
+// const categoryData = [
+//   { name: "Sarees", value: 62, amount: "₹ 2.1L" },
+//   { name: "Kurtis", value: 21, amount: "₹ 0.7L" },
+//   { name: "Kids Wear", value: 11, amount: "₹ 0.3L" },
+//   { name: "Others", value: 6, amount: "₹ 0.1L" },
+// ];
+
+// const recentSignals = [
+//   {
+//     color: "bg-emerald-500",
+//     title: "Weekend spike in saree orders.",
+//     detail: "32% higher than the weekday average.",
+//   },
+//   {
+//     color: "bg-sky-500",
+//     title: "COD conversion improved.",
+//     detail: "Drop in cart abandonment for COD orders.",
+//   },
+//   {
+//     color: "bg-amber-400",
+//     title: "High repeat buyers in Kerala.",
+//     detail: "Region driving majority of repeat orders.",
+//   },
+// ];
+
+// const Home = () => {
+//   return (
+//     <div className="min-h-screen w-full bg-gradient-to-br from-[#f7faf7] via-[#f4f7f2] to-[#e2eee3] px-4 py-6 md:px-8 flex justify-center">
+//       <div className="w-full max-w-7xl space-y-8">
+        
+//         {/* Top Header */}
+//         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+//           <div>
+//             <p className="text-xs uppercase tracking-[0.22em] text-[#7f8f7a]">
+//               Mandharam Drapes · Admin
+//             </p>
+//             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-[#263526]">
+//               Analytics Overview
+//             </h1>
+//             <p className="mt-1 text-sm text-gray-500">
+//               Key performance insights for your ecommerce store.
+//             </p>
+//           </div>
+
+//           <div className="flex flex-wrap items-center gap-3">
+//             {/* Date range pill (dummy) */}
+//             <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs shadow-sm backdrop-blur">
+//               <span className="h-2 w-2 rounded-full bg-emerald-500" />
+//               <span className="font-medium text-gray-800">Last 30 days</span>
+//             </div>
+
+//             {/* Action buttons */}
+//             <button
+//               type="button"
+//               className="rounded-full border border-gray-200 bg-white/70 px-4 py-2 text-xs font-medium text-gray-700 shadow-sm backdrop-blur hover:bg-white"
+//             >
+//               Refresh
+//             </button>
+//             <button
+//               type="button"
+//               className="rounded-full bg-[#364633] px-5 py-2 text-xs font-semibold text-white shadow-md shadow-[#364633]/30 transition hover:bg-[#2b372a]"
+//             >
+//               Export Report
+//             </button>
+//           </div>
+//         </header>
+
+//         {/* Stat Cards */}
+//         <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+//           {statCards.map((item) => {
+//             const Icon = item.icon;
+//             const isUp = item.trend === "up";
+//             return (
+//               <div
+//                 key={item.label}
+//                 className="group relative overflow-hidden rounded-2xl border border-emerald-50/70 bg-white/80 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md"
+//               >
+//                 {/* Soft gradient strip */}
+//                 <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-lime-400 opacity-70" />
+
+//                 <div className="flex items-start justify-between gap-3">
+//                   <div>
+//                     <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+//                       {item.label}
+//                     </p>
+//                     <p className="mt-2 text-2xl font-semibold text-[#263526]">
+//                       {item.value}
+//                     </p>
+//                     <p className="mt-1 text-[11px] text-gray-500">
+//                       {item.helper}
+//                     </p>
+//                   </div>
+//                   <div className="flex flex-col items-end gap-2">
+//                     <div
+//                       className={`flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium ${
+//                         isUp
+//                           ? "bg-emerald-50 text-emerald-600"
+//                           : "bg-rose-50 text-rose-600"
+//                       }`}
+//                     >
+//                       <span>{item.change}</span>
+//                       <span className="text-[9px] uppercase tracking-wide">
+//                         {isUp ? "Increase" : "Drop"}
+//                       </span>
+//                     </div>
+//                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white">
+//                       <Icon className="h-5 w-5" />
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Subtle background accent */}
+//                 <div className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 translate-x-6 translate-y-6 rounded-full bg-gradient-to-br from-emerald-100/90 to-transparent opacity-70" />
+//               </div>
+//             );
+//           })}
+//         </section>
+
+//         {/* Charts + Insights (Main Layout Grid) */}
+//         {/* This section uses a 3-column grid on large screens: 2/3 for the Chart, 1/3 for Insights */}
+//         <section className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
+          
+//           {/* Column 1 & 2: Orders Chart and Category Performance (lg:col-span-2) */}
+//           <div className="lg:col-span-2 rounded-2xl border border-gray-100 bg-white/90 p-5 shadow-sm backdrop-blur">
+//             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+//               <div className="flex items-center gap-2">
+//                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50">
+//                   <ChartBarIcon className="h-5 w-5 text-emerald-600" />
+//                 </div>
+//                 <div>
+//                   <h2 className="text-sm font-semibold text-[#263526]">
+//                     Orders & Revenue (Monthly)
+//                   </h2>
+//                   <p className="text-xs text-gray-500">
+//                     Track order volume and revenue trends over time.
+//                   </p>
+//                 </div>
+//               </div>
+
+//               <div className="flex items-center gap-2 text-[11px] text-gray-500">
+//                 <div className="flex items-center gap-1">
+//                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
+//                   <span>Orders</span>
+//                 </div>
+//                 <div className="flex items-center gap-1">
+//                   <span className="h-2 w-2 rounded-full bg-sky-500" />
+//                   <span>Revenue</span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="">
+//               <OrdersBarChart />
+//             </div>
+
+//             {/* Category Performance - Placed directly below the chart in the same card */}
+//             <div className="mt-10">
+//               <h3 className="text-sm font-semibold text-[#263526] ">
+//                 Category Performance
+//               </h3>
+//               <p className="text-[11px] text-gray-500 mb-4">
+//                 Top categories driving revenue this month.
+//               </p>
+//               <div className="space-y-3">
+//                 {categoryData.map((row) => (
+//                   <div key={row.name} className="space-y-1">
+//                     <div className="flex items-center justify-between text-xs">
+//                       <span className="font-medium text-gray-700">
+//                         {row.name}
+//                       </span>
+//                       <span className="text-gray-500">{row.amount}</span>
+//                     </div>
+//                     <div className="h-2 w-full rounded-full bg-gray-100">
+//                       <div
+//                         className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-lime-400"
+//                         style={{ width: `${row.value}%` }}
+//                       />
+//                     </div>
+//                   </div>
+//                 ))}
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Column 3A: Quick Insights Card (Store Pulse) - Flows first in the third column */}
+//           <div className="rounded-2xl border border-gray-100 bg-white/90 p-4 shadow-sm backdrop-blur h-fit">
+//             <div className="mb-3 flex items-center justify-between">
+//               <div className="flex items-center gap-2">
+//                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50">
+//                   <ChartPieIcon className="h-4 w-4 text-sky-500" />
+//                 </div>
+//                 <div>
+//                   <h3 className="text-sm font-semibold text-[#263526]">
+//                     Store Pulse
+//                   </h3>
+//                   <p className="text-[11px] text-gray-500">
+//                     Snapshot of key ecommerce metrics.
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="grid grid-cols-1 gap-3">
+//               {quickInsights.map((item) => (
+//                 <div
+//                   key={item.label}
+//                   className="flex items-center justify-between rounded-xl bg-gray-50/60 px-3 py-2.5"
+//                 >
+//                   <div>
+//                     <p className="text-xs text-gray-500">{item.label}</p>
+//                     <p className="mt-0.5 text-sm font-semibold text-[#263526]">
+//                       {item.value}
+//                     </p>
+//                   </div>
+//                   <p className="text-[11px] text-gray-400">{item.helper}</p>
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+
+//           {/* Column 3B: Returns & Rating Mini Cards - Flows directly after Store Pulse */}
+//           {/* Uses a nested grid: side-by-side on small screens, stacked on large screens (lg:grid-cols-1) */}
+//           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+//             {/* Returns */}
+//             <div className="rounded-2xl border border-rose-50 bg-white/90 p-4 shadow-sm backdrop-blur">
+//               <div className="mb-2 flex items-center justify-between">
+//                 <p className="text-xs font-semibold text-[#7e2a3a]">
+//                   Monthly Returns
+//                 </p>
+//                 <ArrowTrendingDownIcon className="h-4 w-4 text-rose-400" />
+//               </div>
+//               <p className="text-xl font-semibold text-[#2d2830]">3.2%</p>
+//               <p className="mt-1 text-[11px] text-gray-500">
+//                 Of total orders · Stable
+//               </p>
+//             </div>
+
+//             {/* Rating */}
+//             <div className="rounded-2xl border border-amber-50 bg-white/90 p-4 shadow-sm backdrop-blur">
+//               <div className="mb-2 flex items-center justify-between">
+//                 <p className="text-xs font-semibold text-[#8a5a12]">
+//                   Avg. Rating
+//                 </p>
+//                 <StarIcon className="h-4 w-4 text-amber-400" />
+//               </div>
+//               <p className="text-xl font-semibold text-[#2d2830]">4.6 / 5</p>
+//               <p className="mt-1 text-[11px] text-gray-500">
+//                 Based on recent reviews
+//               </p>
+//             </div>
+//           </div>
+
+
+//           {/* Column 3C: Recent Signals - Flows directly after Returns/Rating */}
+//           <div className="rounded-2xl border border-gray-100 bg-white/90 p-5 shadow-sm backdrop-blur h-fit">
+//             <h3 className="text-sm font-semibold text-[#263526]">
+//               Recent Signals
+//             </h3>
+//             <p className="text-[11px] text-gray-500 mb-4">
+//               Quick highlights detected from recent activity.
+//             </p>
+
+//             <ul className="space-y-3 text-xs">
+//               {recentSignals.map((signal) => (
+//                 <li key={signal.title} className="flex items-start gap-3">
+//                   <span
+//                     className={`mt-1 h-2 w-2 rounded-full ${signal.color}`}
+//                   />
+//                   <div>
+//                     <p className="font-medium text-gray-800">
+//                       {signal.title}
+//                     </p>
+//                     <p className="text-[11px] text-gray-500">
+//                       {signal.detail}
+//                     </p>
+//                   </div>
+//                 </li>
+//               ))}
+//             </ul>
+//           </div>
+//         </section>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Home;
+
+
+
+
+
+
+
+import React, { useEffect, useState, useMemo } from "react";
 import OrdersBarChart from "./OrdersBarChart";
+import api from "../utils/api";
+
 import {
   UsersIcon,
   CurrencyDollarIcon,
@@ -619,40 +970,7 @@ import {
   StarIcon,
 } from "@heroicons/react/24/outline";
 
-const statCards = [
-  {
-    label: "Total Users",
-    value: "1,245",
-    change: "+5.2%",
-    trend: "up",
-    helper: "vs last month",
-    icon: UsersIcon,
-  },
-  {
-    label: "Net Revenue",
-    value: "₹ 3.2L",
-    change: "+12.1%",
-    trend: "up",
-    helper: "after discounts",
-    icon: CurrencyDollarIcon,
-  },
-  {
-    label: "Active Products",
-    value: "1,500",
-    change: "+2.0%",
-    trend: "up",
-    helper: "live on store",
-    icon: ArchiveBoxIcon,
-  },
-  {
-    label: "Orders (This Month)",
-    value: "2,300",
-    change: "+8.4%",
-    trend: "up",
-    helper: "completed orders",
-    icon: ShoppingCartIcon,
-  },
-];
+// ---------------- DUMMY STATIC DATA (kept as-is) ----------------
 
 const quickInsights = [
   { label: "Conversion Rate", value: "3.8%", helper: "Storewide" },
@@ -660,7 +978,6 @@ const quickInsights = [
   { label: "Repeat Customers", value: "41%", helper: "Returning buyers" },
 ];
 
-// Data moved out of the render function for cleanliness
 const categoryData = [
   { name: "Sarees", value: 62, amount: "₹ 2.1L" },
   { name: "Kurtis", value: 21, amount: "₹ 0.7L" },
@@ -686,12 +1003,84 @@ const recentSignals = [
   },
 ];
 
+// ---------------- MAIN COMPONENT ----------------
+
 const Home = () => {
+  const [dashboard, setDashboard] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch admin summary
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const res = await api.get("/admin/summary");
+        setDashboard(res.data);
+      } catch (err) {
+        console.error("Failed to load admin dashboard", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  // Stat cards mapped from backend
+  const statCards = useMemo(() => {
+    if (!dashboard) return [];
+
+    const { users, orders, products, revenue } = dashboard.summary;
+
+    return [
+      {
+        label: "Total Users",
+        value: users.total.toLocaleString(),
+        change: `${users.growth.toFixed(1)}%`,
+        trend: users.growth >= 0 ? "up" : "down",
+        helper: "vs last month",
+        icon: UsersIcon,
+      },
+      {
+        label: "Net Revenue",
+        value: `₹ ${Math.round(revenue.total).toLocaleString()}`,
+        change: `${revenue.growth.toFixed(1)}%`,
+        trend: revenue.growth >= 0 ? "up" : "down",
+        helper: "after discounts",
+        icon: CurrencyDollarIcon,
+      },
+      {
+        label: "Active Products",
+        value: products.total.toLocaleString(),
+        change: `${products.growth.toFixed(1)}%`,
+        trend: products.growth >= 0 ? "up" : "down",
+        helper: "live on store",
+        icon: ArchiveBoxIcon,
+      },
+      {
+        label: "Orders (This Month)",
+        value: orders.total.toLocaleString(),
+        change: `${orders.growth.toFixed(1)}%`,
+        trend: orders.growth >= 0 ? "up" : "down",
+        helper: "completed orders",
+        icon: ShoppingCartIcon,
+      },
+    ];
+  }, [dashboard]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-sm text-gray-500">Loading dashboard…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#f7faf7] via-[#f4f7f2] to-[#e2eee3] px-4 py-6 md:px-8 flex justify-center">
       <div className="w-full max-w-7xl space-y-8">
-        
-        {/* Top Header */}
+
+        {/* Header */}
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-[#7f8f7a]">
@@ -704,28 +1093,6 @@ const Home = () => {
               Key performance insights for your ecommerce store.
             </p>
           </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Date range pill (dummy) */}
-            <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 text-xs shadow-sm backdrop-blur">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="font-medium text-gray-800">Last 30 days</span>
-            </div>
-
-            {/* Action buttons */}
-            <button
-              type="button"
-              className="rounded-full border border-gray-200 bg-white/70 px-4 py-2 text-xs font-medium text-gray-700 shadow-sm backdrop-blur hover:bg-white"
-            >
-              Refresh
-            </button>
-            <button
-              type="button"
-              className="rounded-full bg-[#364633] px-5 py-2 text-xs font-semibold text-white shadow-md shadow-[#364633]/30 transition hover:bg-[#2b372a]"
-            >
-              Export Report
-            </button>
-          </div>
         </header>
 
         {/* Stat Cards */}
@@ -733,107 +1100,73 @@ const Home = () => {
           {statCards.map((item) => {
             const Icon = item.icon;
             const isUp = item.trend === "up";
+
             return (
               <div
                 key={item.label}
-                className="group relative overflow-hidden rounded-2xl border border-emerald-50/70 bg-white/80 p-4 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group relative overflow-hidden rounded-2xl border border-emerald-50/70 bg-white/80 p-4 shadow-sm backdrop-blur"
               >
-                {/* Soft gradient strip */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-lime-400 opacity-70" />
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-lime-400" />
 
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex justify-between">
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                    <p className="text-xs uppercase text-gray-500">
                       {item.label}
                     </p>
                     <p className="mt-2 text-2xl font-semibold text-[#263526]">
                       {item.value}
                     </p>
-                    <p className="mt-1 text-[11px] text-gray-500">
-                      {item.helper}
-                    </p>
+                    <p className="text-[11px] text-gray-500">{item.helper}</p>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div
-                      className={`flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium ${
+
+                  <div className="text-right">
+                    <span
+                      className={`inline-block rounded-full px-2 py-1 text-[11px] ${
                         isUp
                           ? "bg-emerald-50 text-emerald-600"
                           : "bg-rose-50 text-rose-600"
                       }`}
                     >
-                      <span>{item.change}</span>
-                      <span className="text-[9px] uppercase tracking-wide">
-                        {isUp ? "Increase" : "Drop"}
-                      </span>
-                    </div>
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white">
+                      {item.change}
+                    </span>
+                    <div className="mt-3 flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                       <Icon className="h-5 w-5" />
                     </div>
                   </div>
                 </div>
-
-                {/* Subtle background accent */}
-                <div className="pointer-events-none absolute bottom-0 right-0 h-20 w-20 translate-x-6 translate-y-6 rounded-full bg-gradient-to-br from-emerald-100/90 to-transparent opacity-70" />
               </div>
             );
           })}
         </section>
 
-        {/* Charts + Insights (Main Layout Grid) */}
-        {/* This section uses a 3-column grid on large screens: 2/3 for the Chart, 1/3 for Insights */}
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3 ">
-          
-          {/* Column 1 & 2: Orders Chart and Category Performance (lg:col-span-2) */}
-          <div className="lg:col-span-2 rounded-2xl border border-gray-100 bg-white/90 p-5 shadow-sm backdrop-blur">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50">
-                  <ChartBarIcon className="h-5 w-5 text-emerald-600" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-semibold text-[#263526]">
-                    Orders & Revenue (Monthly)
-                  </h2>
-                  <p className="text-xs text-gray-500">
-                    Track order volume and revenue trends over time.
-                  </p>
-                </div>
-              </div>
+        {/* Chart + Insights */}
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-              <div className="flex items-center gap-2 text-[11px] text-gray-500">
-                <div className="flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                  <span>Orders</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="h-2 w-2 rounded-full bg-sky-500" />
-                  <span>Revenue</span>
-                </div>
-              </div>
+          {/* Orders Chart */}
+          <div className="lg:col-span-2 rounded-2xl bg-white/90 p-5 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <ChartBarIcon className="h-5 w-5 text-emerald-600" />
+              <h2 className="text-sm font-semibold text-[#263526]">
+                Orders & Revenue (Last 7 Days)
+              </h2>
             </div>
 
-            <div className="">
-              <OrdersBarChart />
-            </div>
+            <OrdersBarChart data={dashboard?.salesChart || []} />
 
-            {/* Category Performance - Placed directly below the chart in the same card */}
+            {/* Category Performance */}
             <div className="mt-10">
-              <h3 className="text-sm font-semibold text-[#263526] ">
+              <h3 className="text-sm font-semibold text-[#263526]">
                 Category Performance
               </h3>
-              <p className="text-[11px] text-gray-500 mb-4">
-                Top categories driving revenue this month.
-              </p>
-              <div className="space-y-3">
+
+              <div className="mt-4 space-y-3">
                 {categoryData.map((row) => (
-                  <div key={row.name} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-gray-700">
-                        {row.name}
-                      </span>
-                      <span className="text-gray-500">{row.amount}</span>
+                  <div key={row.name}>
+                    <div className="flex justify-between text-xs">
+                      <span>{row.name}</span>
+                      <span>{row.amount}</span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-gray-100">
+                    <div className="h-2 rounded-full bg-gray-100">
                       <div
                         className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-lime-400"
                         style={{ width: `${row.value}%` }}
@@ -845,101 +1178,61 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Column 3A: Quick Insights Card (Store Pulse) - Flows first in the third column */}
-          <div className="rounded-2xl border border-gray-100 bg-white/90 p-4 shadow-sm backdrop-blur h-fit">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50">
-                  <ChartPieIcon className="h-4 w-4 text-sky-500" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-[#263526]">
-                    Store Pulse
-                  </h3>
-                  <p className="text-[11px] text-gray-500">
-                    Snapshot of key ecommerce metrics.
-                  </p>
-                </div>
-              </div>
-            </div>
+          {/* Side Cards */}
+          <div className="space-y-4">
 
-            <div className="grid grid-cols-1 gap-3">
+            {/* Store Pulse */}
+            <div className="rounded-2xl bg-white/90 p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <ChartPieIcon className="h-4 w-4 text-sky-500" />
+                <h3 className="text-sm font-semibold">Store Pulse</h3>
+              </div>
+
               {quickInsights.map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-xl bg-gray-50/60 px-3 py-2.5"
+                  className="flex justify-between rounded-xl bg-gray-50 px-3 py-2 mb-2"
                 >
                   <div>
                     <p className="text-xs text-gray-500">{item.label}</p>
-                    <p className="mt-0.5 text-sm font-semibold text-[#263526]">
-                      {item.value}
-                    </p>
+                    <p className="font-semibold">{item.value}</p>
                   </div>
                   <p className="text-[11px] text-gray-400">{item.helper}</p>
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Column 3B: Returns & Rating Mini Cards - Flows directly after Store Pulse */}
-          {/* Uses a nested grid: side-by-side on small screens, stacked on large screens (lg:grid-cols-1) */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            {/* Returns */}
-            <div className="rounded-2xl border border-rose-50 bg-white/90 p-4 shadow-sm backdrop-blur">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-xs font-semibold text-[#7e2a3a]">
-                  Monthly Returns
-                </p>
-                <ArrowTrendingDownIcon className="h-4 w-4 text-rose-400" />
+            {/* Returns & Rating */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white/90 p-4 shadow-sm">
+                <ArrowTrendingDownIcon className="h-4 w-4 text-rose-400 mb-2" />
+                <p className="text-xl font-semibold">3.2%</p>
+                <p className="text-[11px] text-gray-500">Monthly Returns</p>
               </div>
-              <p className="text-xl font-semibold text-[#2d2830]">3.2%</p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                Of total orders · Stable
-              </p>
+
+              <div className="rounded-2xl bg-white/90 p-4 shadow-sm">
+                <StarIcon className="h-4 w-4 text-amber-400 mb-2" />
+                <p className="text-xl font-semibold">4.6 / 5</p>
+                <p className="text-[11px] text-gray-500">Avg. Rating</p>
+              </div>
             </div>
 
-            {/* Rating */}
-            <div className="rounded-2xl border border-amber-50 bg-white/90 p-4 shadow-sm backdrop-blur">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-xs font-semibold text-[#8a5a12]">
-                  Avg. Rating
-                </p>
-                <StarIcon className="h-4 w-4 text-amber-400" />
-              </div>
-              <p className="text-xl font-semibold text-[#2d2830]">4.6 / 5</p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                Based on recent reviews
-              </p>
-            </div>
-          </div>
-
-
-          {/* Column 3C: Recent Signals - Flows directly after Returns/Rating */}
-          <div className="rounded-2xl border border-gray-100 bg-white/90 p-5 shadow-sm backdrop-blur h-fit">
-            <h3 className="text-sm font-semibold text-[#263526]">
-              Recent Signals
-            </h3>
-            <p className="text-[11px] text-gray-500 mb-4">
-              Quick highlights detected from recent activity.
-            </p>
-
-            <ul className="space-y-3 text-xs">
+            {/* Recent Signals */}
+            <div className="rounded-2xl bg-white/90 p-4 shadow-sm">
+              <h3 className="text-sm font-semibold mb-3">Recent Signals</h3>
               {recentSignals.map((signal) => (
-                <li key={signal.title} className="flex items-start gap-3">
-                  <span
-                    className={`mt-1 h-2 w-2 rounded-full ${signal.color}`}
-                  />
+                <div key={signal.title} className="flex gap-2 mb-2">
+                  <span className={`h-2 w-2 rounded-full ${signal.color}`} />
                   <div>
-                    <p className="font-medium text-gray-800">
-                      {signal.title}
-                    </p>
+                    <p className="text-xs font-medium">{signal.title}</p>
                     <p className="text-[11px] text-gray-500">
                       {signal.detail}
                     </p>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
+
           </div>
         </section>
       </div>
@@ -948,10 +1241,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
-
-
-
-

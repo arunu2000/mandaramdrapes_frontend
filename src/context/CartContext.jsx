@@ -1008,6 +1008,827 @@
 
 
 
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+// } from "react";
+// import axios from "axios";
+// import { domainUrl } from "../utils/constant";
+// import { toast } from "react-toastify";
+
+// axios.defaults.withCredentials = true; // IMPORTANT
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [cartTotal, setCartTotal] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const fetchCart = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const res = await axios.get(`${domainUrl}/cart/list`);
+
+//       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//       const newCartItems =
+//         backendCart?.items
+//           ?.map((item) => ({
+//             _id: item._id,
+//             productId: item.product?._id,
+//             name: item.product?.name,
+//             price: item.product?.price,
+//             image: item.product?.image,
+//             quantity: item.quantity,
+//             selectedSize: item.selectedSize || null,
+//           }))
+//           .filter((item) => item.productId) || [];
+
+//       setCartItems(newCartItems);
+//       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+//     } catch (err) {
+//       console.log("Cart fetch error: ", err.response?.status);
+
+//       // ❗ If cookie expired → user must login
+//       if (err.response?.status === 401) {
+//         setCartItems([]);
+//         setCartTotal(0);
+//       }
+
+//       setError("Could not load cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // Load cart on mount
+//   useEffect(() => {
+//     fetchCart();
+//   }, [fetchCart]);
+
+//   // -------- NEW: addToCart -----------
+//   const addToCart = async (productId, options = {}) => {
+//     // options can include quantity, selectedSize, etc.
+//     const { quantity = 1, selectedSize = null } = options;
+
+//     setLoading(true);
+//     try {
+//       const resp= await axios.post(`${domainUrl}/cart/add`, {
+//         productId,
+//         quantity,
+//         selectedSize,
+//       });
+
+//       if(resp.data){
+//         toast.success("Added to cart 🛒", {
+//               autoClose: 1500,
+//               position: "top-center",
+//             });
+//       }
+//       // Refresh the cart after adding
+//       await fetchCart();
+//       return resp
+//     } catch (err) {
+//       console.error("Add to cart error:", err.response?.data || err);
+//       // You might want to set an error state or return the error here
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   // -------- END addToCart -----------
+
+//   const removeFromCart = async (productId) => {
+//     setLoading(true);
+//     try {
+//       await axios.delete(`${domainUrl}/cart/remove/${productId}`);
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Remove error:", err.response?.data);
+//       setLoading(false);
+//     }
+//   };
+
+//   const updateQuantity = async (productId, newQuantity) => {
+//     if (newQuantity <= 0) return;
+
+//     // Optimistic update
+//     setCartItems((prev) =>
+//       prev.map((item) =>
+//         item.productId === productId ? { ...item, quantity: newQuantity } : item
+//       )
+//     );
+
+//     try {
+//       await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, {
+//         quantity: newQuantity,
+//       });
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Update qty error:", err.response);
+//       fetchCart();
+//     }
+//   };
+
+//   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+//   const placeOrder = async () => {
+//     try {
+//       const res = await axios.post(`${domainUrl}/order/place`);
+//       await wait(3000);
+//       return res.data;
+//     } catch (err) {
+//       await wait(600);
+//       throw err.response?.data || err;
+//     }
+//   };
+
+//   const clearCart = () => {
+//     setCartItems([]);
+//     setCartTotal(0);
+//   };
+
+//   const contextValue = useMemo(
+//     () => ({
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added here
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//       clearCart,
+//     }),
+//     [
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added to dependency list
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//     ]
+//   );
+
+//   return (
+//     <CartContext.Provider value={contextValue}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+
+
+//working codeeeeeeeeee
+
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+// } from "react";
+// // import axios from "axios";
+// import { domainUrl } from "../utils/constant";
+// import { toast } from "react-toastify";
+// import api from "../utils/api";
+
+// // axios.defaults.withCredentials = true; // IMPORTANT
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [cartTotal, setCartTotal] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const fetchCart = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const res = await api.get("/cart/list");
+
+//       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//      const newCartItems =
+//   backendCart?.items
+//     ?.map((item) => ({
+//       _id: item._id,
+//       productId: item.product?._id,
+//       name: item.product?.name,
+//       price: item.product?.price,
+//       image: item.product?.image,
+//       stock: item.product?.stock ?? 0, // ✅ ADD THIS
+//       quantity: item.quantity,
+//       selectedSize: item.selectedSize || null,
+//     }))
+//     .filter((item) => item.productId) || [];
+
+
+//       setCartItems(newCartItems);
+//       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+//     } catch (err) {
+//       console.log("Cart fetch error: ", err.response?.status);
+
+//       // ❗ If cookie expired → user must login
+//       if (err.response?.status === 401) {
+//         setCartItems([]);
+//         setCartTotal(0);
+//       }
+
+//       setError("Could not load cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // Load cart on mount
+//   useEffect(() => {
+//     fetchCart();
+//   }, [fetchCart]);
+
+//   // -------- NEW: addToCart -----------
+//   const addToCart = async (productId, options = {}) => {
+//     // options can include quantity, selectedSize, etc.
+//     const { quantity = 1, selectedSize = null } = options;
+
+//     setLoading(true);
+//     try {
+//       const resp= await api.post("/cart/add", {
+//         productId,
+//         quantity,
+//         selectedSize,
+//       });
+
+//       if(resp.data){
+//         toast.success("Added to cart 🛒", {
+//               autoClose: 1500,
+//               position: "top-center",
+//             });
+//       }
+//       // Refresh the cart after adding
+//       await fetchCart();
+//       return resp
+//     } catch (err) {
+//       console.error("Add to cart error:", err.response?.data || err);
+//       // You might want to set an error state or return the error here
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   // -------- END addToCart -----------
+
+//   const removeFromCart = async (productId) => {
+//     setLoading(true);
+//     try {
+//       await api.delete(`/cart/remove/${productId}`);
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Remove error:", err.response?.data);
+//       setLoading(false);
+//     }
+//   };
+
+//   const updateQuantity = async (productId, newQuantity) => {
+//     if (newQuantity <= 0) return;
+
+//     // Optimistic update
+//     setCartItems((prev) =>
+//       prev.map((item) =>
+//         item.productId === productId ? { ...item, quantity: newQuantity } : item
+//       )
+//     );
+
+//     try {
+//       await api.put(`/cart/updateQuantity/${productId}`, {
+//         quantity: newQuantity,
+//       });
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Update qty error:", err.response);
+//       fetchCart();
+//     }
+//   };
+
+//   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+//   const placeOrder = async () => {
+//     try {
+//       const res = await api.post("/order/place");
+//       await wait(3000);
+//       return res.data;
+//     } catch (err) {
+//       await wait(600);
+//       throw err.response?.data || err;
+//     }
+//   };
+
+//   const clearCart = () => {
+//     setCartItems([]);
+//     setCartTotal(0);
+//   };
+
+//   const contextValue = useMemo(
+//     () => ({
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added here
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//       clearCart,
+//     }),
+//     [
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added to dependency list
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//     ]
+//   );
+
+//   return (
+//     <CartContext.Provider value={contextValue}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+
+
+
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+// } from "react";
+// // import axios from "axios";
+// import { domainUrl } from "../utils/constant";
+// import { toast } from "react-toastify";
+// import api from "../utils/api";
+
+
+
+// // axios.defaults.withCredentials = true; // IMPORTANT
+
+// const CartContext = createContext();
+
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [cartTotal, setCartTotal] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const fetchCart = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const res = await api.get("/cart/list");
+
+//       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//      const newCartItems =
+//   backendCart?.items
+//     ?.map((item) => ({
+//       _id: item._id,
+//       productId: item.product?._id,
+//       name: item.product?.name,
+//       price: item.product?.price,
+//       image: item.product?.image,
+//       stock: item.product?.stock ?? 0, // ✅ ADD THIS
+//       quantity: item.quantity,
+//       selectedSize: item.selectedSize || null,
+//     }))
+//     .filter((item) => item.productId) || [];
+
+
+//       setCartItems(newCartItems);
+//       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+//     } catch (err) {
+//       console.log("Cart fetch error: ", err.response?.status);
+
+//       // ❗ If cookie expired → user must login
+//       if (err.response?.status === 401) {
+//         setCartItems([]);
+//         setCartTotal(0);
+//       }
+
+//       setError("Could not load cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+
+  
+
+
+//   // Load cart on mount
+//   useEffect(() => {
+//     fetchCart();
+//   }, [fetchCart]);
+
+//   // -------- NEW: addToCart -----------
+//   const addToCart = async (productId, options = {}) => {
+//     // options can include quantity, selectedSize, etc.
+//     const { quantity = 1, selectedSize = null } = options;
+
+//     setLoading(true);
+//     try {
+//       const resp= await api.post("/cart/add", {
+//         productId,
+//         quantity,
+//         selectedSize,
+//       });
+
+//       if(resp.data){
+//         toast.success("Added to cart 🛒", {
+//               autoClose: 1500,
+//               position: "top-center",
+//             });
+//       }
+//       // Refresh the cart after adding
+//       await fetchCart();
+//       return resp
+//     } catch (err) {
+//       console.error("Add to cart error:", err.response?.data || err);
+//       // You might want to set an error state or return the error here
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   // -------- END addToCart -----------
+
+//   const removeFromCart = async (productId) => {
+//     setLoading(true);
+//     try {
+//       await api.delete(`/cart/remove/${productId}`);
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Remove error:", err.response?.data);
+//       setLoading(false);
+//     }
+//   };
+
+//   const updateQuantity = async (productId, newQuantity) => {
+//     if (newQuantity <= 0) return;
+
+//     // Optimistic update
+//     setCartItems((prev) =>
+//       prev.map((item) =>
+//         item.productId === productId ? { ...item, quantity: newQuantity } : item
+//       )
+//     );
+
+//     try {
+//       await api.put(`/cart/updateQuantity/${productId}`, {
+//         quantity: newQuantity,
+//       });
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Update qty error:", err.response);
+//       fetchCart();
+//     }
+//   };
+
+
+
+//   //razorpay
+
+
+
+//   const loadRazorpayScript = () => {
+//   return new Promise((resolve) => {
+//     if (window.Razorpay) return resolve(true);
+
+//     const script = document.createElement("script");
+//     script.src = "https://checkout.razorpay.com/v1/checkout.js";
+//     script.onload = () => resolve(true);
+//     script.onerror = () => resolve(false);
+//     document.body.appendChild(script);
+//   });
+// };
+
+
+//   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+//   const placeOrder = async () => {
+//   try {
+//     // 1️⃣ Load Razorpay
+//     const razorpayLoaded = await loadRazorpayScript();
+//     if (!razorpayLoaded) {
+//       toast.error("Razorpay SDK failed to load");
+//       throw new Error("Razorpay SDK failed");
+
+//     }
+
+    
+    
+//     // 2️⃣ Call backend to create order
+// const res = await api.post("/order/place");
+
+// // 🔍 DEBUG: check backend response
+// console.log("PLACE ORDER RESPONSE:", res.data);
+
+// const rzpOrder = res.data.rzpOrder;
+
+// // 🔍 THIS IS THE LINE YOU ASKED ABOUT
+// console.log("RZP ORDER ID:", rzpOrder?.id);
+
+
+//     // 3️⃣ Configure Razorpay checkout
+//    const options = {
+//   key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+
+//   order_id: rzpOrder.id, // ✅ ONLY order-based field
+
+//   name: "Mandharam Drapes",
+//   description: "Order Payment",
+
+//   handler: async (response) => {
+//     try {
+//       await api.post("/order/verifyPayment", {
+//         razorpay_order_id: response.razorpay_order_id,
+//         razorpay_payment_id: response.razorpay_payment_id,
+//         razorpay_signature: response.razorpay_signature,
+//       });
+
+//     toast.success("Payment successful 🎉");
+
+// setCartItems([]);
+// setCartTotal(0);
+// await fetchCart();
+
+// return { success: true };
+
+
+     
+
+//     } catch (err) {
+//       toast.error("Payment verification failed");
+//     }
+//   },
+
+//   modal: {
+//     ondismiss: () => {
+//       toast.info("Payment cancelled");
+//     },
+//   },
+
+//   theme: {
+//     color: "#4f46e5",
+//   },
+// };
+
+
+//     // 5️⃣ Open Razorpay
+//     const rzp = new window.Razorpay(options);
+//     rzp.open();
+
+//   } catch (error) {
+//     toast.error(error?.response?.data?.message || "Payment failed");
+//     throw error;
+//   }
+// };
+
+//   const clearCart = () => {
+//     setCartItems([]);
+//     setCartTotal(0);
+//   };
+
+//   const contextValue = useMemo(
+//     () => ({
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added here
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//       clearCart,
+//     }),
+//     [
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,      // <-- added to dependency list
+//       removeFromCart,
+//       updateQuantity,
+//       placeOrder,
+//     ]
+//   );
+
+//   return (
+//     <CartContext.Provider value={contextValue}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+
+// import React, {
+//   createContext,
+//   useState,
+//   useContext,
+//   useEffect,
+//   useCallback,
+//   useMemo,
+// } from "react";
+// import { toast } from "react-toastify"; // Note: CheckoutPage uses 'react-hot-toast'. Try to stick to one library.
+// import api from "../utils/api";
+
+// const CartContext = createContext();
+
+// export const useCart = () => useContext(CartContext);
+
+// export const CartProvider = ({ children }) => {
+//   const [cartItems, setCartItems] = useState([]);
+//   const [cartTotal, setCartTotal] = useState(0);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   // --- FETCH CART ---
+//   const fetchCart = useCallback(async () => {
+//     setLoading(true);
+//     setError(null);
+
+//     try {
+//       const res = await api.get("/cart/list");
+//       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
+
+//       const newCartItems = backendCart?.items
+//         ?.map((item) => ({
+//           _id: item._id,
+//           productId: item.product?._id,
+//           name: item.product?.name,
+//           price: item.product?.price,
+//           image: item.product?.image,
+//           stock: item.product?.stock ?? 0,
+//           quantity: item.quantity,
+//           selectedSize: item.selectedSize || null,
+//         }))
+//         .filter((item) => item.productId) || [];
+
+//       setCartItems(newCartItems);
+//       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
+//     } catch (err) {
+//       console.log("Cart fetch error: ", err.response?.status);
+//       if (err.response?.status === 401) {
+//         setCartItems([]);
+//         setCartTotal(0);
+//       }
+//       setError("Could not load cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, []);
+
+//   // Load cart on mount
+//   useEffect(() => {
+//     fetchCart();
+//   }, [fetchCart]);
+
+//   // --- ADD TO CART ---
+//   const addToCart = useCallback(async (productId, options = {}) => {
+//     const { quantity = 1, selectedSize = null } = options;
+//     setLoading(true);
+//     try {
+//       const resp = await api.post("/cart/add", {
+//         productId,
+//         quantity,
+//         selectedSize,
+//       });
+
+//       if (resp.data) {
+//         toast.success("Added to cart 🛒", {
+//           autoClose: 1500,
+//           position: "top-center",
+//         });
+//       }
+//       await fetchCart();
+//       return resp;
+//     } catch (err) {
+//       console.error("Add to cart error:", err.response?.data || err);
+//       toast.error(err.response?.data?.message || "Failed to add to cart");
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [fetchCart]);
+
+//   // --- REMOVE FROM CART ---
+//   const removeFromCart = useCallback(async (productId) => {
+//     setLoading(true);
+//     try {
+//       await api.delete(`/cart/remove/${productId}`);
+//       await fetchCart();
+//       toast.info("Item removed");
+//     } catch (err) {
+//       console.error("Remove error:", err.response?.data);
+//       setLoading(false);
+//     }
+//   }, [fetchCart]);
+
+//   // --- UPDATE QUANTITY ---
+//   const updateQuantity = useCallback(async (productId, newQuantity) => {
+//     if (newQuantity <= 0) return;
+
+//     // Optimistic UI update for speed
+//     setCartItems((prev) =>
+//       prev.map((item) =>
+//         item.productId === productId ? { ...item, quantity: newQuantity } : item
+//       )
+//     );
+
+//     try {
+//       await api.put(`/cart/updateQuantity/${productId}`, {
+//         quantity: newQuantity,
+//       });
+//       // We fetch cart again to ensure totals are correct from backend logic
+//       fetchCart();
+//     } catch (err) {
+//       console.error("Update qty error:", err.response);
+//       fetchCart(); // Revert on error
+//     }
+//   }, [fetchCart]);
+
+//   // --- CLEAR CART (Used in CheckoutPage) ---
+//   const clearCart = useCallback(() => {
+//     setCartItems([]);
+//     setCartTotal(0);
+//     // Optionally: If your backend has a specific 'clear cart' endpoint, call it here.
+//     // Usually, placing an order automatically clears the backend cart, 
+//     // so we just clear the Frontend UI here.
+//   }, []);
+
+//   const contextValue = useMemo(
+//     () => ({
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,
+//       removeFromCart,
+//       updateQuantity,
+//       clearCart, // <--- Exposed to the app
+//     }),
+//     [
+//       cartItems,
+//       cartTotal,
+//       loading,
+//       error,
+//       fetchCart,
+//       addToCart,
+//       removeFromCart,
+//       updateQuantity,
+//       clearCart,
+//     ]
+//   );
+
+//   return (
+//     <CartContext.Provider value={contextValue}>
+//       {children}
+//     </CartContext.Provider>
+//   );
+// };
+
+
 import React, {
   createContext,
   useState,
@@ -1016,11 +1837,8 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import axios from "axios";
-import { domainUrl } from "../utils/constant";
-import { toast } from "react-toastify";
-
-axios.defaults.withCredentials = true; // IMPORTANT
+import { toast } from "react-toastify"; // Note: CheckoutPage uses 'react-hot-toast'. Try to stick to one library.
+import api from "../utils/api";
 
 const CartContext = createContext();
 
@@ -1032,39 +1850,36 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // --- FETCH CART ---
   const fetchCart = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const res = await axios.get(`${domainUrl}/cart/list`);
-
+      const res = await api.get("/cart/list");
       const backendCart = res.data.cart || { items: [], totalAmount: 0 };
 
-      const newCartItems =
-        backendCart?.items
-          ?.map((item) => ({
-            _id: item._id,
-            productId: item.product?._id,
-            name: item.product?.name,
-            price: item.product?.price,
-            image: item.product?.image,
-            quantity: item.quantity,
-            selectedSize: item.selectedSize || null,
-          }))
-          .filter((item) => item.productId) || [];
+      const newCartItems = backendCart?.items
+        ?.map((item) => ({
+          _id: item._id,
+          productId: item.product?._id,
+          name: item.product?.name,
+          price: item.product?.price,
+          image: item.product?.image,
+          stock: item.product?.stock ?? 0,
+          quantity: item.quantity,
+          selectedSize: item.selectedSize || null,
+        }))
+        .filter((item) => item.productId) || [];
 
       setCartItems(newCartItems);
       setCartTotal(parseFloat(backendCart?.totalAmount || 0).toFixed(2));
     } catch (err) {
       console.log("Cart fetch error: ", err.response?.status);
-
-      // ❗ If cookie expired → user must login
       if (err.response?.status === 401) {
         setCartItems([]);
         setCartTotal(0);
       }
-
       setError("Could not load cart");
     } finally {
       setLoading(false);
@@ -1076,52 +1891,51 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  // -------- NEW: addToCart -----------
-  const addToCart = async (productId, options = {}) => {
-    // options can include quantity, selectedSize, etc.
+  // --- ADD TO CART ---
+  const addToCart = useCallback(async (productId, options = {}) => {
     const { quantity = 1, selectedSize = null } = options;
-
     setLoading(true);
     try {
-      const resp= await axios.post(`${domainUrl}/cart/add`, {
+      const resp = await api.post("/cart/add", {
         productId,
         quantity,
         selectedSize,
       });
 
-      if(resp.data){
+      if (resp.data) {
         toast.success("Added to cart 🛒", {
-              autoClose: 1500,
-              position: "top-center",
-            });
+          autoClose: 1500,
+          position: "top-center",
+        });
       }
-      // Refresh the cart after adding
       await fetchCart();
-      return resp
+      return resp;
     } catch (err) {
       console.error("Add to cart error:", err.response?.data || err);
-      // You might want to set an error state or return the error here
+      toast.error(err.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading(false);
     }
-  };
-  // -------- END addToCart -----------
+  }, [fetchCart]);
 
-  const removeFromCart = async (productId) => {
+  // --- REMOVE FROM CART ---
+  const removeFromCart = useCallback(async (productId) => {
     setLoading(true);
     try {
-      await axios.delete(`${domainUrl}/cart/remove/${productId}`);
-      fetchCart();
+      await api.delete(`/cart/remove/${productId}`);
+      await fetchCart();
+      toast.info("Item removed");
     } catch (err) {
       console.error("Remove error:", err.response?.data);
       setLoading(false);
     }
-  };
+  }, [fetchCart]);
 
-  const updateQuantity = async (productId, newQuantity) => {
+  // --- UPDATE QUANTITY ---
+  const updateQuantity = useCallback(async (productId, newQuantity) => {
     if (newQuantity <= 0) return;
 
-    // Optimistic update
+    // Optimistic UI update for speed
     setCartItems((prev) =>
       prev.map((item) =>
         item.productId === productId ? { ...item, quantity: newQuantity } : item
@@ -1129,33 +1943,25 @@ export const CartProvider = ({ children }) => {
     );
 
     try {
-      await axios.put(`${domainUrl}/cart/updateQuantity/${productId}`, {
+      await api.put(`/cart/updateQuantity/${productId}`, {
         quantity: newQuantity,
       });
+      // We fetch cart again to ensure totals are correct from backend logic
       fetchCart();
     } catch (err) {
       console.error("Update qty error:", err.response);
-      fetchCart();
+      fetchCart(); // Revert on error
     }
-  };
+  }, [fetchCart]);
 
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const placeOrder = async () => {
-    try {
-      const res = await axios.post(`${domainUrl}/order/place`);
-      await wait(3000);
-      return res.data;
-    } catch (err) {
-      await wait(600);
-      throw err.response?.data || err;
-    }
-  };
-
-  const clearCart = () => {
+  // --- CLEAR CART (Used in CheckoutPage) ---
+  const clearCart = useCallback(() => {
     setCartItems([]);
     setCartTotal(0);
-  };
+    // Optionally: If your backend has a specific 'clear cart' endpoint, call it here.
+    // Usually, placing an order automatically clears the backend cart, 
+    // so we just clear the Frontend UI here.
+  }, []);
 
   const contextValue = useMemo(
     () => ({
@@ -1164,11 +1970,10 @@ export const CartProvider = ({ children }) => {
       loading,
       error,
       fetchCart,
-      addToCart,      // <-- added here
+      addToCart,
       removeFromCart,
       updateQuantity,
-      placeOrder,
-      clearCart,
+      clearCart, // <--- Exposed to the app
     }),
     [
       cartItems,
@@ -1176,10 +1981,10 @@ export const CartProvider = ({ children }) => {
       loading,
       error,
       fetchCart,
-      addToCart,      // <-- added to dependency list
+      addToCart,
       removeFromCart,
       updateQuantity,
-      placeOrder,
+      clearCart,
     ]
   );
 

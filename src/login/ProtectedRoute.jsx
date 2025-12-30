@@ -30,11 +30,15 @@ const ProtectedRoute = ({ children }) => {
 
   // If auth context is still initializing, do nothing
   if (!user || user.isInitialLoad) {
+  
+    
     return null; // or a loading spinner
   }
 
   // If NOT authenticated, block the route
   if (!user.isAuthenticated) {
+ 
+
     return <Navigate to="/login" replace />;
   }
 

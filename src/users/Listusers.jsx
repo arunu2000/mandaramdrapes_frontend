@@ -615,6 +615,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { domainUrl } from "../utils/constant";
+import api from "../utils/api";
 
 // Pagination Component (modern + accurate counts)
 const PaginationControls = ({
@@ -724,29 +725,27 @@ const ListUsers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const USERS_PER_PAGE = 10;
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setLoading(true);
+ useEffect(() => {
+  setLoading(true);
 
-    axios
-      .get(`${domainUrl}/admin/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setAllUsers(res.data.users || []);
-        setError("");
-        setCurrentPage(1);
-      })
-      .catch(() => {
-        setError(
-          "Failed to load users. Please check your network or try again..."
-        );
-        setAllUsers([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  api
+    .get("/admin/users", {
+      // withCredentials: true, // 🔥 cookies sent
+    })
+    .then((res) => {
+      setAllUsers(res.data.users || []);
+      setError("");
+      setCurrentPage(1);
+    })
+    .catch(() => {
+      setError(
+        "Failed to load users. Please check your network or try again..."
+      );
+      setAllUsers([]);
+    })
+    .finally(() => setLoading(false));
+}, []);
+
 
   // Reset page when search changes so user always sees first results
   useEffect(() => {
@@ -807,7 +806,7 @@ const ListUsers = () => {
               <UserGroupIcon className="h-6 w-6 text-[#48633f]" />
             </div> */}
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Users
               </h1>
               <p className="mt-1 text-sm text-gray-600">

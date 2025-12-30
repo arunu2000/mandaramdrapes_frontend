@@ -848,7 +848,8 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { ToastContainer, toast, Slide } from "react-toastify";
+// import { ToastContainer, toast, Slide } from "react-toastify";
+import toast, { Toaster, } from 'react-hot-toast';
 import { motion } from "framer-motion";
 import "react-toastify/dist/ReactToastify.css";
 import api from "../utils/api";
@@ -933,8 +934,7 @@ if (!mediumPasswordRegex.test(password)) {
         const error = validateForm();
         if (error) {
             toast.error(error, {
-                icon: "❌",
-                style: { background: "#ffeded", color: "#c62828" },
+                id:"error"
             });
             return;
         }
@@ -946,8 +946,7 @@ if (!mediumPasswordRegex.test(password)) {
             const res = await api.post("/auth/signup", dataToSend);
 
             toast.success("Account created successfully!", {
-                icon: "✅",
-                style: { background: ACCENT_GREEN, color: DEEP_GREEN },
+               id:"Account Created Successfully"
             });
 
             setTimeout(() => navigate("/", { replace: true }), 1200);
@@ -958,8 +957,7 @@ if (!mediumPasswordRegex.test(password)) {
                 err.response?.data?.message ||
                 "Signup failed",
                 {
-                    icon: "❌",
-                    style: { background: "#ffeded", color: "#c62828" },
+                    id:"signupfailed"
                 }
             );
         } finally {
@@ -1121,7 +1119,17 @@ if (!mediumPasswordRegex.test(password)) {
                 </div>
             </div>
 
-            <ToastContainer position="top-center" autoClose={2000} transition={Slide} />
+            {/* <ToastContainer position="top-center" autoClose={2000} transition={Slide} /> */}
+            <Toaster
+                                      position="top-right"
+                                      toastOptions={{
+                                        duration: 2000,
+                                        style: {
+                                          borderRadius: "10px",
+                                          fontFamily: "Inter, sans-serif",
+                                        },
+                                      }}
+                                    />
         </>
     );
 }

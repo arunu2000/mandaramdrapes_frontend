@@ -1531,6 +1531,7 @@ import { FaUserCircle } from "react-icons/fa";
 import api from "../utils/api";
 import { domainUrl } from "../utils/constant";
 import logo123 from "../assets/logo.png";
+import { useLocation } from "react-router-dom";
 
 
 import {
@@ -1604,16 +1605,103 @@ const adminNavigation = [
 
 const classNames = (...classes) => classes.filter(Boolean).join(" ");
 
+// const NavLink = ({ item, openMenu, toggleMenu }) => {
+//   const hasSubLinks = item.subLinks && item.subLinks.length > 0;
+//   const isCurrent = item.href ? window.location.pathname === item.href : false;
+//   const isActiveParent = hasSubLinks && openMenu === item.name;
+
+//   const baseClasses =
+//     "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer";
+//   const activeClasses = "bg-white/10 text-white";
+//   const inactiveClasses = "text-gray-300 hover:bg-white/10 hover:text-white";
+
+//   if (!hasSubLinks) {
+//     return (
+//       <li key={item.name}>
+//         <Link
+//           to={item.href}
+//           className={classNames(
+//             isCurrent ? activeClasses : inactiveClasses,
+//             baseClasses,
+//             "w-full"
+//           )}
+//         >
+//           <item.icon aria-hidden="true" className="size-6 shrink-0" />
+//           {item.name}
+//         </Link>
+//       </li>
+//     );
+//   }
+
+//   return (
+//     <li key={item.name}>
+//       <button
+//         onClick={() => toggleMenu(item.name)}
+//         className={classNames(
+//           isActiveParent ? activeClasses : inactiveClasses,
+//           baseClasses,
+//           "w-full flex justify-between items-center"
+//         )}
+//       >
+//         <div className="flex items-center gap-x-3">
+//           <item.icon aria-hidden="true" className="size-6 shrink-0" />
+//           {item.name}
+//         </div>
+//         <ChevronDownIcon
+//           className={classNames(
+//             "size-5 transition-transform duration-200",
+//             isActiveParent ? "rotate-180" : "rotate-0"
+//           )}
+//         />
+//       </button>
+
+//       <motion.ul
+//         initial={{ height: 0 }}
+//         animate={{ height: isActiveParent ? "auto" : 0 }}
+//         transition={{ duration: 0.2 }}
+//         className="mt-1 space-y-1 overflow-hidden ml-4 p-1 rounded-md bg-black/20"
+//       >
+//         {item.subLinks.map((subItem) => (
+//           <li key={subItem.name}>
+//             <Link
+//               to={subItem.href}
+//               className="block p-2 text-sm text-gray-400 rounded-md hover:bg-black/30 hover:text-white transition-colors duration-200"
+//             >
+//               {subItem.name}
+//             </Link>
+//           </li>
+//         ))}
+//       </motion.ul>
+//     </li>
+//   );
+// };
+
+
+
+
 const NavLink = ({ item, openMenu, toggleMenu }) => {
+  const location = useLocation();
+
   const hasSubLinks = item.subLinks && item.subLinks.length > 0;
-  const isCurrent = item.href ? window.location.pathname === item.href : false;
-  const isActiveParent = hasSubLinks && openMenu === item.name;
+
+  // MAIN LINK ACTIVE CHECK
+  const isCurrent = item.href
+    ? location.pathname.startsWith(item.href)
+    : false;
+
+  // SUBMENU ACTIVE CHECK
+  const isActiveParent =
+    hasSubLinks &&
+    item.subLinks.some((sub) =>
+      location.pathname.startsWith(sub.href)
+    );
 
   const baseClasses =
     "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold transition-colors duration-200 cursor-pointer";
   const activeClasses = "bg-white/10 text-white";
   const inactiveClasses = "text-gray-300 hover:bg-white/10 hover:text-white";
 
+  // 🟢 NORMAL MENU ITEM (no submenu)
   if (!hasSubLinks) {
     return (
       <li key={item.name}>
@@ -1632,6 +1720,7 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
     );
   }
 
+  // 🟢 MENU ITEM WITH SUBMENU
   return (
     <li key={item.name}>
       <button
@@ -1654,26 +1743,46 @@ const NavLink = ({ item, openMenu, toggleMenu }) => {
         />
       </button>
 
+      {/* Submenu */}
       <motion.ul
         initial={{ height: 0 }}
-        animate={{ height: isActiveParent ? "auto" : 0 }}
+        animate={{
+  height: openMenu === item.name || isActiveParent ? "auto" : 0
+}}
+
         transition={{ duration: 0.2 }}
         className="mt-1 space-y-1 overflow-hidden ml-4 p-1 rounded-md bg-black/20"
       >
-        {item.subLinks.map((subItem) => (
-          <li key={subItem.name}>
-            <Link
-              to={subItem.href}
-              className="block p-2 text-sm text-gray-400 rounded-md hover:bg-black/30 hover:text-white transition-colors duration-200"
-            >
-              {subItem.name}
-            </Link>
-          </li>
-        ))}
+        {item.subLinks.map((sub) => {
+          const isSubActive = location.pathname.startsWith(sub.href);
+
+          return (
+            <li key={sub.name}>
+             <Link
+  to={sub.href}
+  onClick={(e) => {
+    e.stopPropagation();
+    setOpenMenu(item.name); // keep parent open
+  }}
+  className={classNames(
+    isSubActive
+      ? "bg-white/20 text-white font-medium"
+      : "text-gray-400 hover:bg-white/10 hover:text-white",
+    "block px-3 py-2 rounded-md transition-colors duration-200"
+  )}
+>
+  {sub.name}
+</Link>
+
+
+            </li>
+          );
+        })}
       </motion.ul>
     </li>
   );
 };
+
 
 // =========================
 // COOKIE-BASED ADMIN PANEL
@@ -1683,7 +1792,8 @@ export default function Admindashboard() {
   const [openMenu, setOpenMenu] = useState("");
   const [adminInfo, setAdminInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { user, checkAuthStatus, handleClientLogout } = useAuth();
+  const { user, checkAuthStatus, logout } = useAuth();
+
 
   const navigate = useNavigate();
 
@@ -1696,30 +1806,23 @@ export default function Admindashboard() {
   // =========================
   // Admindashboard.jsx
 
-  const handleLogout = async () => {
-    // Remove role stored on frontend
-    // localStorage.removeItem("role");
-    setAdminInfo(null);
+ const handleLogout = async () => {
+  setAdminInfo(null);
 
-    try {
-      //  MUST SEND COOKIES
-      const resp= await axios.post(
-        `${domainUrl}/auth/logout`,
-        {},
-        { withCredentials: true }
-      );
+  try {
+    await api.post(
+      "/auth/logout",
+      {},
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
 
-      console.log('resp!@@',resp);
-      
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+  logout(); // ✅ correct function
+  navigate("/login", { replace: true });
+};
 
-    handleClientLogout(); // Clear client-side state
-
-    // Redirect to login
-    navigate("/login", { replace: true });
-  };
 
   // =========================
   // FETCH ADMIN PROFILE
@@ -1742,6 +1845,8 @@ export default function Admindashboard() {
       setIsLoading(false);
     }
   };
+
+  
 
   // RUN ON MOUNT
   useEffect(() => {
@@ -1794,7 +1899,7 @@ export default function Admindashboard() {
                 </div>
               </TransitionChild>
 
-              <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-[#343e32] px-6 pb-4 ring-1 ring-white/10">
+              <div className="relative flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-r from-gray-900 to-gray-800  px-6 pb-4 ring-1 ring-white/10">
                 <div className="relative flex h-16 shrink-0 items-center ">
                   <img
                     src='logo.png'
@@ -1813,6 +1918,7 @@ export default function Admindashboard() {
                             item={item}
                             openMenu={openMenu}
                             toggleMenu={toggleMenu}
+                             setOpenMenu={setOpenMenu}
                           />
                         ))}
                       </ul>
@@ -1834,8 +1940,8 @@ export default function Admindashboard() {
           </div>
         </Dialog>
 
-        {/* Desktop Sidebar */}
-        <div className="hidden bg-[#343e32] lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        {/* Desktop Sidebar bg-[#343e32] */} 
+        <div className="hidden  bg-gradient-to-r from-gray-900 to-gray-800 text-white lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
@@ -1922,25 +2028,28 @@ export default function Admindashboard() {
                   </MenuButton>
 
                   <MenuItems
-                    transition
-                    className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition"
-                  >
-                    <div className="px-3 py-1 text-sm text-gray-600 border-b mb-1">
-                      <p className="font-semibold">{adminInfo?.name}</p>
-                      <p className="text-xs text-gray-500">
-                        Role: {adminInfo?.role}
-                      </p>
-                    </div>
+  transition
+  className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 transition"
+>
+  <MenuItem>
+    <Link
+      to="/admindashboard/profile"
+      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+    >
+      View Profile
+    </Link>
+  </MenuItem>
 
-                    <MenuItem>
-                      <a
-                        onClick={handleLogout}
-                        className="block px-3 py-1 text-sm/6 text-red-600 hover:bg-gray-50 cursor-pointer"
-                      >
-                        Sign out
-                      </a>
-                    </MenuItem>
-                  </MenuItems>
+  <MenuItem>
+    <a
+      onClick={handleLogout}
+      className="block px-3 py-2 text-sm text-red-600 hover:bg-gray-100 cursor-pointer"
+    >
+      Sign out
+    </a>
+  </MenuItem>
+</MenuItems>
+
                 </Menu>
               </div>
             </div>
