@@ -1,5 +1,6 @@
 import React from "react";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
+import toast, { Toaster, } from 'react-hot-toast';
 import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
@@ -105,7 +106,19 @@ const OrderSummary = ({ cartItems, cartTotal, shippingCharge ,paymentMethod,setP
   {paymentMethod === "COD" ? "Place Order (COD)" : "Pay Now"}
 </button>
 
+<Toaster
+                          position="top-right"
+                          toastOptions={{
+                            duration: 2000,
+                            style: {
+                              borderRadius: "10px",
+                              fontFamily: "Inter, sans-serif",
+                            },
+                          }}
+                        />
+
     </div>
+    
   );
 };
 

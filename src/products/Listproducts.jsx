@@ -2631,7 +2631,7 @@ const ActionModel = ({ onEdit, onDelete }) => {
         <div className="relative action-model-container">
             <button 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsOpen(!isOpen); }}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-all duration-200 border border-gray-200 hover:border-gray-300"
+                className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-all duration-200 border border-gray-200 hover:border-gray-300 cursor-pointer"
                 title="Product Actions"
             >
                 <EllipsisVerticalIcon className="w-5 h-5" />
@@ -2640,14 +2640,14 @@ const ActionModel = ({ onEdit, onDelete }) => {
                 <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-10 origin-top-right animate-fadeIn ring-1 ring-gray-100 overflow-hidden">
                     <button
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(); setIsOpen(false); }}
-                        className="w-full text-left flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200 border-b border-gray-100"
+                        className="w-full text-left flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200 border-b border-gray-100 cursor-pointer"
                     >
-                        <PencilSquareIcon className="w-4 h-4 mr-3 text-blue-600" /> 
+                        <PencilSquareIcon className="w-4 h-4 mr-3 text-blue-600 " /> 
                         <span className="font-medium">Edit Product</span>
                     </button>
                     <button
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(); setIsOpen(false); }}
-                        className="w-full text-left flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                        className="w-full text-left flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
                     >
                         <TrashIcon className="w-4 h-4 mr-3 text-red-600" /> 
                         <span className="font-medium">Delete Product</span>
@@ -2724,9 +2724,9 @@ const DashboardProductCard = ({ product, handleEditClick, handleDeleteClick , ha
 <div className="flex items-center justify-between pt-4">
   <button
     onClick={() => handleViewProduct(product)}
-    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors"
+    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
   >
-    <FaInfoCircle className="h-3 w-3" />
+    <FaInfoCircle className="h-3 w-3 " />
     View Details
   </button>
 
@@ -3139,19 +3139,19 @@ const handleUpdate = async (e) => {
                             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm" />
                         </div>
 
-                        <nav className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
+                        <nav className="space-y-2 max-h-[500px] overflow-y-auto pr-2 ">
                             {filteredCategories.length > 0 ? (
                                 filteredCategories.map((category) => (
                                     <button
                                         key={category._id}
                                         onClick={() => setSelectedCategoryId(category._id)}
-                                        className={`w-full text-left flex justify-between items-center px-4 py-3 rounded-lg font-medium transition-all duration-200 group
+                                        className={`w-full text-left flex justify-between items-center px-5 py-4 rounded-lg font-medium transition-all duration-200 group cursor-pointer 
                                             ${selectedCategoryId === category._id 
                                                 ? 'bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-md' 
                                                 : 'text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
-                                        <span className="font-medium group-hover:text-[#2D5A27]">{category.name}</span>
+                                        <span className="font-medium  ">{category.name}</span>
                                         <span className={`text-xs font-mono px-2 py-1 rounded ${selectedCategoryId === category._id ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>
                                             {category.code}
                                         </span>
@@ -3242,7 +3242,7 @@ const handleUpdate = async (e) => {
       <div className="sticky top-0 bg-white/90 backdrop-blur-sm z-10 p-6 border-b border-slate-100">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-slate-900">
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 ">
               Edit Product
             </h2>
             <p className="text-sm text-slate-500 mt-1">
@@ -3428,8 +3428,8 @@ const handleUpdate = async (e) => {
             Card Preview
           </h3>
 
-          <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6">
-            <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-100 mb-4 flex items-center justify-center">
+          <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 ">
+            <div className="aspect-square w-full overflow-hidden rounded-lg bg-slate-100 mb-4 flex items-center justify-center ">
               {imagePreview ? (
                 <img
                   src={imagePreview}
@@ -3506,7 +3506,7 @@ const handleUpdate = async (e) => {
         </div>
 
         {/* DETAILS */}
-        <div className="space-y-4">
+        <div className="space-y-4 ">
           <div>
             <p className="text-sm text-slate-500">Product Name</p>
             <p className="text-xl font-bold text-slate-900 break-all break-words max-w-full">
@@ -3544,7 +3544,7 @@ const handleUpdate = async (e) => {
 
 
                 {/* ❌ Updated Delete Modal */}
-                <Modal 
+                {/* <Modal 
                   title="Delete Product" 
                   isOpen={showDeleteModal} 
                   onClose={() => setShowDeleteModal(false)}
@@ -3604,7 +3604,70 @@ const handleUpdate = async (e) => {
 
                         </div>
                     </div>
-                </Modal>
+                </Modal> */}
+
+                {showDeleteModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="p-8 text-center">
+        
+        {/* Icon */}
+        <div className="mx-auto w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
+          <TrashIcon className="h-8 w-8 text-red-600" />
+        </div>
+
+        {/* Title */}
+        <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-3">
+          Delete Product
+        </h3>
+
+        {/* Message */}
+        <p className="text-slate-600 mb-2">
+          Are you sure you want to delete{" "}
+          <span className="font-bold text-slate-900">
+            {selectedProduct?.name}
+          </span>
+          ?
+        </p>
+
+        {/* Product Meta */}
+        <p className="text-sm text-slate-500 mb-2">
+          Code: {selectedProduct?.code} • Price: ₹{selectedProduct?.price}
+        </p>
+
+        <p className="text-sm text-slate-500 mb-8">
+          This action cannot be undone. The product will be permanently removed.
+        </p>
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            onClick={() => setShowDeleteModal(false)}
+            className="w-full sm:w-auto px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-all duration-200"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-500 text-white font-medium hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDeleting ? (
+              <>
+                <LoaderSpinner size="sm" color="white" />
+                Deleting...
+              </>
+            ) : (
+              "Delete Product"
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
             </div>
             <Toaster
                                 position="top-right"

@@ -623,6 +623,8 @@ import { motion } from "framer-motion";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 import logo123 from "../assets/logo.png";
+import OtpInput from "react-otp-input";
+
 
 
 // BRAND COLORS
@@ -641,8 +643,10 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const otpRefs = useRef([]);
+  // const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  // const otpRefs = useRef([]);
+  const [otp, setOtp] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [timer, setTimer] = useState(0);
@@ -682,6 +686,43 @@ export default function Login() {
     return () => clearInterval(interval);
   }, [timer]);
 
+  useEffect(() => {
+  const handleEnter = (e) => {
+    if (e.key !== "Enter") return;
+
+    if (loading) return;
+
+    // LOGIN
+    if (step === 1 && forgotStep === 0) {
+      handleLoginSubmit(e);
+    }
+
+    // LOGIN OTP
+    else if (step === 2 && forgotStep === 0) {
+      handleVerifyOtp();
+    }
+
+    // FORGOT EMAIL
+    else if (forgotStep === 1) {
+      handleForgotSubmit();
+    }
+
+    // FORGOT OTP
+    else if (forgotStep === 2) {
+      handleVerifyResetOtp();
+    }
+
+    // RESET PASSWORD
+    else if (forgotStep === 3) {
+      handleResetPassword();
+    }
+  };
+
+  window.addEventListener("keydown", handleEnter);
+  return () => window.removeEventListener("keydown", handleEnter);
+}, [step, forgotStep, loading, email, password, otp, resetEmail, newPassword, confirmPassword]);
+
+
   // STEP 1 — LOGIN SUBMIT
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -698,7 +739,9 @@ export default function Login() {
 
       if (res.data.step === "VERIFY_OTP") {
         toast.success("OTP sent to your email",{id:"otp sent success"});
-        setOtp(["", "", "", "", "", ""]);
+        // setOtp(["", "", "", "", "", ""]);
+        setOtp("");
+
         setStep(2); // Switch UI
         setTimer(300); // Optional timer
       }
@@ -731,27 +774,37 @@ export default function Login() {
   };
 
   // OTP CHANGE
-  const handleOtpChange = (value, index) => {
-    if (!/^[0-9]?$/.test(value)) return;
+  // const handleOtpChange = (value, index) => {
+  //   if (!/^[0-9]?$/.test(value)) return;
 
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
+  //   const newOtp = [...otp];
+  //   newOtp[index] = value;
+  //   setOtp(newOtp);
 
-    if (value && index < 5) {
-      otpRefs.current[index + 1].focus();
-    }
-  };
+  //   if (value && index < 5) {
+  //     otpRefs.current[index + 1].focus();
+  //   }
+  // };
 
-  const handleOtpKeyDown = (e, index) => {
-    if (e.key === "Backspace" && otp[index] === "" && index > 0) {
-      otpRefs.current[index - 1].focus();
-    }
-  };
+  // const handleOtpKeyDown = (e, index) => {
+  //   if (e.key === "Backspace" && otp[index] === "" && index > 0) {
+  //     otpRefs.current[index - 1].focus();
+  //   }
+  // };
+
+
+
+if (user.isInitialLoad) {
+  return null; // or spinner
+}
+
+
+
 
   // VERIFY OTP
   const handleVerifyOtp = async () => {
-    const code = otp.join("");
+    const code = otp;
+
 
     if (code.length !== 6) {
       toast.error("Enter full OTP",{id:"enter full otp"});
@@ -786,7 +839,9 @@ export default function Login() {
     toast.success("OTP resent successfully" ,{id:"otp resend success"});
 
     // ✅ clear otp
-    setOtp(["", "", "", "", "", ""]);
+    // setOtp(["", "", "", "", "", ""]);
+    setOtp("");
+
 
     // ✅ move cursor to first input
     setTimeout(() => {
@@ -812,7 +867,9 @@ const handleResendResetOtp = async () => {
     });
 
     toast.success("OTP resent successfully" ,{id:"otp resent success"});
-   setOtp(["", "", "", "", "", ""]);
+  //  setOtp(["", "", "", "", "", ""]);
+  setOtp("");
+
    setTimeout(() => {
   otpRefs.current[0]?.focus();
 }, 0);
@@ -829,11 +886,15 @@ const handleResendResetOtp = async () => {
   const resetLoginFields = () => {
     setEmail("");
     setPassword("");
-    setOtp(["", "", "", "", "", ""]);
+    // setOtp(["", "", "", "", "", ""]);
+    setOtp("");
+
   };
 
   const handleVerifyResetOtp = async () => {
-    const code = otp.join("");
+    // const code = otp.join("");
+    const code = otp;
+
 
     if (code.length !== 6) {
       toast.error("Please enter full OTP" , {id:"enter full otp."});
@@ -893,12 +954,22 @@ const handleResendResetOtp = async () => {
             clipPath: "polygon(0 0, 100% 0, 85% 100%, 0% 100%)",
           }}
         >
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="relative z-10 max-w-md"
-          >
+          > */}
+          <motion.div
+  onKeyDown={(e) => {
+    if (e.key === "Enter") e.preventDefault();
+  }}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className=" p-8 sm:p-10   w-full max-w-md"
+>
+
             <span
               className="text-sm font-light"
               style={{ color: ACCENT_GREEN }}
@@ -912,7 +983,10 @@ const handleResendResetOtp = async () => {
               Discover your ultimate sustainable fashion destination
             </h2>
           </motion.div>
+
+          
         </div>
+        
 
         {/* RIGHT SECTION */}
         <div
@@ -1017,7 +1091,7 @@ const handleResendResetOtp = async () => {
                   Enter the 6-digit OTP sent to {email}
                 </p>
 
-                <div className="flex justify-center gap-3">
+                {/* <div className="flex justify-center gap-3">
                   {otp.map((digit, i) => (
                     <input
                       key={i}
@@ -1029,12 +1103,49 @@ const handleResendResetOtp = async () => {
                       className="w-10 h-12 border text-center text-xl rounded-md"
                     />
                   ))}
-                </div>
+                </div> */}
+
+<OtpInput
+  value={otp}
+  onChange={setOtp}
+  numInputs={6}
+  isInputNum
+  shouldAutoFocus
+  renderInput={(props) => (
+    <input
+      {...props}
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      style={{
+        color: "#111827",
+        caretColor: "#111827",
+        backgroundColor: "#ffffff",
+      }}
+      className="
+        w-9 h-11
+        sm:w-12 sm:h-14
+        px-2 sm:px-4
+        py-2
+        border border-gray-300
+        rounded-lg
+        text-center text-lg sm:text-xl font-semibold
+        !text-gray-900
+        !bg-white
+        focus:outline-none
+        focus:border-[#c0ddd1]
+      "
+    />
+  )}
+  containerStyle="flex justify-center gap-2 sm:gap-3 max-w-full overflow-hidden"
+/>
+
+
+
 
                 <button
                   onClick={handleVerifyOtp}
                   disabled={loading}
-                  className="w-full h-[45px] font-semibold rounded-md shadow-md text-white"
+                  className="w-full h-[45px] font-semibold rounded-md shadow-md text-white cursor-pointer"
                   style={{ backgroundColor: DEEP_GREEN }}
                 >
                   {loading ? (
@@ -1110,7 +1221,7 @@ const handleResendResetOtp = async () => {
                   Enter the 6-digit code sent to {resetEmail}
                 </p>
 
-                <div className="flex justify-center gap-3">
+                {/* <div className="flex justify-center gap-3">
                   {otp.map((digit, i) => (
                     <input
                       key={i}
@@ -1122,12 +1233,52 @@ const handleResendResetOtp = async () => {
                       className="w-10 h-12 border text-center text-xl rounded-md"
                     />
                   ))}
-                </div>
+                </div> */}
+
+
+            <OtpInput
+  value={otp}
+  onChange={setOtp}
+  numInputs={6}
+  isInputNum
+  shouldAutoFocus
+  renderInput={(props) => (
+    <input
+      {...props}
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      style={{
+        color: "#111827",
+        caretColor: "#111827",
+        backgroundColor: "#ffffff",
+      }}
+      className="
+        w-9 h-11
+        sm:w-12 sm:h-14
+        px-2 sm:px-4
+        py-2
+        border border-gray-300
+        rounded-lg
+        text-center text-lg sm:text-xl font-semibold
+        !text-gray-900
+        !bg-white
+        focus:outline-none
+        focus:border-[#c0ddd1]
+      "
+    />
+  )}
+  containerStyle="flex justify-center gap-2 sm:gap-3 max-w-full overflow-hidden"
+/>
+
+
+
+
+
 
                 <button
                   onClick={handleVerifyResetOtp}
                   disabled={loading}
-                  className="w-full h-[45px] font-semibold rounded-md shadow-md text-white"
+                  className="w-full h-[45px] font-semibold rounded-md shadow-md text-white cursor-pointer"
                   style={{ backgroundColor: DEEP_GREEN }}
                 >
                   {loading ? (

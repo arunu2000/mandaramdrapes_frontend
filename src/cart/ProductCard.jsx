@@ -600,167 +600,349 @@
 
 // export default ProductCard;
 
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  HeartIcon as HeartOutline,
-  PlusIcon,
-  CheckIcon,
-} from "@heroicons/react/24/outline";
-import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
-import { SkewLoader } from "react-spinners";
-import { toast } from "react-toastify";
-import { useWishlist } from "../context/WishlistContext";
-import { useCart } from "../context/CartContext";
 
-const BACKEND_BASE_URL = "http://192.168.29.217:5000";
+//workinggggggg
+
+// import React, { useState } from "react";
+// import { Link } from "react-router-dom";
+// import {
+//   HeartIcon as HeartOutline,
+//   PlusIcon,
+//   CheckIcon,
+// } from "@heroicons/react/24/outline";
+// import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+// import { SkewLoader } from "react-spinners";
+// import { toast } from "react-toastify";
+// import { useWishlist } from "../context/WishlistContext";
+// import { useCart } from "../context/CartContext";
+
+// const BACKEND_BASE_URL = "http://192.168.29.217:5000";
+
+// const ProductCard = ({ product }) => {
+//   if (!product || !product._id) return null;
+
+//   const { isProductInWishlist, toggleWishlist } = useWishlist();
+//   const { addToCart, cartItems } = useCart();
+
+//   const [loading, setLoading] = useState(false);
+//   const productId = product._id;
+//   const isSaved = isProductInWishlist(productId);
+
+//   const alreadyInCart = cartItems.some((item) => item.productId === productId);
+//   const productLink = `/products/${productId}`;
+
+//   const name = product?.name || "No Name";
+//   const price = product?.price ? `₹${product.price}` : "N/A";
+
+//   const imageUrl = product?.image
+//     ? product.image.startsWith("http")
+//       ? product.image
+//       : `${BACKEND_BASE_URL}/${product.image}`
+//     : "https://placehold.co/500x500?text=No+Image";
+
+//   // WISHLIST FUNCTIONALITY
+//   const handleToggleWishlist = (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+
+//     toggleWishlist(productId, isSaved);
+
+//     isSaved
+//       ? toast.info("Removed from favourites", {
+//           autoClose: 1500,
+//           position: "top-center",
+//         })
+//       : toast.success("Added to favourites", {
+//           autoClose: 1500,
+//           position: "top-center",
+//         });
+//   };
+
+//   // ADD TO CART
+//   const handleAddToCart = async (e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+
+//     if (alreadyInCart) {
+//       toast.info("Already in cart ✔", {
+//         autoClose: 1500,
+//         position: "top-center",
+//       });
+//       return;
+//     }
+
+//     try {
+//       setLoading(true); // START LOADER
+
+//       const resp = await addToCart(productId, {
+//         quantity: 1,
+//         selectedSize: null,
+//       });
+
+//       setLoading(false); // STOP LOADER
+
+//       if (resp?.data?.success) {
+//         toast.success("Added to cart 🛒", {
+//           autoClose: 1500,
+//           position: "top-center",
+//         });
+//       }
+//     } catch (error) {
+//       setLoading(false); // STOP LOADER ON ERROR
+//       toast.error("Failed to add to cart", { position: "top-center" });
+//     }
+//   };
+
+//   return (
+//     <div className="bg-white shadow-xl rounded-3xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+//       <Link to={productLink} className="block">
+//         {/* IMAGE */}
+//        <div className="bg-gray-100 rounded-2xl overflow-hidden relative">
+//   <div className="w-full h-[220px] sm:h-[280px] md:h-[300px] flex items-center justify-center">
+//     {imageUrl ? (
+//       <img
+//         src={imageUrl}
+//         alt={name}
+//         className="
+//           w-full h-full
+//           object-contain sm:object-cover
+//           object-center
+//           transition-transform duration-300
+//         "
+//       />
+//     ) : (
+//       <div className="w-full h-full flex items-center justify-center text-[11px] text-gray-400">
+//         No Image
+//       </div>
+//     )}
+//   </div>
+// </div>
+
+
+//         {/* TITLE + HEART */}
+//         <div className="flex justify-between items-center mt-4">
+//           <h2 className="text-lg font-bold text-gray-900">{name}</h2>
+
+//           <button onClick={handleToggleWishlist}>
+//             {isSaved ? (
+//               <HeartSolid className="w-6 h-6 text-red-600" />
+//             ) : (
+//               <HeartOutline className="w-6 h-6 text-gray-800 hover:text-red-500" />
+//             )}
+//           </button>
+//         </div>
+
+//         {/* PRICE + ADD TO CART */}
+//         <div className="flex justify-between items-center mt-4">
+//           <div>
+//             <p className="text-xs text-gray-600">Price:</p>
+//             <span className="text-green-600 font-bold text-lg">{price}</span>
+//           </div>
+
+//           <button
+//             onClick={handleAddToCart}
+//             className={`w-3/5 py-3 rounded-xl text-sm font-semibold transition-all
+//     ${
+//       alreadyInCart
+//         ? "bg-green-600 text-white hover:opacity-90"
+//         : "bg-black text-white hover:opacity-90"
+//     }`}
+//           >
+//             {loading ? (
+//               <div className="flex justify-center">
+//                 <SkewLoader size={10} color="#ffffff" />
+//               </div>
+//             ) : alreadyInCart ? (
+//               <span className="flex items-center justify-center gap-1">
+//                 <CheckIcon className="w-4 h-4" /> Added
+//               </span>
+//             ) : (
+//               <span className="flex items-center justify-center gap-1">
+//                 <PlusIcon className="w-4 h-4" /> Add to Cart
+//               </span>
+//             )}
+//           </button>
+//         </div>
+//       </Link>
+//     </div>
+//   );
+// };
+
+// export default ProductCard;
+
+
+
+
+
+
+"use client";
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Heart, ShoppingBag, Check, ArrowRight } from "lucide-react"; // Consistent icons
+import { toast } from "react-hot-toast"; // Using hot-toast for consistency
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
+import { domainUrl } from "../utils/constant";
+// import { useAuth } from "../context/AuthContext";
+
+
+
+function classNames(...c) {
+  return c.filter(Boolean).join(" ");
+}
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+  const { addToCart, cartItems } = useCart();
+  const { isProductInWishlist, toggleWishlist } = useWishlist();
+
+  // const { user } = useAuth();
+
+
+  // Safety check
   if (!product || !product._id) return null;
 
-  const { isProductInWishlist, toggleWishlist } = useWishlist();
-  const { addToCart, cartItems } = useCart();
+  // State
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  
+  // Derived State
+  const isSaved = isProductInWishlist(product._id);
+  const isInCart = cartItems.some((item) => {
+    const cartId = item.product?._id || item.productId;
+    return String(cartId) === String(product._id);
+  });
 
-  const [loading, setLoading] = useState(false);
-  const productId = product._id;
-  const isSaved = isProductInWishlist(productId);
+  // Image Helper
+  const imageUrl = product.image?.startsWith("http")
+    ? product.image
+    : `${domainUrl}/${product.image}`;
 
-  const alreadyInCart = cartItems.some((item) => item.productId === productId);
-  const productLink = `/products/${productId}`;
+  const categoryName = typeof product.category === 'object' 
+    ? product.category?.name 
+    : product.category;
 
-  const name = product?.name || "No Name";
-  const price = product?.price ? `₹${product.price}` : "N/A";
-
-  const imageUrl = product?.image
-    ? product.image.startsWith("http")
-      ? product.image
-      : `${BACKEND_BASE_URL}/${product.image}`
-    : "https://placehold.co/500x500?text=No+Image";
-
-  // WISHLIST FUNCTIONALITY
-  const handleToggleWishlist = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    toggleWishlist(productId, isSaved);
-
-    isSaved
-      ? toast.info("Removed from favourites", {
-          autoClose: 1500,
-          position: "top-center",
-        })
-      : toast.success("Added to favourites", {
-          autoClose: 1500,
-          position: "top-center",
-        });
+  // Handlers
+  const handleCardClick = () => {
+    navigate(`/products/${product._id}`);
+    window.scrollTo(0, 0);
   };
 
-  // ADD TO CART
+  const handleToggleWishlist = async (e) => {
+    e.stopPropagation();
+    if (isWishlistLoading) return;
+    
+    setIsWishlistLoading(true);
+    try {
+        await toggleWishlist(product._id, isSaved);
+        toast.success(isSaved ? "Removed from favourites" : "Added to favourites",{id:"removed wishlist productcard"});
+    } catch (error) {
+        console.error(error);
+    } finally {
+        setIsWishlistLoading(false);
+    }
+  };
+
+
+
+
+
   const handleAddToCart = async (e) => {
-    e.preventDefault();
     e.stopPropagation();
 
-    if (alreadyInCart) {
-      toast.info("Already in cart ✔", {
-        autoClose: 1500,
-        position: "top-center",
-      });
+    if (isInCart) {
+      toast.error("This item is already in your cart",{id:"already to cart allproducts"});
       return;
     }
 
+    if (product.stock <= 0) {
+        toast.error("This item is out of stock",{id:"out of stock product card"});
+        return;
+    }
+
     try {
-      setLoading(true); // START LOADER
-
-      const resp = await addToCart(productId, {
-        quantity: 1,
-        selectedSize: null,
-      });
-
-      setLoading(false); // STOP LOADER
-
-      if (resp?.data?.success) {
-        toast.success("Added to cart 🛒", {
-          autoClose: 1500,
-          position: "top-center",
-        });
-      }
+      await addToCart(product);
+      toast.success(`Added ${product.name} to cart`);
     } catch (error) {
-      setLoading(false); // STOP LOADER ON ERROR
-      toast.error("Failed to add to cart", { position: "top-center" });
+      console.error(error);
+      toast.error("Failed to add to cart");
     }
   };
 
   return (
-    <div className="bg-white shadow-xl rounded-3xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-      <Link to={productLink} className="block">
-        {/* IMAGE */}
-       <div className="bg-gray-100 rounded-2xl overflow-hidden relative">
-  <div className="w-full h-[220px] sm:h-[280px] md:h-[300px] flex items-center justify-center">
-    {imageUrl ? (
+    <div 
+      onClick={handleCardClick}
+      className="group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-[2rem] bg-gray-100 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+    >
+      {/* 1. Background Image */}
       <img
         src={imageUrl}
-        alt={name}
-        className="
-          w-full h-full
-          object-contain sm:object-cover
-          object-center
-          transition-transform duration-300
-        "
+        alt={product.name}
+        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
       />
-    ) : (
-      <div className="w-full h-full flex items-center justify-center text-[11px] text-gray-400">
-        No Image
+
+      {/* 2. Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+      {/* 3. Top Left: Category Tag */}
+      <div className="absolute left-4 top-4">
+        <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wider text-gray-900 backdrop-blur-md shadow-sm">
+          {categoryName || "Collection"}
+        </span>
       </div>
-    )}
-  </div>
-</div>
 
-
-        {/* TITLE + HEART */}
-        <div className="flex justify-between items-center mt-4">
-          <h2 className="text-lg font-bold text-gray-900">{name}</h2>
-
-          <button onClick={handleToggleWishlist}>
-            {isSaved ? (
-              <HeartSolid className="w-6 h-6 text-red-600" />
-            ) : (
-              <HeartOutline className="w-6 h-6 text-gray-800 hover:text-red-500" />
+      {/* 4. Top Right: Action Buttons */}
+      <div className="absolute right-4 top-4 flex flex-col gap-3">
+        {/* Wishlist Button */}
+        <button
+          onClick={handleToggleWishlist}
+          disabled={isWishlistLoading}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-md backdrop-blur-md transition-all hover:scale-110 active:scale-95 disabled:opacity-70"
+        >
+          <Heart
+            className={classNames(
+              "h-5 w-5 transition-colors",
+              isSaved ? "fill-red-500 text-red-500" : "text-gray-900"
             )}
-          </button>
-        </div>
+          />
+        </button>
 
-        {/* PRICE + ADD TO CART */}
-        <div className="flex justify-between items-center mt-4">
-          <div>
-            <p className="text-xs text-gray-600">Price:</p>
-            <span className="text-green-600 font-bold text-lg">{price}</span>
+        {/* Add To Cart Button */}
+        <button
+          onClick={handleAddToCart}
+          disabled={isInCart || product.stock <= 0}
+          className={classNames(
+            "flex h-10 w-10 items-center justify-center rounded-full shadow-md backdrop-blur-md transition-all hover:scale-110 active:scale-95",
+            isInCart 
+              ? "bg-green-100 text-green-700 cursor-default" 
+              : "bg-white/90 text-gray-900 hover:bg-black hover:text-white"
+          )}
+        >
+          {isInCart ? <Check className="h-5 w-5" /> : <ShoppingBag className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {/* 5. Bottom Info Card */}
+      <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="flex items-center justify-between rounded-2xl bg-white/95 p-4 shadow-xl backdrop-blur-md border border-white/50">
+          <div className="flex flex-col truncate pr-2">
+            <h3 className="truncate text-sm font-bold text-gray-900">
+              {product.name}
+            </h3>
+            <p className="mt-0.5 text-xs font-bold text-gray-500">
+              ₹ {product.price?.toLocaleString()}
+            </p>
           </div>
-
-          <button
-            onClick={handleAddToCart}
-            className={`w-3/5 py-3 rounded-xl text-sm font-semibold transition-all
-    ${
-      alreadyInCart
-        ? "bg-green-600 text-white hover:opacity-90"
-        : "bg-black text-white hover:opacity-90"
-    }`}
-          >
-            {loading ? (
-              <div className="flex justify-center">
-                <SkewLoader size={10} color="#ffffff" />
-              </div>
-            ) : alreadyInCart ? (
-              <span className="flex items-center justify-center gap-1">
-                <CheckIcon className="w-4 h-4" /> Added
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-1">
-                <PlusIcon className="w-4 h-4" /> Add to Cart
-              </span>
-            )}
-          </button>
+          
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 group-hover:bg-black group-hover:text-white transition-colors duration-300">
+            <ArrowRight className="h-4 w-4" />
+          </div>
         </div>
-      </Link>
+      </div>
+
+      
+
+
     </div>
   );
 };

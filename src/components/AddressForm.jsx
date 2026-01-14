@@ -1,6 +1,7 @@
 import React from "react";
 import api from "../utils/api";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
+import toast, { Toaster, } from 'react-hot-toast';
 
 const handleGetLocation = () => {
   if (!navigator.geolocation) {

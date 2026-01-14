@@ -6,11 +6,31 @@ import { domainUrl } from "./constant";
 // - transports: ["websocket"] → avoids polling issues
 // - autoConnect: false → we control when to connect
 
+// const socket = io(domainUrl, {
+//   withCredentials: true,
+//   transports: ["websocket"],
+//   autoConnect: false,
+// });
+
+
+// const socket = io(domainUrl, {
+//   withCredentials: true,
+//   transports: ["websocket"],
+//   autoConnect: false,
+//   reconnection: false,        // ✅ THIS STOPS THE LOOP
+// });
+
+console.log("🔥 SOCKET CONFIG LOADED — POLLING ONLY");
+
+
 const socket = io(domainUrl, {
   withCredentials: true,
-  transports: ["websocket"],
   autoConnect: false,
+  reconnection: false,
+  transports: ["polling"],   // ✅ FIX
 });
+
+
 
 // Optional: debug logs (remove in production)
 socket.on("connect", () => {
